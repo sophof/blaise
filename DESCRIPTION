@@ -14,3 +14,5 @@ Imports:
     readr,
     stringr,
     utils
+Suggests: testthat
+RoxygenNote: 6.0.1
