@@ -4,12 +4,14 @@
 \alias{read_blaise_asc}
 \title{Read a fixed width ascii datafile with a blaise datamodel}
 \usage{
-read_blaise_asc(datafile, modelfile)
+read_blaise_asc(datafile, modelfile, dec = ",")
 }
 \arguments{
 \item{datafile}{the ascii file with the data}
 
 \item{modelfile}{the datamodel describing the data}
+
+\item{dec}{decimal separator for real/floats, default is ","}
 }
 \description{
 Read a fixed width ascii datafile with a blaise datamodel

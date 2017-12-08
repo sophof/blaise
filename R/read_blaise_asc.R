@@ -4,10 +4,12 @@
 #'
 #' @param modelfile the datamodel describing the data
 #'
+#' @param dec decimal separator for real/floats, default is ","
+#'
 #' @export
 
-read_blaise_asc = function(datafile, modelfile){
+read_blaise_asc = function(datafile, modelfile, dec = ','){
   bla = read_model(modelfile)
-  data = read_data(datafile, bla)
+  data = read_data(datafile, bla, dec)
   return(data)
 }
