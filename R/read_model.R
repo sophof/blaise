@@ -1,14 +1,14 @@
-read_model = function(blafile){
+read_model = function(blafile, force_string = FALSE){
   bla = readr::read_file(blafile)
-  bla = parse_bla(bla)
+  bla = parse_bla(bla, force_string)
   return(bla)
 }
 
-parse_bla = function(bla){
+parse_bla = function(bla, force_string = FALSE){
   bla = clean_model(bla)
   modelname = extract_datamodelName(bla)
   names = extract_names(bla)
-  types = extract_types(bla)
+  types = extract_types(bla, force_string)
   lengths = extract_lengths(bla)
   decimals = extract_decimals(bla)
   return(list(modelname = modelname,
@@ -66,7 +66,7 @@ extract_names = function(bla){
   extract_cols(bla, 2)
 }
 
-extract_types = function(bla){
+extract_types = function(bla, force_string = FALSE){
   types = c(
     'STRING',
     'REAL',
@@ -74,6 +74,10 @@ extract_types = function(bla){
     'DATETYPE'
   )
   col_types = extract_cols(bla, 3)
+  if (force_string){
+    col_types = replicate(length(col_types), 'STRING')
+  }
+
   controle = str_detect(
     col_types,
     regex(

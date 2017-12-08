@@ -104,3 +104,41 @@ test_that("DATETYPE can be used", {
   expect_equal(lubridate::month(df[[1]]), c(4, 5, 6))
   expect_equal(lubridate::year(df[[1]]), c(2010, 2011, 2012))
 })
+
+test_that("unknown types throw an error", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : INTEGER[1]
+  B     : ONZIN[2]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data = "123\n23.\n3.4"
+  datafile = makedatafile(data)
+
+  expect_error(read_blaise_asc(datafile, blafile))
+})
+
+test_that("string can be forced to read unknown types", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : INTEGER[1]
+  B     : ONZIN[2]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data = "123\n23.\n3.4"
+  datafile = makedatafile(data)
+
+  expect_silent(read_blaise_asc(datafile, blafile, force_string = TRUE))
+
+  df = read_blaise_asc(datafile, blafile, force_string = TRUE)
+
+  expect_identical(colnames(df), c('A', 'B'))
+  expect_identical(df[[1]], c('1', '2', '3'))
+  expect_identical(df[[2]], c('23', '3.', '.4'))
+})
