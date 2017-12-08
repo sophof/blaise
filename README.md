@@ -6,5 +6,5 @@ in R
 
 Momenteel alleen nog lezen geimplementeerd.
 
-Bouw met devtools in Rstudio door het project file te openen en 'build source package'
+Bouw met devtools in Rstudio door de .Rproj file te openen en 'build source package'
 uit te voeren.
