@@ -1,4 +1,4 @@
-read_data = function(datafile, datamodel, dec = ','){
+read_data = function(datafile, datamodel, locale){
   col_types = convert_types_to_cols(datamodel$col_types, datamodel$col_names)
   readr::read_fwf(
     datafile,
@@ -7,7 +7,7 @@ read_data = function(datafile, datamodel, dec = ','){
       datamodel$col_names
     ),
     col_types = col_types,
-    locale = readr::locale(decimal_mark = dec)
+    locale = locale
   )
 }
 

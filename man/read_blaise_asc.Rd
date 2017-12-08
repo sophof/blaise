@@ -4,14 +4,16 @@
 \alias{read_blaise_asc}
 \title{Read a fixed width ascii datafile with a blaise datamodel}
 \usage{
-read_blaise_asc(datafile, modelfile, dec = ",")
+read_blaise_asc(datafile, modelfile, locale = readr::locale(decimal_mark =
+  ","))
 }
 \arguments{
 \item{datafile}{the ascii file with the data}
 
 \item{modelfile}{the datamodel describing the data}
 
-\item{dec}{decimal separator for real/floats, default is ","}
+\item{locale}{locale as specified with readr::locale(). Uses "," as default
+decimal separator. Can be used to change date_format, timezone, encoding, etc.}
 }
 \description{
 Read a fixed width ascii datafile with a blaise datamodel
