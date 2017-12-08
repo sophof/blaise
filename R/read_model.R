@@ -10,10 +10,12 @@ parse_bla = function(bla){
   names = extract_names(bla)
   types = extract_types(bla)
   lengths = extract_lengths(bla)
+  decimals = extract_decimals(bla)
   return(list(modelname = modelname,
               col_names = names,
               col_types = types,
-              col_lengths = lengths))
+              col_lengths = lengths,
+              col_decimals = decimals))
 }
 
 #' @import stringr
@@ -48,16 +50,10 @@ extract_datamodelName = function(bla){
 }
 
 extract_cols = function(bla, group){
-  types = c(
-    'STRING',
-    'REAL',
-    'INTEGER'
-  )
-
   regexcols = paste0(
     '^.*',
     ':',
-    '(', paste(types, collapse = '|'), ')',
+    '.*',
     '\\[.+\\]$'
   )
   cols = grep(regexcols, bla, ignore.case = TRUE)
@@ -71,9 +67,62 @@ extract_names = function(bla){
 }
 
 extract_types = function(bla){
-  extract_cols(bla, 3)
+  types = c(
+    'STRING',
+    'REAL',
+    'INTEGER'
+  )
+  col_types = extract_cols(bla, 3)
+  controle = str_detect(
+    col_types,
+    regex(
+      paste0('^(',
+             paste(types, collapse = '|'),
+             ')$'),
+      ignore_case = TRUE)
+  )
+  if(any(!controle)){
+    msg = sprintf(
+      'datamodel contains unknown type(s) "%s"',
+      paste(col_types[!controle], collapse = '; ')
+    )
+    stop(msg)
+  }
+  return(col_types)
 }
 
 extract_lengths = function(bla){
-  extract_cols(bla, 4)
+  col_lengths = extract_cols(bla, 4)
+  col_lengths = str_match(col_lengths, '^(\\d+),?\\d*$')[,2]
+
+  tryCatch(
+    {col_lengths = as.integer(col_lengths)},
+    error = function (e){
+      stop('column lengths could not be converted to integer, fails with error:\n',
+           e)
+    },
+    warning = function (e){
+      stop('column lengths could not be converted to integer, fails with warning:\n',
+           e)
+    }
+    )
+  return(col_lengths)
+}
+
+extract_decimals = function(bla){
+  col_lengths = extract_cols(bla, 4)
+  col_decimals = str_match(col_lengths, '^\\d+,(\\d+)$')[,2]
+
+  tryCatch(
+    {col_decimals = as.integer(col_decimals)},
+    error = function (e){
+      stop('column decimals could not be converted to integer, fails with error:\n',
+           e)
+    },
+    warning = function (e){
+      stop('column decimals could not be converted to integer, fails with warning:\n',
+           e)
+    }
+  )
+  return(col_decimals)
 }
