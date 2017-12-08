@@ -14,7 +14,7 @@ FIELDS
   B     : INTEGER[2]
   C     : REAL[9,2]
   D     : STRING[4]
-  E     : STRING[2]  {testcomment}
+  E     : DATETYPE[8]  {testcomment}
 { multiline comment {with nesting}
   second line}
 ENDMODEL

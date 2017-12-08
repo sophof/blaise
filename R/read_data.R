@@ -12,17 +12,18 @@ read_data = function(datafile, datamodel, locale){
 }
 
 convert_types_to_cols = function(col_types, col_names){
-  col_types = sapply(toupper(col_types), match_type)
+  col_types = Map(match_type, col_types)
   names(col_types) = col_names
   do.call(readr::cols, col_types)
 }
 
 match_type = function(type){
   switch(
-    EXPR = type,
+    EXPR = toupper(type),
     STRING = readr::col_character(),
     INTEGER = readr::col_integer(),
     REAL = readr::col_double(),
+    DATETYPE = readr::col_date(),
     stop('type "', type, '" not recognized')
   )
 }

@@ -61,3 +61,46 @@ test_that("different decimal separator can be used", {
                        locale = readr::locale(decimal_mark =  '.'))
   expect_equal(df[[1]], c(123, 23., 3.4))
 })
+
+test_that("DATETYPE can be used", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : DATETYPE[8]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data =
+"20100401
+20110502
+20120603"
+  datafile = makedatafile(data)
+
+  df = read_blaise_asc(datafile,
+                       blafile,
+                       locale = readr::locale(date_format = '%Y%m%d'))
+  expect_equal(lubridate::day(df[[1]]), c(1, 2, 3))
+  expect_equal(lubridate::month(df[[1]]), c(4, 5, 6))
+  expect_equal(lubridate::year(df[[1]]), c(2010, 2011, 2012))
+
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : DATETYPE[10]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data =
+"2010-04-01
+2011-05-02
+2012-06-03"
+  datafile = makedatafile(data)
+
+  df = read_blaise_asc(datafile,
+                       blafile)
+  expect_equal(lubridate::day(df[[1]]), c(1, 2, 3))
+  expect_equal(lubridate::month(df[[1]]), c(4, 5, 6))
+  expect_equal(lubridate::year(df[[1]]), c(2010, 2011, 2012))
+})

@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_blaise_asc.R
 \name{read_blaise_asc}
 \alias{read_blaise_asc}
-\title{Read a fixed width ascii datafile with a blaise datamodel}
+\title{Read a fixed width ascii datafile using a blaise datamodel}
 \usage{
 read_blaise_asc(datafile, modelfile, locale = readr::locale(decimal_mark =
   ","))
@@ -16,5 +16,17 @@ read_blaise_asc(datafile, modelfile, locale = readr::locale(decimal_mark =
 decimal separator. Can be used to change date_format, timezone, encoding, etc.}
 }
 \description{
-Read a fixed width ascii datafile with a blaise datamodel
+Use this function to read a fwf that is described by a blaise datamodel.
+Only handles files with a single datamodel.
+}
+\details{
+Currently handles the following types:
+\itemize{
+  \item STRING
+  \item INTEGER
+  \item REAL
+  \item DATETYPE
+  }
+
+Other types will throw an error
 }

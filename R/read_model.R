@@ -70,7 +70,8 @@ extract_types = function(bla){
   types = c(
     'STRING',
     'REAL',
-    'INTEGER'
+    'INTEGER',
+    'DATETYPE'
   )
   col_types = extract_cols(bla, 3)
   controle = str_detect(
