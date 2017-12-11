@@ -14,6 +14,7 @@ Imports:
     readr,
     stringr,
     utils,
-    lubridate
+    lubridate,
+    tools
 Suggests: testthat
 RoxygenNote: 6.0.1

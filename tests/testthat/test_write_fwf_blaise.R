@@ -1,0 +1,22 @@
+context("writing blaise datafiles with a datamodel")
+
+test_that("asc is added as extension when missing", {
+  datafilename = tempfile(fileext = '.asc')
+  dir = tempdir()
+  df = data.frame(1:10)
+
+  write_fwf_blaise(df, datafilename)
+  files = tools::list_files_with_exts(dir, '.asc', full.names = F)
+  expect_match(files, datafilename, all = FALSE)
+  unlink(datafilename)
+  datafilename = tempfile()
+  write_fwf_blaise(df, datafilename)
+  files = tools::list_files_with_exts(dir, '.asc', full.names = F)
+  expect_match(files, datafilename, all = FALSE)
+  unlink(datafilename)
+  datafilename = tempfile(fileext = '.test')
+  write_fwf_blaise(df, datafilename)
+  files = tools::list_files_with_exts(dir, '.test', full.names = F)
+  expect_match(files, datafilename, all = FALSE)
+  unlink(datafilename)
+})
