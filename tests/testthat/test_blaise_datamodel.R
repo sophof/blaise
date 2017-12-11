@@ -15,16 +15,21 @@ FIELDS
   C     : REAL[9,2]
   D     : STRING[4]
   E     : DATETYPE[8]  {testcomment}
+  F     : (Male, Female)
+  G     : 1..20
+  H     : 1.0..99.9
 { multiline comment {with nesting}
   second line}
 ENDMODEL
 "
+  Ncols = 8
+
   blafile = makeblafile(model)
-  expect_silent(read_model(blafile))
-  bla = read_model(blafile)
-  expect_true(length(bla$col_names) == 5)
-  expect_true(length(bla$col_types) == 5)
-  expect_true(length(bla$col_lengths) == 5)
+  expect_silent({bla = read_model(blafile)})
+  expect_true(length(bla$col_names) == Ncols)
+  expect_true(length(bla$col_types) == Ncols)
+  expect_true(length(bla$col_lengths) == Ncols)
+  expect_true(length(bla$col_lengths) == Ncols)
 })
 
 test_that("Unknown datatypes throw an error", {
@@ -50,6 +55,8 @@ FIELDS
   B     : INTEGER[2]
   C     : REAL[9,2]
   D     : STRING[4]
+  E     : DATETYPE[2]
+  F     : (MALE, FEMALE)
 ENDMODEL
 "
   blafile = makeblafile(model)
@@ -58,6 +65,8 @@ ENDMODEL
   expect_equal(bla$col_types[2], 'INTEGER')
   expect_equal(bla$col_types[3], 'REAL')
   expect_equal(bla$col_types[4], 'STRING')
+  expect_equal(bla$col_types[5], 'DATETYPE')
+  expect_equal(bla$col_types[6], 'ENUM')
 })
 
 test_that("names are detected", {

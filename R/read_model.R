@@ -8,14 +8,17 @@ parse_bla = function(bla, force_string = FALSE){
   bla = clean_model(bla)
   modelname = extract_datamodelName(bla)
   names = extract_names(bla)
-  types = extract_types(bla, force_string)
-  lengths = extract_lengths(bla)
-  decimals = extract_decimals(bla)
+  cols = extract_types_and_widths(bla, force_string)
+  types = cols$types
+  lengths = cols$widths
+  decimals = cols$decs
+  levels = cols$levels
   return(list(modelname = modelname,
               col_names = names,
               col_types = types,
               col_lengths = lengths,
-              col_decimals = decimals))
+              col_decimals = decimals,
+              col_levels = levels))
 }
 
 #' @import stringr
@@ -54,10 +57,10 @@ extract_cols = function(bla, group){
     '^.*',
     ':',
     '.*',
-    '\\[.+\\]$'
+    '(\\[.+\\])?$'
   )
   cols = grep(regexcols, bla, ignore.case = TRUE)
-  groups = stringr::str_match_all(bla[cols], '^(.+):(.+)\\[([,\\d]+)\\]$')
+  groups = stringr::str_match_all(bla[cols], '^(.+):(.+)$')
   output = sapply(groups, function(x) x[group])
   return(output)
 }
@@ -66,68 +69,95 @@ extract_names = function(bla){
   extract_cols(bla, 2)
 }
 
-extract_types = function(bla, force_string = FALSE){
+extract_types_and_widths = function(bla, force_string = FALSE){
   types = c(
     'STRING',
     'REAL',
     'INTEGER',
-    'DATETYPE'
+    'DATETYPE',
+    'ENUM'
   )
-  col_types = extract_cols(bla, 3)
+  cols = extract_cols(bla, 3)
+  ret = list(input = cols)
+
+  normal_regex = '^(.+)\\[(\\d+),?(\\d+)?\\]$'
+  normal_types = str_detect(cols, normal_regex)
+  ret = extract_normal(ret, normal_types, normal_regex)
+
+  enum_regex = '^\\((.+)\\)$'
+  enum_types = str_detect(cols, enum_regex)
+  ret = extract_enum(ret, enum_types)
+
+  range_regex = '^(\\d+\\.?(?:\\d+)?)\\.\\.(\\d+\\.?(?:\\d+)?)$'
+  range_types = str_detect(cols, range_regex)
+  ret = extract_range(ret, range_types, range_regex)
+
   if (force_string){
-    col_types = replicate(length(col_types), 'STRING')
+    ret$types = replicate(length(ret$types), 'STRING')
   }
 
-  controle = str_detect(
-    col_types,
-    regex(
-      paste0('^(',
-             paste(types, collapse = '|'),
-             ')$'),
-      ignore_case = TRUE)
-  )
-  if(any(!controle)){
+  controle = is.na(ret$types) | !(ret$types %in% types)
+  if(any(controle)){
     msg = sprintf(
       'datamodel contains unknown type(s) "%s"',
-      paste(col_types[!controle], collapse = '; ')
+      paste(cols[controle], collapse = '; ')
     )
     stop(msg)
   }
-  return(col_types)
+  ret$widths = as.integer(ret$widths)
+  ret$decs = as.integer(ret$decs)
+
+  return(ret)
 }
 
-extract_lengths = function(bla){
-  col_lengths = extract_cols(bla, 4)
-  col_lengths = str_match(col_lengths, '^(\\d+),?\\d*$')[,2]
+extract_normal = function(all, mask, regex){
+  if(all(!mask)) return(all) # if none match, return input
+  cols = all$input
 
-  tryCatch(
-    {col_lengths = as.integer(col_lengths)},
-    error = function (e){
-      stop('column lengths could not be converted to integer, fails with error:\n',
-           e)
-    },
-    warning = function (e){
-      stop('column lengths could not be converted to integer, fails with warning:\n',
-           e)
-    }
-    )
-  return(col_lengths)
+  all$types[mask] = str_match(cols[mask], regex)[,2]
+  all$widths[mask] = str_match(cols[mask], regex)[,3]
+  all$decs[mask] = str_match(cols[mask], regex)[,4]
+  return(all)
 }
 
-extract_decimals = function(bla){
-  col_lengths = extract_cols(bla, 4)
-  col_decimals = str_match(col_lengths, '^\\d+,(\\d+)$')[,2]
+extract_enum = function(all, mask){
+  get_enum_levels = function(string){
+    # remove ()
+    string = stringr::str_match(string, '\\((.+)\\)')[,2]
+    trimws(unlist(stringr::str_split(string, ',')))
+  }
 
-  tryCatch(
-    {col_decimals = as.integer(col_decimals)},
-    error = function (e){
-      stop('column decimals could not be converted to integer, fails with error:\n',
-           e)
+  get_enum_size = function(string){
+    levels = get_enum_levels(string)
+    n = length(levels)
+    nchar(n)
+  }
+  if(all(!mask)) return(all) # if none match, return input
+  cols = all$input
+
+  all$types[mask] = 'ENUM'
+  all$widths[mask] = vapply(cols[mask], get_enum_size, 1)
+  all$levels[mask] = lapply(cols[mask], get_enum_levels)
+  return(all)
+}
+
+extract_range = function(all, mask, regex){
+  if(all(!mask)) return(all) # if none match, return input
+
+  cols = all$input
+  start = str_match(cols[mask], regex)[,2]
+  end = str_match(cols[mask], regex)[,3]
+
+  doubles = str_detect(start, '\\.') | str_detect(end, '\\.')
+  all$types[mask & doubles] = 'REAL'
+  all$types[mask & !doubles] = 'INTEGER'
+
+  all$widths[mask] = mapply(function(start, end) {
+    max(nchar(start), nchar(end))
     },
-    warning = function (e){
-      stop('column decimals could not be converted to integer, fails with warning:\n',
-           e)
-    }
-  )
-  return(col_decimals)
+    start,
+    end,
+    USE.NAMES = F)
+
+  return(all)
 }

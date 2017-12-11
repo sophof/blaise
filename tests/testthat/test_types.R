@@ -5,7 +5,7 @@ expect_type_equal = function(df, column){
   blafile = tempfile(fileext = '.bla')
 
   eval(bquote(expect_silent(write_fwf_blaise(.(df), datafile, blafile))))
-  eval(bquote(expect_silent({dfnew = read_blaise_asc(datafile, blafile)})))
+  eval(bquote(expect_silent({dfnew = read_fwf_blaise(datafile, blafile)})))
   eval(bquote(expect_equal(.(df)[[.(column)]], dfnew[[.(column)]], tolerance = 1e-7)))
 }
 
