@@ -30,14 +30,16 @@ B23,41,2
 C34,512,"
   datafile = makedatafile(data)
 
-  expect_silent(read_blaise_asc(datafile, blafile))
+  expect_silent(read_fwf_blaise(datafile, blafile))
 
-  df = read_blaise_asc(datafile, blafile)
+  df = read_fwf_blaise(datafile, blafile)
   expect_identical(colnames(df), c('A', 'B', 'C', 'D'))
   expect_identical(df[[1]], c('A', 'B', 'C'))
   expect_equal(df[[2]], c(1, 2, 3))
   expect_equal(df[[3]], c(2.3, 3.4, 4.5))
   expect_equal(df[[4]], c(.12, 1.2, 12.))
+  unlink(blafile)
+  unlink(datafile)
 })
 
 
@@ -56,10 +58,12 @@ test_that("different decimal separator can be used", {
 3.4"
   datafile = makedatafile(data)
 
-  df = read_blaise_asc(datafile,
+  df = read_fwf_blaise(datafile,
                        blafile,
                        locale = readr::locale(decimal_mark =  '.'))
   expect_equal(df[[1]], c(123, 23., 3.4))
+  unlink(blafile)
+  unlink(datafile)
 })
 
 test_that("DATETYPE can be used", {
@@ -77,12 +81,14 @@ test_that("DATETYPE can be used", {
 20120603"
   datafile = makedatafile(data)
 
-  df = read_blaise_asc(datafile,
+  df = read_fwf_blaise(datafile,
                        blafile,
                        locale = readr::locale(date_format = '%Y%m%d'))
   expect_equal(lubridate::day(df[[1]]), c(1, 2, 3))
   expect_equal(lubridate::month(df[[1]]), c(4, 5, 6))
   expect_equal(lubridate::year(df[[1]]), c(2010, 2011, 2012))
+  unlink(blafile)
+  unlink(datafile)
 
   model = "
   DATAMODEL Test
@@ -98,11 +104,13 @@ test_that("DATETYPE can be used", {
 2012-06-03"
   datafile = makedatafile(data)
 
-  df = read_blaise_asc(datafile,
+  df = read_fwf_blaise(datafile,
                        blafile)
   expect_equal(lubridate::day(df[[1]]), c(1, 2, 3))
   expect_equal(lubridate::month(df[[1]]), c(4, 5, 6))
   expect_equal(lubridate::year(df[[1]]), c(2010, 2011, 2012))
+  unlink(blafile)
+  unlink(datafile)
 })
 
 test_that("unknown types throw an error", {
@@ -118,7 +126,9 @@ test_that("unknown types throw an error", {
   data = "123\n23.\n3.4"
   datafile = makedatafile(data)
 
-  expect_error(read_blaise_asc(datafile, blafile))
+  expect_error(read_fwf_blaise(datafile, blafile))
+  unlink(blafile)
+  unlink(datafile)
 })
 
 test_that("string can be forced to read unknown types", {
@@ -134,11 +144,13 @@ test_that("string can be forced to read unknown types", {
   data = "123\n23.\n3.4"
   datafile = makedatafile(data)
 
-  expect_silent(read_blaise_asc(datafile, blafile, force_string = TRUE))
+  expect_silent(read_fwf_blaise(datafile, blafile, force_string = TRUE))
 
-  df = read_blaise_asc(datafile, blafile, force_string = TRUE)
+  df = read_fwf_blaise(datafile, blafile, force_string = TRUE)
 
   expect_identical(colnames(df), c('A', 'B'))
   expect_identical(df[[1]], c('1', '2', '3'))
   expect_identical(df[[2]], c('23', '3.', '.4'))
+  unlink(blafile)
+  unlink(datafile)
 })
