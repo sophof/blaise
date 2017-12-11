@@ -4,8 +4,8 @@
 \alias{write_fwf_blaise}
 \title{Write a fixed width ascii datafile and accompanying blaise datamodel}
 \usage{
-write_fwf_blaise(df, output_data, output_model = NULL,
-  locale = readr::locale(decimal_mark = ","), force_string = FALSE)
+write_fwf_blaise(df, output_data, output_model = NULL, force_string = FALSE,
+  decimal.mark = ",", digits = NULL)
 }
 \arguments{
 \item{df}{dataframe to write}
@@ -15,20 +15,38 @@ write_fwf_blaise(df, output_data, output_model = NULL,
 \item{output_model}{path and name to output datamodel. If NULL will use the
 same name as output_data with .bla extension.}
 
-\item{locale}{readr locale. Will use "," as a decimal mark by default, all
-other defaults the same as in readr package}
-
 \item{force_string}{If TRUE, will force unknown/unsupported column types to
 string, otherwise these will throw an error}
+
+\item{decimal.mark}{decimal mark to use. Default is ",".}
+
+\item{digits}{how many significant digits are to be used for numeric and
+complex x. The default, NULL, uses getOption("digits"). This is a suggestion:
+enough decimal places will be used so that the smallest (in magnitude) number
+has this many significant digits, and also to satisfy nsmall.}
+}
+\value{
+list of filepaths written. data = datafile, model = modelfile. Does so
+invisibly, will not print but can be assigned.
 }
 \description{
 Write a datafile in the blaise format (fwf ascii without separators)
 will always write out a blaise datamodel describing the datafile as well
 }
+\details{
+Currently supports the following dataformats:
+\itemize{
+  \item character = STRING,
+  \item integer = INTEGER,
+  \item numeric = REAL,
+  \item Date = DATETYPE,
+  \item factor = STRING
+}
+}
 \examples{
 datafilename = tempfile('testdata', fileext = '.asc')
 blafilename = tempfile('testbla', fileext = '.bla')
-data = data.frame(1, 1:10, sample(LETTERS[1:3], 10, replace = TRUE))
+data = data.frame(1, 1:10, sample(LETTERS[1:3], 10, replace = TRUE), runif(10, 1, 10))
 # would automatically create a bla file, but fails because factor is an
 # unsupported type
 write_fwf_blaise(data, datafilename)
@@ -37,5 +55,6 @@ write_fwf_blaise(data,
   datafilename,
   blafilename,
   force_string = TRUE)
+unlink(c(datafilename, blafilename))
 
 }
