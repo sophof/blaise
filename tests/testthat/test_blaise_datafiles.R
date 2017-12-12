@@ -30,9 +30,7 @@ B23,41,2
 C34,512,"
   datafile = makedatafile(data)
 
-  expect_silent(read_fwf_blaise(datafile, blafile))
-
-  df = read_fwf_blaise(datafile, blafile)
+  expect_silent({df = read_fwf_blaise(datafile, blafile)})
   expect_identical(colnames(df), c('A', 'B', 'C', 'D'))
   expect_identical(df[[1]], c('A', 'B', 'C'))
   expect_equal(df[[2]], c(1, 2, 3))
@@ -153,4 +151,23 @@ test_that("string can be forced to read unknown types", {
   expect_identical(df[[2]], c('23', '3.', '.4'))
   unlink(blafile)
   unlink(datafile)
+})
+
+test_that("dataframe is read as a tibble", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : STRING[1]
+  B     : INTEGER[1]
+  C     : REAL[3,2]
+  D     : REAL[3]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data = "A12,3,12\nB23,41,2\nC34,512,"
+  datafile = makedatafile(data)
+
+  df = read_fwf_blaise(datafile, blafile)
+  expect_match(class(df), '^tbl', all = FALSE)
 })
