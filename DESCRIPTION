@@ -1,12 +1,13 @@
 Package: blaise
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.3.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: Read and Write FWF Files in the Blaise Format
+Version: 0.3.2
+Authors@R: person("Sjoerd", "Ophof", email = "sohf@cbs.nl",
+                  role = c("aut", "cre"))
+Description: Can be used to read a fwf with an accompanying blaise datamodel
+  The same for writing such files automatically.
+  Supports dataframes and tibbles.
+License: 
 Encoding: UTF-8
 LazyData: true
 Imports:
