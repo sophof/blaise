@@ -34,3 +34,31 @@ Currently handles the following types:
 Other types will throw an error unless force_string is set to TRUE, in this
 case all columns will be read as a character vector.
 }
+\examples{
+model = "
+  DATAMODEL Test
+FIELDS
+A     : STRING[1]
+B     : INTEGER[1]
+C     : REAL[3,2]
+D     : REAL[3]
+E     : (Male, Female)
+F     : 1..20
+G     : 1.00..100.00
+ENDMODEL
+"
+data =
+  "A12,3,121 1  1,00
+B23,41,2210 20,20
+C34,512,120100,00"
+
+blafile = tempfile('testbla', fileext = '.bla')
+writeLines(model, con = blafile)
+datafile = tempfile('testdata', fileext = '.asc')
+writeLines(data, con = datafile)
+
+df = read_fwf_blaise(datafile, blafile)
+unlink(blafile)
+unlink(datafile)
+
+}

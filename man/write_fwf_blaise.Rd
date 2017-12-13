@@ -5,7 +5,7 @@
 \title{Write a fixed width ascii datafile and accompanying blaise datamodel}
 \usage{
 write_fwf_blaise(df, output_data, output_model = NULL, force_string = FALSE,
-  decimal.mark = ",", digits = NULL)
+  decimal.mark = ",", digits = getOption("digits"))
 }
 \arguments{
 \item{df}{dataframe to write}
@@ -21,9 +21,9 @@ string, otherwise these will throw an error}
 \item{decimal.mark}{decimal mark to use. Default is ",".}
 
 \item{digits}{how many significant digits are to be used for numeric and
-complex x. The default, NULL, uses getOption("digits"). This is a suggestion:
+complex x. The default uses getOption("digits"). This is a suggestion:
 enough decimal places will be used so that the smallest (in magnitude) number
-has this many significant digits, and also to satisfy nsmall.}
+has this many significant digits.}
 }
 \value{
 list of filepaths written. data = datafile, model = modelfile. Does so
@@ -47,10 +47,7 @@ Currently supports the following dataformats:
 datafilename = tempfile('testdata', fileext = '.asc')
 blafilename = tempfile('testbla', fileext = '.bla')
 data = data.frame(1, 1:10, sample(LETTERS[1:3], 10, replace = TRUE), runif(10, 1, 10))
-# would automatically create a bla file, but fails because factor is an
-# unsupported type
 write_fwf_blaise(data, datafilename)
-# Will convert factor to string type
 write_fwf_blaise(data,
   datafilename,
   blafilename,
