@@ -13,37 +13,19 @@ parse_bla = function(bla, force_string = FALSE){
   lengths = cols$widths
   decimals = cols$decs
   levels = cols$levels
+
+  stopifnot(
+    all(!is.na(types)),
+    all(!is.na(names)),
+    all(!is.na(lengths))
+  )
+
   return(list(modelname = modelname,
               col_names = names,
               col_types = types,
               col_lengths = lengths,
               col_decimals = decimals,
               col_levels = levels))
-}
-
-#' @import stringr
-#' @import dplyr
-clean_model = function(tekst){
-  # Verwijder genest commentaar.
-  tekst0 <- ""
-  while (tekst != tekst0) {
-    tekst0 <- tekst
-    tekst <- str_replace_all(tekst, "(?s)\\{[^\\{\\}]*\\}", "")
-  }
-
-  regels <-                                        # Splits en verwijder ...
-    unlist(str_split(tekst, "\n")) %>%
-    str_replace_all("\\r","") %>%            # Return characters
-    str_replace("^[:blank:]*", "") %>%       # Spaties aan het begin;
-    str_replace("[:blank:]*$", "") %>%       # Spaties aan het einde;
-    str_replace_all("[:blank:]+", " ") %>%   # Spaties achter elkaar;
-    str_replace_all("\".*\"", "") %>%        # Tekst tussen '"';
-    str_replace_all(" *: *", ":") %>%        # Spaties rond ':';
-    str_replace_all(" *\\[ *", "[") %>%      # Spaties rond '[';
-    str_replace_all(" *\\] *", "]") %>%      # Spaties rond ']';
-    str_replace_all(" *\\.\\. *", "..") %>%  # Spaties rond '..'.
-    Filter(function(x) x != "", .)           # Lege regels.
-  return(regels)
 }
 
 extract_datamodelName = function(bla){
@@ -95,6 +77,9 @@ extract_types_and_widths = function(bla, force_string = FALSE){
   if (force_string){
     ret$types = replicate(length(ret$types), 'STRING')
   }
+  if(any(is.null(ret$types)) | any(is.null(ret$widths))){
+    stop('not all datatypes could be detected, model probably malformed')
+  }
 
   controle = is.na(ret$types) | !(ret$types %in% types)
   if(any(controle)){
@@ -105,7 +90,15 @@ extract_types_and_widths = function(bla, force_string = FALSE){
     stop(msg)
   }
   ret$widths = as.integer(ret$widths)
-  ret$decs = as.integer(ret$decs)
+  if(is.null(ret$decs)) {
+    ret$decs = replicate(length(ret$types), NA)
+  }
+  else {
+    ret$decs = as.integer(ret$decs)
+  }
+
+
+  if(is.null(ret$levels)) ret$levels = lapply(ret$types, function(x) NULL)
 
   return(ret)
 }
@@ -148,9 +141,9 @@ extract_range = function(all, mask, regex){
   start = str_match(cols[mask], regex)[,2]
   end = str_match(cols[mask], regex)[,3]
 
-  doubles = str_detect(start, '\\.') | str_detect(end, '\\.')
-  all$types[mask & doubles] = 'REAL'
-  all$types[mask & !doubles] = 'INTEGER'
+  doubles = (str_detect(start, '\\.') | str_detect(end, '\\.'))
+  all$types[mask][doubles] = 'REAL'
+  all$types[mask][!doubles] = 'INTEGER'
 
   all$widths[mask] = mapply(function(start, end) {
     max(nchar(start), nchar(end))

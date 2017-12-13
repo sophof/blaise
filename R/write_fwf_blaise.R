@@ -20,9 +20,9 @@
 #' string, otherwise these will throw an error
 #' @param decimal.mark decimal mark to use. Default is ",".
 #' @param digits how many significant digits are to be used for numeric and
-#' complex x. The default, NULL, uses getOption("digits"). This is a suggestion:
+#' complex x. The default uses getOption("digits"). This is a suggestion:
 #' enough decimal places will be used so that the smallest (in magnitude) number
-#' has this many significant digits, and also to satisfy nsmall.
+#' has this many significant digits.
 #'
 #' @return list of filepaths written. data = datafile, model = modelfile. Does so
 #' invisibly, will not print but can be assigned.
@@ -47,7 +47,7 @@ write_fwf_blaise = function(df,
                             output_model = NULL,
                             force_string = FALSE,
                             decimal.mark = ',',
-                            digits = NULL){
+                            digits = getOption('digits')){
   # add asc if no file extension found
   if (tools::file_ext(output_data) == ''){
     output_data = paste0(output_data, '.asc')
@@ -59,24 +59,16 @@ write_fwf_blaise = function(df,
     output_model = paste0(output_model, '.bla')
   }
 
-  #save the decimal mark option
-  decOption = getOption("OutDec")
   tryCatch(
     expr = {
-      options(OutDec = decimal.mark)
-      formatinfo = gdata::write.fwf(df,
-                                    file = output_data,
-                                    colnames = FALSE,
-                                    sep = '',
-                                    formatInfo = TRUE)
+      formatinfo = get_formatinfo(df, digits)
+      write_data(df, formatinfo, file = output_data, decimal.mark, digits)
       write_datamodel(df, formatinfo, output_model, force_string)
     },
     error = function(e){
-      options(OutDec = decOption)
       stop(e)
     },
     finally = {
-      options(OutDec = decOption)
     }
   )
 

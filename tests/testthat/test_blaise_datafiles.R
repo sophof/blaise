@@ -20,22 +20,29 @@ test_that("correct data and datamodel can be read and reproduced", {
   B     : INTEGER[1]
   C     : REAL[3,2]
   D     : REAL[3]
+  E     : (Male, Female)
+  F     : 1..20
+  G     : 1.00..100.00
   ENDMODEL
   "
   blafile = makeblafile(model)
 
   data =
-"A12,3,12
-B23,41,2
-C34,512,"
+"A12,3,121 1  1,00
+B23,41,2210 20,20
+C34,512,120100,00"
   datafile = makedatafile(data)
+  factorinput = factor(c(1, 2, 1), labels = c('Male', 'Female'))
 
   expect_silent({df = read_fwf_blaise(datafile, blafile)})
-  expect_identical(colnames(df), c('A', 'B', 'C', 'D'))
+  expect_identical(colnames(df), c('A', 'B', 'C', 'D', 'E', 'F', 'G'))
   expect_identical(df[[1]], c('A', 'B', 'C'))
   expect_equal(df[[2]], c(1, 2, 3))
   expect_equal(df[[3]], c(2.3, 3.4, 4.5))
   expect_equal(df[[4]], c(.12, 1.2, 12.))
+  expect_equal(df[[5]], factorinput)
+  expect_equal(df[[6]], c(1, 10, 20))
+  expect_equal(df[[7]], c(1.00, 20.20, 100.00))
   unlink(blafile)
   unlink(datafile)
 })

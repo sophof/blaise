@@ -123,3 +123,108 @@ test_that("floats lengths and decimals are detected", {
   expect_true(is.na(bla$col_decimals[2]))
   expect_equal(bla$col_decimals[3], 2)
 })
+
+test_that("ENUMS get correctly read", {
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A     : (Male, Female)
+  B     : (1,2,3,4,5,6,7,8,9,10)
+  C     : INTEGER[3]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equal(bla$col_names, c('A', 'B', 'C'))
+  expect_equal(bla$col_types, c('ENUM', 'ENUM', 'INTEGER'))
+  expect_equal(bla$col_lengths, c(1, 2, 3))
+  expect_equal(bla$col_levels[[1]],
+               c('Male', 'Female'))
+  expect_equal(bla$col_levels[[2]],
+               c('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
+  expect_equal(bla$col_levels[[3]],
+               NULL)
+})
+
+test_that("field descriptions over multiple lines work", {
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A     :
+          STRING[9]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equal(bla$col_names, 'A')
+  expect_equal(bla$col_types, 'STRING')
+  expect_equal(bla$col_lengths, 9)
+
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A     : (Male,
+           Female)
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equal(bla$col_names, 'A')
+  expect_equal(bla$col_types, 'ENUM')
+  expect_equal(bla$col_lengths, 1)
+})
+
+
+test_that("malformed datamodel throws an error", {
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A     :  STRING[9]
+  END
+  "
+  blafile = makeblafile(model)
+  expect_error({bla = read_model(blafile)})
+
+  model =
+    "
+  FIELDS
+  A     :  STRING[9]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_error({bla = read_model(blafile)})
+
+  model =
+    "
+  DATAMODEL test
+  A     :  STRING[9]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_error({bla = read_model(blafile)})
+
+  model =
+    "
+  DATAMODEL test
+  FIELDS
+  A     :  STRING
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_error({bla = read_model(blafile)})
+
+  model =
+    "
+  DATAMODEL test
+  FIELDS
+  A     :
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_error({bla = read_model(blafile)})
+})
+
