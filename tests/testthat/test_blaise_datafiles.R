@@ -178,3 +178,75 @@ test_that("dataframe is read as a tibble", {
   df = read_fwf_blaise(datafile, blafile)
   expect_match(class(df), '^tbl', all = FALSE)
 })
+
+test_that("empty values are read as NA", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : STRING[1]
+  B     : INTEGER[1]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data = "A1\n 2\nC "
+  datafile = makedatafile(data)
+
+  expect_silent({df = read_fwf_blaise(datafile, blafile)})
+  expect_equal(df[[1]], c('A', NA, 'C'))
+  expect_equal(df[[2]], c(1, 2, NA))
+})
+
+test_that("negative integers work", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  B     : INTEGER[3]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data = "  1\n999\n-30"
+  datafile = makedatafile(data)
+
+  expect_silent({df = read_fwf_blaise(datafile, blafile)})
+  expect_equal(df[[1]], c(1, 999, -30))
+})
+
+test_that("integers outside of max.integer range produce a warning and are converted to double", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  B     : INTEGER[10]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data = "        1\n9999999999\n       -30"
+  datafile = makedatafile(data)
+
+  expect_warning({df = read_fwf_blaise(datafile, blafile)})
+  expect_equal(df[[1]], c(1, 9999999999, -30))
+  expect_equal(class(df[[1]]), 'numeric')
+})
+
+test_that("integers floats of max.range produce a warning and are converted to string", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  B     : REAL[54]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  leeg50 = strrep(' ', 50)
+  a = paste0(strrep(' ', 50), '   1')
+  b = paste0(strrep(' ', 50), '   2')
+  c = strrep('9', 54)
+  data = paste(a,b,c, sep = '\n')
+  datafile = makedatafile(data)
+
+  expect_warning({df = read_fwf_blaise(datafile, blafile)})
+  expect_equal(df[[1]], c('1', '2', c))
+  expect_equal(class(df[[1]]), 'character')
+})

@@ -97,7 +97,6 @@ extract_types_and_widths = function(bla, force_string = FALSE){
     ret$decs = as.integer(ret$decs)
   }
 
-
   if(is.null(ret$levels)) ret$levels = lapply(ret$types, function(x) NULL)
 
   return(ret)
@@ -110,6 +109,31 @@ extract_normal = function(all, mask, regex){
   all$types[mask] = str_match(cols[mask], regex)[,2]
   all$widths[mask] = str_match(cols[mask], regex)[,3]
   all$decs[mask] = str_match(cols[mask], regex)[,4]
+
+  max_int = nchar(.Machine$integer.max)
+  big_int = (toupper(all$types[mask]) == 'INTEGER') &
+    (as.integer(all$widths[mask]) >= max_int)
+  if (any(big_int)){
+    msg = sprintf('column(s) too wide for 32bit int with width "%s", converting to double.
+                  max int is %i',
+                  paste(all$widths[big_int], collapse = '; '),
+                  .Machine$integer.max)
+    warning(msg)
+    all$types[big_int] = 'REAL'
+  }
+
+  max_digits = .Machine$double.digits
+  big_float = (toupper(all$types[mask]) == 'REAL') &
+    (as.integer(all$widths[mask]) >= max_digits)
+  if (any(big_float)){
+    msg = sprintf('column(s) too wide for double with width "%s", converting to string.
+                  max float digits are %i',
+                  paste(all$widths[big_float], collapse = '; '),
+                  max_digits)
+    warning(msg)
+    all$types[big_float] = 'STRING'
+  }
+
   return(all)
 }
 
