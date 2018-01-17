@@ -22,7 +22,7 @@ get_width = function(col, digits){
   }
 
   factor = function(col){
-    n = length(levels(col))
+    n = nlevels(col)
     nchar(n)
   }
 
