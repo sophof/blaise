@@ -12,8 +12,8 @@ expect_type_equal = function(df, column){
 test_that("all types get read back identically for a dataframe", {
   df = data.frame(
     int = 1:10,
-    factor = as.factor(LETTERS[1:10]),
-    numeric = seq(1.1, 10.1, by = 1),
+    factor = as.factor(rep(c('male','female'), 5)),
+    numeric = seq(1.1111111111, 10.1111111111, by = 1),
     date = seq(as.Date('2010-01-01'), as.Date('2010-01-10'), by = 'day')
     )
   df$string = as.character(df$factor)
@@ -50,4 +50,29 @@ test_that("multiple factors can be written and read", {
 
   expect_type_equal(df, 'letters')
   expect_type_equal(df, 'date')
+})
+
+test_that("all types get read back identically with NA", {
+  df = data.frame(
+    int = 1:10,
+    factor = as.factor(rep(c('male','female'), 5)),
+    numeric = seq(1.1111111111, 10.1111111111, by = 1),
+    date = seq(as.Date('2010-01-01'), as.Date('2010-01-10'), by = 'day')
+  )
+  df$string = as.character(df$factor)
+  df[5,] = NA
+
+  expect_type_equal(df, 'int')
+  expect_type_equal(df, 'factor')
+  expect_type_equal(df, 'numeric')
+  expect_type_equal(df, 'date')
+  expect_type_equal(df, 'string')
+})
+
+test_that("single width numeric", {
+  df = data.frame(
+    numeric = seq(1, 9, by = 1.)
+  )
+  df[5,] = NA
+  expect_type_equal(df, 'numeric')
 })

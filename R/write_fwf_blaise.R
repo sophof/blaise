@@ -56,18 +56,9 @@ write_fwf_blaise = function(df,
     output_model = paste0(output_model, '.bla')
   }
 
-  tryCatch(
-    expr = {
-      formatinfo = get_formatinfo(df, digits)
-      write_data(df, formatinfo, file = output_data, decimal.mark, digits)
-      write_datamodel(df, formatinfo, output_model, force_string)
-    },
-    error = function(e){
-      stop(e)
-    },
-    finally = {
-    }
-  )
+  formatinfo = get_formatinfo(df, digits)
+  write_data(df, formatinfo, file = output_data, decimal.mark, digits)
+  write_datamodel(df, formatinfo, output_model, force_string)
 
   return(invisible(list(data = output_data, model = output_model)))
 }

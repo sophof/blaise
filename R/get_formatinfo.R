@@ -13,6 +13,7 @@ get_formatinfo = function(df, digits = 7){
 }
 
 get_width = function(col, digits){
+  col = col[!is.na(col)]
   normal = function(col){
     format.info(col, digits = digits)[1]
   }
