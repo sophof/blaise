@@ -1,4 +1,4 @@
-context("writing blaise datafiles with a datamodel")
+context("writing blaise datafiles without an input datamodel")
 
 test_that("asc is added as extension when missing", {
   datafilename = tempfile(fileext = '.asc')
@@ -48,8 +48,6 @@ test_that("custom bla can be made", {
 test_that("data.frame can be written", {
   datafilename = tempfile(fileext = '.asc')
   blafilename = tempfile(fileext = '.bla')
-  blafilename2 = tempfile(fileext = '.test')
-  dir = tempdir()
   df = data.frame(1:10)
 
   expect_silent(write_fwf_blaise(df, datafilename, blafilename))
@@ -58,8 +56,6 @@ test_that("data.frame can be written", {
 test_that("tibble can be written", {
   datafilename = tempfile(fileext = '.asc')
   blafilename = tempfile(fileext = '.bla')
-  blafilename2 = tempfile(fileext = '.test')
-  dir = tempdir()
   df = dplyr::tibble(1:10)
 
   expect_silent(write_fwf_blaise(df, datafilename, blafilename))
