@@ -15,7 +15,12 @@
 #' @param df dataframe to write
 #' @param output_data path and name to output datafile. Will add .asc if no extension
 #' @param output_model path and name to output datamodel. If NULL will use the
-#' same name as output_data with .bla extension.
+#' same name as output_data with .bla extension unless and input_model is given.
+#' @param input_model path and name of an existing datamodel. Will check that the
+#' dataframe conforms to the datamodel and pad columns where required on the right
+#' side with whitespace. Will attempt to convert column types. Significance for
+#' numeric columns will be set according to width and column order will be adjusted
+#' automatically. Will not write out an output model unless explicitly provided.
 #' @param force_string If TRUE, will force unknown/unsupported column types to
 #' string, otherwise these will throw an error
 #' @param decimal.mark decimal mark to use. Default is ",".
@@ -42,6 +47,7 @@
 write_fwf_blaise = function(df,
                             output_data,
                             output_model = NULL,
+                            input_model = NULL,
                             force_string = FALSE,
                             decimal.mark = ',',
                             digits = getOption('digits')){
@@ -50,10 +56,15 @@ write_fwf_blaise = function(df,
     output_data = paste0(output_data, '.asc')
   }
 
-  # create output_model filename if not given
-  if(is.null(output_model)){
-    output_model = tools::file_path_sans_ext(output_data)
-    output_model = paste0(output_model, '.bla')
+  if(!is.null(input_model)){
+    stop('not yet implemented')
+  }
+  else {
+    # create output_model filename if not given
+    if(is.null(output_model)){
+      output_model = tools::file_path_sans_ext(output_data)
+      output_model = paste0(output_model, '.bla')
+    }
   }
 
   formatinfo = get_formatinfo(df, digits)
