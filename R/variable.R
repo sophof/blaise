@@ -1,3 +1,5 @@
+#' @include generics.R
+
 .check_validity <- function(object) {
   errors = character()
 
@@ -12,19 +14,19 @@
     errors = c(errors, paste('type', object@type, 'is unknown'))
   }
 
-  if(is.na(object@decimals) & object@type == 'REAL'){
-    errors = c(errors, paste('type REAL requires decimals to be known'))
-  }
-
   if(!is.na(object@decimals) & object@type != 'REAL'){
     errors = c(errors, paste('only type REAL requires decimals to be known'))
   }
 
-  if(is.na(object@labels) & object@type == 'ENUM'){
+  if(!is.na(object@decimals) & object@decimals > (object@width - 1)){
+    errors = c(errors, paste('only type REAL requires decimals to be known'))
+  }
+
+  if(is.na(object@labels[1]) & object@type == 'ENUM'){
     errors = c(errors, paste('type ENUM requires labels to be known'))
   }
 
-  if(!is.na(object@labels) & object@type != 'ENUM'){
+  if(!is.na(object@labels[1]) & object@type != 'ENUM'){
     errors = c(errors, paste('only type ENUM requires labels to be known'))
   }
 
@@ -56,9 +58,9 @@ setMethod("variable",
             name = "character",
             type = "character",
             width = "numeric",
-            decimals = 'missing',
-            labels = 'missing'),
-          function(name, type, width) new(
+            decimals = 'missingOrNULL',
+            labels = 'missingOrNULL'),
+          function(name, type, width, decimals, labels) new(
             'variable',
             name = name,
             type = .convert_type(type),
@@ -73,8 +75,8 @@ setMethod("variable",
             type = "character",
             width = "numeric",
             decimals = 'numeric',
-            labels = 'missing'),
-          function(name, type, width, decimals) new(
+            labels = 'missingOrNULL'),
+          function(name, type, width, decimals, labels) new(
             'variable',
             name = name,
             type = .convert_type(type),
@@ -88,14 +90,30 @@ setMethod("variable",
             name = "character",
             type = "character",
             width = "numeric",
-            decimals = 'missing',
+            decimals = 'missingOrNULL',
             labels = 'character'),
-          function(name, type, width, labels) new(
+          function(name, type, width, decimals, labels) new(
             'variable',
             name = name,
             type = .convert_type(type),
             width = as.integer(width),
             decimals = NA_integer_,
+            labels = labels)
+)
+
+setMethod("variable",
+          signature(
+            name = "character",
+            type = "character",
+            width = "numeric",
+            decimals = 'numeric',
+            labels = 'character'),
+          function(name, type, width, decimals, labels) new(
+            'variable',
+            name = name,
+            type = .convert_type(type),
+            width = as.integer(width),
+            decimals = as.integer(decimals),
             labels = labels)
 )
 
@@ -111,20 +129,13 @@ setMethod('show', 'variable', function(object){
 
 
 #======================
-# accessors for name
-setGeneric("name<-",
-           valueClass = "variable",
-           function(object, value) standardGeneric("name<-")
-)
+# accessors
 
 setMethod("name<-", "variable", function(object, value){
   object@name = value
   object
 })
 
-setGeneric("name",
-           valueClass = "character",
-           function(object) standardGeneric("name")
-)
-
 setMethod("name", "variable", function(object) object@name)
+
+setMethod("type", "variable", function(object) object@type)

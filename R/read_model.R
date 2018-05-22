@@ -12,20 +12,30 @@ parse_bla = function(bla, force_string = FALSE){
   types = cols$types
   lengths = cols$widths
   decimals = cols$decs
-  levels = cols$levels
+  labels = cols$levels
 
   stopifnot(
     all(!is.na(types)),
     all(!is.na(names)),
-    all(!is.na(lengths))
+    all(!is.na(lengths)),
+    all(sapply(c(length(types),
+                 length(lengths),
+                 length(decimals),
+                 length(labels)),
+               function (x) x == length(names)))
   )
 
-  return(list(modelname = modelname,
-              col_names = names,
-              col_types = types,
-              col_lengths = lengths,
-              col_decimals = decimals,
-              col_levels = levels))
+  vars = mapply(function(name, type, length, decimals, labels){
+    variable(name, type, length, decimals, labels)
+  },
+  names,
+  types,
+  lengths,
+  decimals,
+  labels)
+
+  m = model(modelname, vars)
+  return(m)
 }
 
 extract_datamodelName = function(bla){
@@ -91,7 +101,7 @@ extract_types_and_widths = function(bla, force_string = FALSE){
   }
   ret$widths = as.integer(ret$widths)
   if(is.null(ret$decs)) {
-    ret$decs = replicate(length(ret$types), NA)
+    ret$decs = replicate(length(ret$types), NA_integer_)
   }
   else {
     ret$decs = as.integer(ret$decs)

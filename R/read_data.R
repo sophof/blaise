@@ -1,39 +1,33 @@
 read_data = function(datafile,
                      datamodel,
                      locale){
-  col_types = convert_types_to_cols(datamodel$col_types,
-                                    datamodel$col_names)
+  col_types = convert_types_to_cols(datamodel)
   df = readr::read_fwf(
     datafile,
     readr::fwf_widths(
-      datamodel$col_lengths,
-      datamodel$col_names
+      variable_widths(datamodel),
+      variable_names(datamodel)
     ),
     col_types = col_types,
     locale = locale
   )
 
-  factors = datamodel$col_types == 'ENUM'
-  df = convert_factors(df, factors, datamodel)
+  df = convert_factors(df, datamodel)
   return(df)
 }
 
-convert_factors = function(df, mask, datamodel){
-  cols = colnames(df[,mask])
-  levels = lapply(cols, function(name) {
-    unlist(
-      datamodel$col_levels[match(name, datamodel$col_names)]
-    )
-  })
-  df[,mask] = Map(function(col, levels) factor(col, labels = levels),
+convert_factors = function(df, datamodel){
+  mask = variable_types(datamodel) == 'ENUM'
+  df[,mask] = Map(function(col, labels) factor(col, labels = labels),
                   df[,mask],
-                  levels)
+                  variable_labels(datamodel)[mask])
   return(df)
 }
 
-convert_types_to_cols = function(col_types, col_names){
+convert_types_to_cols = function(model){
+  col_types = variable_types(model)
   col_types = Map(match_type, col_types)
-  names(col_types) = col_names
+  names(col_types) = variable_names(model)
   do.call(readr::cols, col_types)
 }
 

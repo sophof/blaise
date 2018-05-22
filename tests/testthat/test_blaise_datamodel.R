@@ -26,10 +26,18 @@ ENDMODEL
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_true(length(bla$col_names) == Ncols)
-  expect_true(length(bla$col_types) == Ncols)
-  expect_true(length(bla$col_lengths) == Ncols)
-  expect_true(length(bla$col_lengths) == Ncols)
+  expect_true(length(variable_names(bla)) == Ncols)
+  expect_true(length(variable_types(bla)) == Ncols)
+  expect_true(length(variable_widths(bla)) == Ncols)
+  expect_equivalent(variable_names(bla), c('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'))
+  expect_equivalent(variable_types(bla), c('STRING',
+                                           'INTEGER',
+                                           'REAL',
+                                           'STRING',
+                                           'DATETYPE',
+                                           'ENUM',
+                                           'INTEGER',
+                                           'REAL'))
 })
 
 test_that("Unknown datatypes throw an error", {
@@ -61,12 +69,13 @@ ENDMODEL
 "
   blafile = makeblafile(model)
   bla = read_model(blafile)
-  expect_equal(bla$col_types[1], 'STRING')
-  expect_equal(bla$col_types[2], 'INTEGER')
-  expect_equal(bla$col_types[3], 'REAL')
-  expect_equal(bla$col_types[4], 'STRING')
-  expect_equal(bla$col_types[5], 'DATETYPE')
-  expect_equal(bla$col_types[6], 'ENUM')
+  types = variable_types(bla)
+  expect_equivalent(types[1], 'STRING')
+  expect_equivalent(types[2], 'INTEGER')
+  expect_equivalent(types[3], 'REAL')
+  expect_equivalent(types[4], 'STRING')
+  expect_equivalent(types[5], 'DATETYPE')
+  expect_equivalent(types[6], 'ENUM')
 })
 
 test_that("names are detected", {
@@ -82,7 +91,7 @@ test_that("names are detected", {
   "
   blafile = makeblafile(model)
   bla = read_model(blafile)
-  expect_equal(bla$col_names, c('A', 'B', 'C', 'D'))
+  expect_equivalent(variable_names(bla), c('A', 'B', 'C', 'D'))
 })
 
 test_that("lengths are detected", {
@@ -98,10 +107,11 @@ test_that("lengths are detected", {
 "
   blafile = makeblafile(model)
   bla = read_model(blafile)
-  expect_equal(bla$col_lengths[1], 9)
-  expect_equal(bla$col_lengths[2], 2)
-  expect_equal(bla$col_lengths[3], 9)
-  expect_equal(bla$col_lengths[4], 4)
+  widths = variable_widths(bla)
+  expect_equivalent(widths[1], 9)
+  expect_equivalent(widths[2], 2)
+  expect_equivalent(widths[3], 9)
+  expect_equivalent(widths[4], 4)
 })
 
 test_that("floats lengths and decimals are detected", {
@@ -117,11 +127,13 @@ test_that("floats lengths and decimals are detected", {
 "
   blafile = makeblafile(model)
   bla = read_model(blafile)
-  expect_equal(bla$col_lengths[2], 2)
-  expect_equal(bla$col_lengths[3], 9)
-  expect_true(is.na(bla$col_decimals[1]))
-  expect_true(is.na(bla$col_decimals[2]))
-  expect_equal(bla$col_decimals[3], 2)
+  widths = variable_widths(bla)
+  decs = variable_decimals(bla)
+  expect_equivalent(widths[2], 2)
+  expect_equivalent(widths[3], 9)
+  expect_true(is.na(decs[1]))
+  expect_true(is.na(decs[2]))
+  expect_equivalent(decs[3], 2)
 })
 
 test_that("ENUMS get correctly read", {
@@ -136,15 +148,28 @@ test_that("ENUMS get correctly read", {
   "
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equal(bla$col_names, c('A', 'B', 'C'))
-  expect_equal(bla$col_types, c('ENUM', 'ENUM', 'INTEGER'))
-  expect_equal(bla$col_lengths, c(1, 2, 3))
-  expect_equal(bla$col_levels[[1]],
+  expect_equivalent(variable_names(bla), c('A', 'B', 'C'))
+  expect_equivalent(variable_types(bla), c('ENUM', 'ENUM', 'INTEGER'))
+  expect_equivalent(variable_widths(bla), c(1, 2, 3))
+  expect_equivalent(variable_labels(bla)[[1]],
                c('Male', 'Female'))
-  expect_equal(bla$col_levels[[2]],
+  expect_equivalent(variable_labels(bla)[[2]],
                c('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
-  expect_equal(bla$col_levels[[3]],
-               NULL)
+  expect_equivalent(variable_labels(bla)[[3]],
+               NA_character_)
+})
+
+test_that("alternative representations for INTEGER and REAL work", {
+  model = "
+DATAMODEL Test
+FIELDS
+  G     : 1..20
+  H     : 1.0..99.9
+ENDMODEL
+"
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(variable_types(bla), c('INTEGER', 'REAL'))
 })
 
 test_that("field descriptions over multiple lines work", {
@@ -158,9 +183,9 @@ test_that("field descriptions over multiple lines work", {
   "
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equal(bla$col_names, 'A')
-  expect_equal(bla$col_types, 'STRING')
-  expect_equal(bla$col_lengths, 9)
+  expect_equivalent(variable_names(bla), 'A')
+  expect_equivalent(variable_types(bla), 'STRING')
+  expect_equivalent(variable_widths(bla), 9)
 
   model =
     "
@@ -172,9 +197,9 @@ test_that("field descriptions over multiple lines work", {
   "
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equal(bla$col_names, 'A')
-  expect_equal(bla$col_types, 'ENUM')
-  expect_equal(bla$col_lengths, 1)
+  expect_equivalent(variable_names(bla), 'A')
+  expect_equivalent(variable_types(bla), 'ENUM')
+  expect_equivalent(variable_widths(bla), 1)
 })
 
 
@@ -228,3 +253,24 @@ test_that("malformed datamodel throws an error", {
   expect_error({bla = read_model(blafile)})
 })
 
+test_that("Nonsense decimals don't work", {
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A     : REAL[3,3]
+  ENDMODEL
+"
+  blafile = makeblafile(model)
+  expect_error(read_model(blafile))
+
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A     : REAL[3,4]
+  ENDMODEL
+"
+  blafile = makeblafile(model)
+  expect_error(read_model(blafile))
+})
