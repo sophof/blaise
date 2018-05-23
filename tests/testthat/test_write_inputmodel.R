@@ -132,7 +132,7 @@ test_that("REAL type is converted to correct significance", {
   expect_equal(ncol(newdf), 3)
   expect_equal(newdf[,1], c(1.1, 2.1, 3.1))
   expect_equal(newdf[,2], c(1.0, 2.0, 3.0))
-  expect_equal(newdf[,3], c(1.11, 99.91, 78.51.0))
+  expect_equal(newdf[,3], c(1.11, 99.91, 78.51))
   unlink(c(datafile, blafile))
 })
 

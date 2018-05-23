@@ -60,3 +60,12 @@ test_that("tibble can be written", {
 
   expect_silent(write_fwf_blaise(df, datafilename, blafilename))
 })
+
+test_that("converted dataframe is returned", {
+  datafilename = tempfile(fileext = '.asc')
+  blafilename = tempfile(fileext = '.bla')
+  df = dplyr::tibble(9:11)
+
+  expect_silent(df = write_fwf_blaise(df, datafilename, blafilename))
+  expect_equal(df, c(' 9\n10\n11'))
+})

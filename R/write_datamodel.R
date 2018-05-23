@@ -42,19 +42,6 @@ make_field = function(df, name, max_char, type, width, dec = NA, levels = NA){
   }
 }
 
-convert_type = function(type, df, force_string = FALSE){
-  switch(
-    EXPR = type,
-    'character' = 'STRING',
-    'integer' = 'INTEGER',
-    'numeric' = 'REAL',
-    'Date' = 'DATETYPE',
-    'factor' = 'ENUM',
-    if (force_string) 'STRING'
-    else stop('type "', type, '" not implemented')
-  )
-}
-
 empty_line = function(nchars){
   paste(replicate(nchars, ' '), collapse = '')
 }

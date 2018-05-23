@@ -1,22 +1,26 @@
-write_data = function(df, formatinfo, file, decimal.mark = ',', digits = 7){
-  uit = create_fixed_width_column(df, decimal.mark, digits)
-  if (format.info(uit)[1] != sum(formatinfo$widths)){
+write_data = function(df, model, file, decimal.mark = ','){
+  uit = create_fixed_width_column(df, model, decimal.mark, digits)
+  if (format.info(uit)[1] != sum(variable_widths(model))){
     stop('total output width is not the sum of the individual column widths')
   }
   readr::write_lines(uit, file, na = '\n')
 }
 
 # depends on format for doubles
-create_fixed_width_column = function(df, decimal.mark, digits){
-  factors = vapply(df, is.factor, TRUE)
-  df = dplyr::mutate_if(df, factors, replace_factors)
-  df = dplyr::mutate_all(df, format_all, decimal.mark, digits)
-  df = dplyr::mutate_all(df, replace_NA)
-  apply(df, 1, paste, collapse = '')
-}
+create_fixed_width_column = function(df, model, decimal.mark){
+  per_col = function(col, var){
+    dig = ifelse(is.na(var@decimals), NULL, var@decimals)
+    nas = is.na(col)
+    if(is.factor(col)) col = as.integer(col)
+    else if(class(col) == 'Date') col = as.character(col)
+    else col[!nas] = format(col[!nas], decimal.mark = decimal.mark, digits = dig)
 
-replace_factors = function(x){
-  as.integer(x)
+    col = replace_NA(col)
+  }
+
+  uit = mapply(per_col, df, variables(model))
+  uit = apply(uit, 1, paste, collapse = '')
+  return(uit)
 }
 
 format_all = function(x, decimal.mark, digits){

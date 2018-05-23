@@ -58,8 +58,6 @@ write_fwf_blaise = function(df,
 
   if(!is.null(input_model)){
     model = read_model(input_model)
-    df = convert_df(df, model)
-    write_data(df, model, file = output_data, decimal.mark)
   }
   else {
     # create output_model filename if not given
@@ -68,11 +66,10 @@ write_fwf_blaise = function(df,
       output_model = paste0(output_model, '.bla')
     }
 
-    formatinfo = get_formatinfo(df, digits)
-    write_data(df, formatinfo, file = output_data, decimal.mark, digits)
-    write_datamodel(df, formatinfo, output_model, force_string)
+    model = get_formatinfo(df, digits)
   }
 
-
-  return(invisible(list(data = output_data, model = output_model)))
+  df = write_data(df, model, file = output_data, decimal.mark)
+  if(!is.null(output_model)) write_datamodel(model, output_model)
+  return(invisible(df))
 }
