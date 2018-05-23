@@ -55,7 +55,7 @@
 #'
 #' @export
 
-read_fwf_blaise = function(datafile,
+read_fwf = function(datafile,
                            modelfile,
                            locale = readr::locale(decimal_mark = ','),
                            force_string = FALSE){

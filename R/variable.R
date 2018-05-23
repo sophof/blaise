@@ -60,13 +60,16 @@ setMethod("variable",
             width = "numeric",
             decimals = 'missingOrNULL',
             labels = 'missingOrNULL'),
-          function(name, type, width, decimals, labels) new(
-            'variable',
-            name = name,
-            type = .convert_type(type),
-            width = as.integer(width),
-            decimals = NA_integer_,
-            labels = NA_character_)
+          function(name, type, width, decimals, labels) {
+            object = new(
+              'variable',
+              name = name,
+              type = .convert_type(type),
+              width = as.integer(width),
+              decimals = NA_integer_,
+              labels = NA_character_)
+            .init(object)
+          }
 )
 
 setMethod("variable",
