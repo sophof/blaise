@@ -16,10 +16,37 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
       col[!nas] = format(col[!nas], width = var@width)
     }
     else if(class(col) == 'Date') col = as.character.Date(col, format = '%Y%m%d')
+    else if (is.numeric(col) & !is.na(var@decimals)){
+      info = format.info(col)
+      if(info[2] > var@decimals | info[1] > var@width){
+        message('reducing significance for variable ',
+                name(var),
+                ' since the datamodel requires less significance')
+        col = round(col, var@decimals)
+      }
+      col[!nas] = format(round(col[!nas], var@decimals),
+                         decimal.mark = decimal.mark,
+                         digits = var@width - 1,
+                         width = var@width,
+                         nsmall = var@decimals)
+    }
+    else if (is.numeric(col) & is.na(var@decimals)){
+      info = format.info(col)
+      if(info[1] > var@width) {
+        message('reducing significance for variable ',
+                name(var),
+                ' since the datamodel requires less significance')
+        col = signif(col, var@width - 1)
+      }
+      col[!nas] = format(col[!nas],
+                         decimal.mark = decimal.mark,
+                         width = var@width,
+                         digits = var@width - 1)
+    }
     else col[!nas] = format(col[!nas], decimal.mark = decimal.mark, width = var@width, justify = justify)
 
     col = replace_NA(col, var@width)
-    nmax = max(nchar(col))
+    nmax = format.info(col)[1]
     if(var@width < nmax){
       stop('width in datamodel smaller than number of characters of largest element for variable: ',
            name(var))
