@@ -23,21 +23,23 @@
 #' @param justify direction of padding for STRING type when data is smaller than the width.
 #' Defaults to right-justified (padded on the left), can be "left", "right" or "centre".
 #' @param max.distance maximum Levenshtein distance to match columns. ignores case changes.
-#' Set to 0 to only accept exact matches. defaults to 4.
+#' Set to 0 (default) to only accept exact matches ignoring case. 4 appears to be
+#' a good number in general. Will prevent double matches and will pick te best match
+#' for each variable in the datamodel.
 #'
 #' @return dataframe written
 #' @export
 #'
 #' @examples
 #'
-write_fwf_blaise = function(df,
-                            output_data,
-                            input_model,
-                            output_model = NULL,
-                            decimal.mark = ',',
-                            digits = getOption('digits'),
-                            justify = 'left',
-                            max.distance = 4L){
+write_fwf_with_model = function(df,
+                                output_data,
+                                input_model,
+                                output_model = NULL,
+                                decimal.mark = ',',
+                                digits = getOption('digits'),
+                                justify = 'left',
+                                max.distance = 0L){
   # add asc if no file extension found
   if (tools::file_ext(output_data) == ''){
     output_data = paste0(output_data, '.asc')

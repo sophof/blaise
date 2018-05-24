@@ -27,17 +27,23 @@ test_that("all types are accepted", {
   expect_silent(write_datamodel(get_model(df), datafile))
   file = readr::read_file(datafile)
   model ='
-  DATAMODEL Test
+  DATAMODEL
   FIELDS
   int     : INTEGER[2]
-  factor  : (male, female)
-  numeric : REAL[8]
-  date    : DATETYPE[12]
+  factor  : (female, male)
+  numeric : REAL[9]
+  date    : DATETYPE[10]
   string  : STRING[6]
   ENDMODEL
   '
   blafile = makeblafile(model)
-  expect_equal(read_model(datafile), read_model(blafile))
+  m1 = read_model(datafile)
+  m2 = read_model(blafile)
+  expect_equal(variable_names(m1), variable_names(m2))
+  expect_equal(variable_types(m1), variable_types(m2))
+  expect_equal(variable_widths(m1), variable_widths(m2))
+  expect_equal(variable_decimals(m1), variable_decimals(m2))
+  expect_equal(variable_labels(m1), variable_labels(m2))
 })
 
 test_that("boolean is converted", {

@@ -44,13 +44,13 @@
 #' unlink(c(datafilename, blafilename))
 #'
 write_fwf = function(df,
-                            output_data,
-                            output_model = NULL,
-                            force_string = FALSE,
-                            decimal.mark = ',',
-                            digits = getOption('digits'),
-                            justify = 'left',
-                            write_model = TRUE){
+                     output_data,
+                     output_model = NULL,
+                     force_string = FALSE,
+                     decimal.mark = ',',
+                     digits = getOption('digits'),
+                     justify = 'left',
+                     write_model = TRUE){
   # add asc if no file extension found
   if (tools::file_ext(output_data) == ''){
     output_data = paste0(output_data, '.asc')

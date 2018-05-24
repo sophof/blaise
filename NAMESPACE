@@ -2,6 +2,6 @@
 
 export(read_fwf)
 export(write_fwf)
-export(write_fwf_blaise)
+export(write_fwf_with_model)
 import(dplyr)
 import(stringr)

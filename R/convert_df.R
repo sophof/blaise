@@ -3,7 +3,7 @@
 # Will try and match columns with the fields in the datamodel by name using
 # Levenshtein distance.
 # Reorder columns as neccesary and convert column types as necessary.
-convert_df = function(df, model, max.distance = 4L){
+convert_df = function(df, model, max.distance = 0L){
   names_df = colnames(df)
   locations = find_names(names_df, model, max.distance)
   df = df[,locations]
@@ -13,7 +13,14 @@ convert_df = function(df, model, max.distance = 4L){
   }
 
   cast_funs = lapply(sapply(variables(model), type), cast_type)
-  df = mapply(function(col, var) cast_type(type(var))(col), df, variables(model))
+
+  # Turns out to be faster than a vector apply
+  incorrect_type = sapply(df, function(x) convert_rtype(class(x))) !=
+    variable_types(model)
+  for (i in 1:length(cast_funs)){
+    if(incorrect_type[i]) df[,i] = cast_funs[[i]](df[,i])
+  }
+
   return(df)
 }
 

@@ -68,7 +68,6 @@ setMethod("variable",
               width = as.integer(width),
               decimals = NA_integer_,
               labels = NA_character_)
-            .init(object)
           }
 )
 
