@@ -179,9 +179,15 @@ extract_range = function(all, mask, regex){
   start = str_match(cols[mask], regex)[,2]
   end = str_match(cols[mask], regex)[,3]
 
+  startdecs = nchar(stringr::str_match(start, '^\\d+\\.(\\d+)$')[,2])
+  enddecs = nchar(stringr::str_match(end, '^\\d+\\.(\\d+)$')[,2])
+  decs = pmax(startdecs, enddecs)
+
   doubles = (str_detect(start, '\\.') | str_detect(end, '\\.'))
   all$types[mask][doubles] = 'REAL'
   all$types[mask][!doubles] = 'INTEGER'
+
+  all$decs[mask][doubles] = decs
 
   all$widths[mask] = mapply(function(start, end) {
     max(nchar(start), nchar(end))
