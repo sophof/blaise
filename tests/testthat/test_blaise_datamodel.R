@@ -298,7 +298,7 @@ test_that("Nonsense decimals don't work", {
     "
   DATAMODEL Test
   FIELDS
-  A     : REAL[3,4]
+  A     : REAL[3,2]
   ENDMODEL
 "
   blafile = makeblafile(model)

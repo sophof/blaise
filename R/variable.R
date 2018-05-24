@@ -18,8 +18,8 @@
     errors = c(errors, paste('only type REAL requires decimals to be known'))
   }
 
-  if(!is.na(object@decimals) & object@decimals > (object@width - 1)){
-    errors = c(errors, paste('only type REAL requires decimals to be known'))
+  if(!is.na(object@decimals) & object@decimals > (object@width - 2)){
+    errors = c(errors, paste('decimals have to be at least 2 smaller than width'))
   }
 
   if(is.na(object@labels[1]) & object@type == 'ENUM'){

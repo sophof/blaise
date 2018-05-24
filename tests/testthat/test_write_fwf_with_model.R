@@ -82,7 +82,7 @@ test_that("input_model pads int and string types if width is larger than column"
   unlink(c(datafile, blafile))
 })
 
-test_that("REAL type is converted to correct significance", {
+test_that("REAL type is converted to correct significance with warning", {
   dir = tempdir()
   datafile = tempfile('testasc', dir, fileext = '.asc')
   model = "
@@ -90,7 +90,7 @@ test_that("REAL type is converted to correct significance", {
   FIELDS
   C     : REAL[3,2]
   D     : REAL[3]
-  G     : 1.00..100.00
+  G     : 1.00..99.99
   ENDMODEL
   "
   blafile = makeblafile(model)
@@ -103,7 +103,7 @@ test_that("REAL type is converted to correct significance", {
     )
   )
 
-  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile, decimal.mark = '.'))
+  expect_message(write_fwf_with_model(df, datafile, input_model = blafile, decimal.mark = '.'))
   expect_silent(newdf <- readr::read_fwf(
     datafile,
     col_positions = readr::fwf_widths(c(3, 3, 6)),

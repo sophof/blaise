@@ -18,7 +18,7 @@ test_that("correct data and datamodel can be read and reproduced", {
   FIELDS
   A     : STRING[1]
   B     : INTEGER[1]
-  C     : REAL[3,2]
+  C     : REAL[3,1]
   D     : REAL[3]
   E     : (Male, Female)
   F     : 1..20
@@ -143,7 +143,7 @@ test_that("dataframe is read as a tibble", {
   FIELDS
   A     : STRING[1]
   B     : INTEGER[1]
-  C     : REAL[3,2]
+  C     : REAL[3,1]
   D     : REAL[3]
   ENDMODEL
   "
