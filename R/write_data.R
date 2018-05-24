@@ -23,6 +23,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
       stop('width in datamodel smaller than number of characters of largest element for variable: ',
            name(var))
     }
+    return(col)
   }
 
   uit = mapply(per_col, df, variables(model))
