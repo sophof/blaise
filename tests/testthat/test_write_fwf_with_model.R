@@ -25,7 +25,7 @@ test_that("input_model passes an identical dataframe with common types", {
   E     : (Male, Female)
   F     : 1..20
   G     : 1.00..100.00
-  H     : DATETYPE[10]
+  H     : DATETYPE[8]
   ENDMODEL
   "
   blafile = makeblafile(model)
@@ -69,16 +69,16 @@ test_that("input_model pads int and string types if width is larger than column"
     stringsAsFactors = FALSE
   )
 
-  expect_silent(write_fwf_with_model(df, datafile, blafile))
+  expect_silent(write_fwf_with_model(df, datafile, blafile, decimal.mark = '.'))
   expect_silent(newdf <- readr::read_fwf(
     datafile,
     col_positions = readr::fwf_widths(c(2, 2, 3)),
     col_types = 'cid',
     progress = FALSE))
-  expect_equal(ncol(newdf), 3)
-  expect_equal(newdf[,1], rep('t',3))
-  expect_equal(newdf[,2], 1:3)
-  expect_equal(newdf[,3], 1.1:3.1)
+  expect_equivalent(ncol(newdf), 3)
+  expect_equivalent(newdf[[1]], rep('t',3))
+  expect_equivalent(newdf[[2]], 1:3)
+  expect_equivalent(newdf[[3]], 1.1:3.1)
   unlink(c(datafile, blafile))
 })
 
@@ -103,21 +103,17 @@ test_that("REAL type is converted to correct significance", {
     )
   )
 
-  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
+  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile, decimal.mark = '.'))
   expect_silent(newdf <- readr::read_fwf(
     datafile,
     col_positions = readr::fwf_widths(c(3, 3, 6)),
     col_types = 'ddd',
     progress = FALSE))
-  expect_equal(ncol(newdf), 3)
-  expect_equal(newdf[,1], c(1.1, 2.1, 3.1))
-  expect_equal(newdf[,2], c(1.0, 2.0, 3.0))
-  expect_equal(newdf[,3], c(1.11, 99.91, 78.51))
+  expect_equivalent(ncol(newdf), 3)
+  expect_equivalent(newdf[[1]], c(1.1, 2.1, 3.1))
+  expect_equivalent(newdf[[2]], c(1.0, 2.0, 3.0))
+  expect_equivalent(newdf[[3]], c(1.11, 99.91, 78.51))
   unlink(c(datafile, blafile))
-})
-
-test_that("DATETYPE is converted to correct format based on length", {
-  testthat::expect_silent(stop('to be implemented'))
 })
 
 test_that("larger INTS, STRINGS throw an error", {
@@ -197,8 +193,8 @@ test_that("extra columns in dataframe are ignored", {
     col_positions = readr::fwf_widths(c(3)),
     col_types = 'c',
     progress = FALSE))
-  expect_equal(newdf[,1], rep('tst',3))
-  expect_equal(ncol(newdf), 1)
+  expect_equivalent(newdf[[1]], rep('tst',3))
+  expect_equivalent(ncol(newdf), 1)
   unlink(c(datafile, blafile))
 })
 
@@ -228,9 +224,9 @@ test_that("order in dataframe doesn't matter", {
     col_positions = readr::fwf_widths(c(3, 1)),
     col_types = 'ci',
     progress = FALSE))
-  expect_equal(ncol(newdf), 2)
-  expect_equal(newdf[,1], rep('tst',3))
-  expect_equal(newdf[,2], 1:3)
+  expect_equivalent(ncol(newdf), 2)
+  expect_equivalent(newdf[[1]], rep('tst',3))
+  expect_equivalent(newdf[[2]], 1:3)
   unlink(c(datafile, blafile))
 })
 
@@ -238,7 +234,7 @@ test_that("types are converted properly and can be converted back without loss",
   expect_type_equal = function(df, dfnew, column, cast){
     datafile = tempfile(fileext = '.asc')
     df[[column]] = cast(df[[column]])
-    eval(bquote(expect_equal(.(df)[[.(column)]], dfnew[[.(column)]], tolerance = 1e-7)))
+    eval(bquote(expect_equivalent(.(df)[[.(column)]], dfnew[[.(column)]], tolerance = 1e-7)))
   }
 
   dir = tempdir()
