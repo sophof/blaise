@@ -187,7 +187,7 @@ extract_range = function(all, mask, regex){
   all$types[mask][doubles] = 'REAL'
   all$types[mask][!doubles] = 'INTEGER'
 
-  all$decs[mask][doubles] = decs
+  all$decs[mask][doubles] = decs[doubles]
 
   all$widths[mask] = mapply(function(start, end) {
     max(nchar(start), nchar(end))
