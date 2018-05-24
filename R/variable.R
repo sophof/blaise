@@ -87,7 +87,7 @@ setMethod("variable",
             name = name,
             type = .convert_type(type),
             width = as.integer(width),
-            decimals = as.integer(decimals),
+            decimals = if_else(as.integer(decimals) == 0, NA_integer_, as.integer(decimals)),
             labels = NA_character_)
 )
 
