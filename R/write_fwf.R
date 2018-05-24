@@ -16,11 +16,6 @@
 #' @param output_data path and name to output datafile. Will add .asc if no extension
 #' @param output_model path and name to output datamodel. If NULL will use the
 #' same name as output_data with .bla extension unless and input_model is given.
-#' @param input_model path and name of an existing datamodel. Will check that the
-#' dataframe conforms to the datamodel and pad columns where required on the right
-#' side with whitespace. Will attempt to convert column types. Significance for
-#' numeric columns will be set according to width and column order will be adjusted
-#' automatically. Will not write out an output model unless explicitly provided.
 #' @param force_string If TRUE, will force unknown/unsupported column types to
 #' string, otherwise these will throw an error
 #' @param decimal.mark decimal mark to use. Default is ",".
@@ -28,9 +23,13 @@
 #' complex x. The default uses getOption("digits"). This is a suggestion:
 #' enough decimal places will be used so that the smallest (in magnitude) number
 #' has this many significant digits.
+#' @param justify direction of padding for STRING type when data is smaller than the width.
+#' Defaults to right-justified (padded on the left), can be "left", "right" or "centre".
+#' @param write_model logical that can be used to disabling the automatic writing of a
+#' datamodel
 #'
-#' @return list of filepaths written. data = datafile, model = modelfile. Does so
-#' invisibly, will not print but can be assigned.
+#' @return dataframe written to file. Does so invisibly, will not print but can be assigned.
+#'
 #' @export
 #'
 #' @examples
@@ -44,32 +43,26 @@
 #'   force_string = TRUE)
 #' unlink(c(datafilename, blafilename))
 #'
-write_fwf_blaise = function(df,
+write_fwf = function(df,
                             output_data,
                             output_model = NULL,
-                            input_model = NULL,
                             force_string = FALSE,
                             decimal.mark = ',',
-                            digits = getOption('digits')){
+                            digits = getOption('digits'),
+                            justify = 'left',
+                            write_model = TRUE){
   # add asc if no file extension found
   if (tools::file_ext(output_data) == ''){
     output_data = paste0(output_data, '.asc')
   }
-
-  if(!is.null(input_model)){
-    model = read_model(input_model)
-  }
-  else {
-    # create output_model filename if not given
-    if(is.null(output_model)){
-      output_model = tools::file_path_sans_ext(output_data)
-      output_model = paste0(output_model, '.bla')
-    }
-
-    model = get_formatinfo(df, digits)
+  # create output_model filename if not given
+  if(is.null(output_model)){
+    output_model = tools::file_path_sans_ext(output_data)
+    output_model = paste0(output_model, '.bla')
   }
 
-  df = write_data(df, model, file = output_data, decimal.mark)
-  if(!is.null(output_model)) write_datamodel(model, output_model)
+  model = get_model(df, digits, force_string)
+  df = write_data(df, model, file = output_data, decimal.mark, justify = justify)
+  if(write_model) write_datamodel(model, output_model)
   return(invisible(df))
 }

@@ -1,3 +1,21 @@
+write_datamodel = function(model, filepath){
+  maxwidth = max(nchar(formatinfo$names))
+
+  fields = Map(make_field,
+               df,
+               formatinfo$names,
+               maxwidth,
+               formatinfo$types,
+               formatinfo$widths,
+               formatinfo$decs,
+               formatinfo$levels)
+  header = 'DATAMODEL\nFIELDS'
+  content = paste(fields, collapse = '\n')
+  footer = 'ENDMODEL'
+  text = paste(header, content, footer, sep = '\n')
+  readr::write_file(text, filepath)
+}
+
 write_datamodel = function(df, formatinfo, filepath, force_string = FALSE){
   maxwidth = max(nchar(formatinfo$names))
 

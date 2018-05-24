@@ -1,4 +1,4 @@
-context("writing blaise datafiles with an input datamodel")
+context("converting a dataframe according to an input datamodel")
 
 makeblafile = function(model, file = NULL){
   if (is.null(file)) file = tempfile('testbla', fileext = '.bla')
@@ -43,27 +43,7 @@ test_that("input_model passes an identical dataframe with common types", {
     )
   )
 
-  expect_silent(write_fwf_blaise(df, datafile, input_model = blafile))
-  unlink(c(datafile, blafile))
-})
-
-test_that("input_model used and output_model NULL does not write a new bla", {
-  dir = tempdir()
-  junk = list.files(path=dir, pattern='^testasc.*\\.bla', full.names = TRUE)
-  file.remove(junk)
-  datafile = tempfile('testasc', dir, fileext = '.asc')
-  model = "
-  DATAMODEL Test
-  FIELDS
-  A     : INT[2]
-  ENDMODEL
-  "
-  blafile = makeblafile(model)
-  df = dplyr::tibble(1:10)
-
-  expect_silent(write_fwf_blaise(df, datafile, input_model = blafile))
-  match = list.files(dir, pattern = '^testasc.*\\.bla')
-  expect_length(match, 0)
+  expect_silent(write_fwf_with_model(df, datafile, blafile))
   unlink(c(datafile, blafile))
 })
 
@@ -89,7 +69,7 @@ test_that("input_model pads int and string types if width is larger than column"
     stringsAsFactors = FALSE
   )
 
-  expect_silent(write_fwf_blaise(df, datafile, input_model = blafile))
+  expect_silent(write_fwf_with_model(df, datafile, blafile))
   expect_silent(newdf <- readr::read_fwf(
     datafile,
     col_positions = readr::fwf_widths(c(2, 2, 3)),
@@ -123,7 +103,7 @@ test_that("REAL type is converted to correct significance", {
     )
   )
 
-  expect_silent(write_fwf_blaise(df, datafile, input_model = blafile))
+  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
   expect_silent(newdf <- readr::read_fwf(
     datafile,
     col_positions = readr::fwf_widths(c(3, 3, 6)),
@@ -155,20 +135,20 @@ test_that("larger INTS, STRINGS throw an error", {
   df = data.frame(
     list(
       A = rep('tst',3),
-      B = 11:13,
+      B = 11:13
     ),
     stringsAsFactors = FALSE
   )
 
-  expect_error(write_fwf_blaise(df, datafile, input_model = blafile))
+  expect_error(write_fwf_with_model(df, datafile, input_model = blafile))
   df = data.frame(
     list(
       A = rep('test',3),
-      B = 1:3,
+      B = 1:3
     ),
     stringsAsFactors = FALSE
   )
-  expect_error(write_fwf_blaise(df, datafile, input_model = blafile))
+  expect_error(write_fwf_with_model(df, datafile, input_model = blafile))
   unlink(c(datafile, blafile))
 })
 
@@ -190,7 +170,7 @@ test_that("unavailable/unknown variables throw an error", {
     ),
     stringsAsFactors = FALSE
   )
-  expect_error(write_fwf_blaise(df, datafile, input_model = blafile))
+  expect_error(write_fwf_with_model(df, datafile, input_model = blafile))
   unlink(c(datafile, blafile))
 })
 
@@ -211,7 +191,7 @@ test_that("extra columns in dataframe are ignored", {
     ),
     stringsAsFactors = FALSE
   )
-  expect_silent(write_fwf_blaise(df, datafile, input_model = blafile))
+  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
   expect_silent(newdf <- readr::read_fwf(
     datafile,
     col_positions = readr::fwf_widths(c(3)),
@@ -242,7 +222,7 @@ test_that("order in dataframe doesn't matter", {
     stringsAsFactors = FALSE
   )
 
-  expect_silent(write_fwf_blaise(df, datafile, input_model = blafile))
+  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
   expect_silent(newdf <- readr::read_fwf(
     datafile,
     col_positions = readr::fwf_widths(c(3, 1)),
@@ -286,7 +266,7 @@ test_that("types are converted properly and can be converted back without loss",
     stringsAsFactors = FALSE
   )
 
-  expect_silent(write_fwf_blaise(df, datafile, input_model = blafile))
+  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
   expect_silent(newdf <- read_fwf_blaise(
     datafile,
     blafile))

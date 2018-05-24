@@ -7,7 +7,7 @@ Authors@R: person("Sjoerd", "Ophof", email = "sohf@cbs.nl",
 Description: Can be used to read a fwf with an accompanying blaise datamodel
   The same for writing such files automatically.
   Supports dataframes and tibbles.
-License: 
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
@@ -22,13 +22,15 @@ RoxygenNote: 6.0.1
 Collate: 
     'clean_model.R'
     'convert_df.R'
+    'convert_type.R'
     'generics.R'
     'get_model.R'
     'variable.R'
     'model.R'
     'read_data.R'
-    'read_fwf_blaise.R'
+    'read_fwf.R'
     'read_model.R'
     'write_data.R'
     'write_datamodel.R'
-    'write_fwf_blaise.R'
+    'write_fwf.R'
+    'write_fwf_with_model.R'
