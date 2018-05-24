@@ -93,28 +93,6 @@ test_that("DATETYPE can be used", {
   expect_equal(lubridate::year(df[[1]]), c(2010, 2011, 2012))
   unlink(blafile)
   unlink(datafile)
-
-  model = "
-  DATAMODEL Test
-  FIELDS
-  A     : DATETYPE[10]
-  ENDMODEL
-  "
-  blafile = makeblafile(model)
-
-  data =
-"2010-04-01
-2011-05-02
-2012-06-03"
-  datafile = makedatafile(data)
-
-  df = read_fwf(datafile,
-                       blafile)
-  expect_equal(lubridate::day(df[[1]]), c(1, 2, 3))
-  expect_equal(lubridate::month(df[[1]]), c(4, 5, 6))
-  expect_equal(lubridate::year(df[[1]]), c(2010, 2011, 2012))
-  unlink(blafile)
-  unlink(datafile)
 })
 
 test_that("unknown types throw an error", {

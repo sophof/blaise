@@ -30,6 +30,10 @@
     errors = c(errors, paste('only type ENUM requires labels to be known'))
   }
 
+  if(object@type == 'DATETYPE' & object@width != 8L){
+    errors = c(errors, paste('DATETYPE only supports width of 8 (YYmmdd)'))
+  }
+
   if(length(errors) == 0) TRUE else errors
 }
 

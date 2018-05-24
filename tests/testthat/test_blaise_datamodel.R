@@ -14,7 +14,7 @@ FIELDS
   B     : INTEGER[2]
   C     : REAL[9,2]
   D     : STRING[4]
-  E     : DATETYPE[8]  {testcomment}
+  E     : DATETYPE  {testcomment}
   F     : (Male, Female)
   G     : 1..20
   H     : 1.0..99.9
@@ -63,7 +63,7 @@ FIELDS
   B     : INTEGER[2]
   C     : REAL[9,2]
   D     : STRING[4]
-  E     : DATETYPE[2]
+  E     : DATETYPE
   F     : (MALE, FEMALE)
 ENDMODEL
 "
@@ -171,6 +171,36 @@ ENDMODEL
   expect_silent({bla = read_model(blafile)})
   expect_equivalent(variable_types(bla), c('INTEGER', 'REAL'))
 })
+
+test_that("Only 8 width or empty datetypes work", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : DATETYPE
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent(read_model(blafile))
+
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : DATETYPE[8]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent(read_model(blafile))
+
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : DATETYPE[10]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_error(read_model(blafile))
+})
+
 
 test_that("field descriptions over multiple lines work", {
   model =

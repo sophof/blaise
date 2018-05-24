@@ -32,7 +32,7 @@ test_that("all types are accepted", {
   int     : INTEGER[2]
   factor  : (female, male)
   numeric : REAL[9]
-  date    : DATETYPE[10]
+  date    : DATETYPE[8]
   string  : STRING[6]
   ENDMODEL
   '

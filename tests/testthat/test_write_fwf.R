@@ -89,8 +89,8 @@ test_that("converted dataframe is returned", {
   blafilename = tempfile(fileext = '.bla')
   df = dplyr::tibble(9:11)
 
-  expect_silent(df = write_fwf(df, datafilename, blafilename))
-  expect_equal(df, c(' 9\n10\n11'))
+  expect_silent({res = write_fwf(df, datafilename, blafilename)})
+  expect_equal(res, c(' 9', '10', '11'))
 })
 
 test_that("padding direction can be supplied", {
@@ -105,13 +105,13 @@ test_that("padding direction can be supplied", {
     stringsAsFactors = FALSE
   )
 
-  expect_silent(write_fwf(df, datafile, blafile, justify = 'left'))
-  df = readr::read_file(datafile)
-  expect_equal(df, c('t    1\nte  22\ntes333'))
-  expect_silent(write_fwf(df, datafile, blafile, justify = 'right'))
-  df = readr::read_file(datafile)
-  expect_equal(df, c('  t  1\n te 22\ntes333'))
-  expect_silent(write_fwf(df, datafile, blafile, justify = 'centre'))
-  df = readr::read_file(datafile)
-  expect_equal(df, c(' t   1\nte  22\ntes333'))
+  expect_silent(write_fwf(df, datafile, justify = 'left'))
+  uit = readr::read_file(datafile)
+  expect_equal(uit, c('t    1\nte  22\ntes333\n'))
+  expect_silent(write_fwf(df, datafile, justify = 'right'))
+  uit = readr::read_file(datafile)
+  expect_equal(uit, c('  t  1\n te 22\ntes333\n'))
+  expect_silent(write_fwf(df, datafile, justify = 'centre'))
+  uit = readr::read_file(datafile)
+  expect_equal(uit, c(' t   1\nte  22\ntes333\n'))
 })

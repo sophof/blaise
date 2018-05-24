@@ -37,7 +37,7 @@ match_type = function(type){
     STRING = readr::col_character(),
     INTEGER = readr::col_integer(),
     REAL = readr::col_double(),
-    DATETYPE = readr::col_date(),
+    DATETYPE = readr::col_date(format = '%Y%m%d'),
     ENUM = readr::col_integer(),
     stop('type "', type, '" not recognized')
   )

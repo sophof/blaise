@@ -20,7 +20,7 @@ get_width = function(col, digits){
   }
 
   date = function(col){
-    format.info(as.character(col))
+    8
   }
 
   factor = function(col){

@@ -77,8 +77,3 @@ test_that("single width numeric", {
   df[5,] = NA
   expect_type_equal(df, 'numeric')
 })
-
-test_that("multiple date formats work via locale", {
-  expect_silent(stop('to be implemented'))
-})
-

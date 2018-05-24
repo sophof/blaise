@@ -84,6 +84,10 @@ extract_types_and_widths = function(bla, force_string = FALSE){
   range_types = str_detect(cols, range_regex)
   ret = extract_range(ret, range_types, range_regex)
 
+  date_regex = '^DATETYPE(\\[8\\])?$'
+  date_types = str_detect(cols, date_regex)
+  ret = extract_date(ret, date_types)
+
   if (force_string){
     ret$types = replicate(length(ret$types), 'STRING')
   }
@@ -186,5 +190,13 @@ extract_range = function(all, mask, regex){
     end,
     USE.NAMES = F)
 
+  return(all)
+}
+
+extract_date = function(all, mask){
+  if(all(!mask)) return(all) #if none match return input
+
+  all$types[mask] = 'DATETYPE'
+  all$widths[mask] = 8L
   return(all)
 }

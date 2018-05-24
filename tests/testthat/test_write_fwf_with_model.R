@@ -25,7 +25,7 @@ test_that("input_model passes an identical dataframe with common types", {
   E     : (Male, Female)
   F     : 1..20
   G     : 1.00..100.00
-  H     : DATETYPE[8]
+  H     : DATETYPE[10]
   ENDMODEL
   "
   blafile = makeblafile(model)

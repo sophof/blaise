@@ -29,7 +29,7 @@ cast_type = function(type){
     'STRING' = as.character,
     'INTEGER' = as.integer,
     'REAL' = as.numeric,
-    'DATETYPE' = as.Date,
+    'DATETYPE' = function(x) as.Date.character(x, format = '%Y%m%d'),
     'ENUM' = as.factor,
     stop('type "', type, '" not implemented')
   )
