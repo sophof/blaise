@@ -31,7 +31,63 @@
 #' @export
 #'
 #' @examples
+#' datafilename = tempfile('testdata', fileext = '.asc')
+#' blafilename = tempfile('testbla', fileext = '.bla')
 #'
+#' model = "
+#' DATAMODEL Test
+#' FIELDS
+#' A     : STRING[1]
+#' B     : INTEGER[1]
+#' C     : REAL[3,1]
+#' D     : REAL[3]
+#' E     : (Male, Female)
+#' F     : 1..20
+#' G     : 1.00..100.00
+#' H     : DATETYPE
+#' ENDMODEL
+#' "
+#' writeLines(model, con = blafilename)
+#'
+#'   df = data.frame(
+#' list(
+#'   A = rep('t',3),
+#'   B = 1:3,
+#'   C = 1.1:3.3,
+#'   D = 1.0:3.0,
+#'   E = factor(c(1,2,1), labels = c('M', 'F')),
+#'   F = 1:3,
+#'   G = c(1., 99.9, 78.5),
+#'   H = as.Date(rep('2001-01-01', 3))
+#' )
+#' )
+#' write_fwf_with_model(df, datafilename, blafilename)
+#'
+#'
+#' model = "
+#' DATAMODEL Test
+#' FIELDS
+#' A     : STRING[1]
+#' B     : STRING[1]
+#' C     : STRING[3]
+#' E     : STRING[1]
+#' H     : STRING[8]
+#' ENDMODEL
+#' "
+#' writeLines(model, con = blafilename)
+#'
+#' df = data.frame(
+#' list(
+#' A = rep('t',3),
+#' E = factor(c(1,2,1), labels = c('M', 'F')),
+#' B = 1:3,
+#' C = 1.1:3.3,
+#' H = as.Date(rep('2001-01-01', 3))
+#' ),
+#' stringsAsFactors = FALSE
+#' )
+#' write_fwf_with_model(df, datafilename, blafilename)
+
 write_fwf_with_model = function(df,
                                 output_data,
                                 input_model,

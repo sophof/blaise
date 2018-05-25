@@ -40,7 +40,7 @@ DATAMODEL Test
 FIELDS
 A     : STRING[1]
 B     : INTEGER[1]
-C     : REAL[3,2]
+C     : REAL[3,1]
 D     : REAL[3]
 E     : (Male, Female)
 F     : 1..20
@@ -57,7 +57,7 @@ writeLines(model, con = blafile)
 datafile = tempfile('testdata', fileext = '.asc')
 writeLines(data, con = datafile)
 
-df = read_fwf_blaise(datafile, blafile)
+df = read_fwf(datafile, blafile)
 unlink(blafile)
 unlink(datafile)
 

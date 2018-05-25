@@ -36,8 +36,8 @@
 #' datafilename = tempfile('testdata', fileext = '.asc')
 #' blafilename = tempfile('testbla', fileext = '.bla')
 #' data = data.frame(1, 1:10, sample(LETTERS[1:3], 10, replace = TRUE), runif(10, 1, 10))
-#' write_fwf_blaise(data, datafilename)
-#' write_fwf_blaise(data,
+#' write_fwf(data, datafilename)
+#' write_fwf(data,
 #'   datafilename,
 #'   blafilename,
 #'   force_string = TRUE)
