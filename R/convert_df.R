@@ -8,6 +8,9 @@ convert_df = function(df, model, max.distance = 0L){
   locations = find_names(names_df, model, max.distance)
   df = df[,locations, drop = FALSE]
 
+  # Convert logicals first to integer since the logical type doesn't exist for blaise
+  df = dplyr::mutate_if(df, is.logical, as.integer)
+
   if(ncol(df) != length(variables(model))) {
     stop("dataframe doesn't have the same numer of columns as datamodel")
   }

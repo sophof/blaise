@@ -77,3 +77,15 @@ test_that("single width numeric", {
   df[5,] = NA
   expect_type_equal(df, 'numeric')
 })
+
+test_that("booleans are converted to int with a message", {
+  df = data.frame(
+    bool = sample(c(T,F), 10, replace = TRUE)
+  )
+  df[5,] = NA
+  datafile = tempfile(fileext = '.asc')
+  blafile = tempfile(fileext = '.bla')
+  expect_message(write_fwf(df, datafile, blafile))
+  expect_silent({dfnew = read_fwf(datafile, blafile)})
+  expect_equal(as.integer(df[['bool']]), dfnew[['bool']])
+})

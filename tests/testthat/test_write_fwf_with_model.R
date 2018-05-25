@@ -293,3 +293,30 @@ test_that("types are converted properly and can be converted back without loss",
   expect_type_equal(df, dfnew, 'H', function(x) as.Date(x, format = '%Y%m%d'))
   unlink(c(datafile, blafile))
 })
+
+test_that("bool is converted to integer before it is type converted by casting", {
+  dir = tempdir()
+  datafile = tempfile('testasc', dir, fileext = '.asc')
+  model = "
+  DATAMODEL Test
+  FIELDS
+  bool     : STRING[1]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  df = data.frame(
+    list(
+      bool = sample(c(T,F), 10, replace = TRUE)
+    ),
+    stringsAsFactors = FALSE
+  )
+  df[5,] = NA
+
+  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
+  expect_silent(dfnew <- read_fwf(
+    datafile,
+    blafile))
+  expect_equal(as.character(as.integer(df[['bool']])), dfnew[['bool']])
+  unlink(c(datafile, blafile))
+})

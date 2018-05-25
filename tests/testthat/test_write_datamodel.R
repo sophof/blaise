@@ -46,6 +46,27 @@ test_that("all types are accepted", {
   expect_equal(variable_labels(m1), variable_labels(m2))
 })
 
-test_that("boolean is converted", {
-  expect_silent(stop('to be implemented'))
+test_that("boolean is converted to INTEGER", {
+  df = data.frame(
+    bool = sample(c(T,F), 10, replace = TRUE)
+  )
+  df[5,] = NA
+
+  datafile = tempfile(fileext = '.bla')
+  dir = tempdir()
+
+  expect_silent(write_datamodel(get_model(df), datafile))
+  file = readr::read_file(datafile)
+  model ='
+  DATAMODEL
+  FIELDS
+  bool     : INTEGER[1]
+  ENDMODEL
+  '
+  blafile = makeblafile(model)
+  m1 = read_model(datafile)
+  m2 = read_model(blafile)
+  expect_equal(variable_names(m1), variable_names(m2))
+  expect_equal(variable_types(m1), variable_types(m2))
+  expect_equal(variable_widths(m1), variable_widths(m2))
 })

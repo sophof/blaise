@@ -15,7 +15,9 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
       col = as.integer(col)
       col[!nas] = format(col[!nas], width = var@width)
     }
+
     else if(class(col) == 'Date') col = as.character.Date(col, format = '%Y%m%d')
+
     else if (is.numeric(col) & !is.na(var@decimals)){
       info = format.info(col[!nas])
       if(info[2] > var@decimals | info[1] > var@width){
@@ -30,6 +32,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
                          width = var@width,
                          nsmall = var@decimals)
     }
+
     else if (is.numeric(col) & is.na(var@decimals)){
       info = format.info(col[!nas])
       if(info[1] > var@width) {
@@ -43,6 +46,15 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
                          width = var@width,
                          digits = var@width - 1)
     }
+
+    else if(is.logical(col)){
+      message('variable ',
+              name(var),
+              ' is automatically converted from logical to integer')
+      col = as.integer(col)
+      col[!nas] = format(col[!nas], width = var@width)
+    }
+
     else col[!nas] = format(col[!nas], decimal.mark = decimal.mark, width = var@width, justify = justify)
 
     col = replace_NA(col, var@width)

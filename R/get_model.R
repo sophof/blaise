@@ -1,6 +1,6 @@
 get_model = function(df, digits = getOption('digits'), force_string = FALSE){
-
   vars = mapply(function(col, name){
+    if(is.logical(col)) col = as.integer(col)
     type = convert_rtype(class(col), force_string)
     width = get_width(col, digits)
     decimals = get_decimals(col, digits)
@@ -10,7 +10,7 @@ get_model = function(df, digits = getOption('digits'), force_string = FALSE){
   df,
   colnames(df)
   )
-  return(model(NA_character_, vars))
+  return(model(deparse(substitute(df)), vars))
 }
 
 get_width = function(col, digits){
