@@ -304,3 +304,35 @@ test_that("Nonsense decimals don't work", {
   blafile = makeblafile(model)
   expect_error(read_model(blafile))
 })
+
+test_that("lowercase variables also work", {
+  model = "
+DATAMODEL Test
+  FIELDS
+  A     : String[9]
+  B     : integer[2]
+  C     : real[9,2]
+  D     : STRING[4]
+  E     : Datetype
+  F     : (Male, Female)
+  G     : 1..20
+  H     : 1.0..99.9
+  ENDMODEL
+  "
+  Ncols = 8
+
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_true(length(variable_names(bla)) == Ncols)
+  expect_true(length(variable_types(bla)) == Ncols)
+  expect_true(length(variable_widths(bla)) == Ncols)
+  expect_equivalent(variable_names(bla), c('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'))
+  expect_equivalent(variable_types(bla), c('STRING',
+                                           'INTEGER',
+                                           'REAL',
+                                           'STRING',
+                                           'DATETYPE',
+                                           'ENUM',
+                                           'INTEGER',
+                                           'REAL'))
+})

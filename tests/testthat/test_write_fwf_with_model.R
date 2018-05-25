@@ -294,6 +294,33 @@ test_that("types are converted properly and can be converted back without loss",
   unlink(c(datafile, blafile))
 })
 
+test_that("bool to INTEGER works", {
+  dir = tempdir()
+  datafile = tempfile('testasc', dir, fileext = '.asc')
+  model = "
+  DATAMODEL Test
+  FIELDS
+  bool     : INTEGER[1]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  df = data.frame(
+    list(
+      bool = sample(c(T,F), 10, replace = TRUE)
+    ),
+    stringsAsFactors = FALSE
+  )
+  df[5,] = NA
+
+  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
+  expect_silent(dfnew <- read_fwf(
+    datafile,
+    blafile))
+  expect_equal(as.integer(df[['bool']]), dfnew[['bool']])
+  unlink(c(datafile, blafile))
+})
+
 test_that("bool is converted to integer before it is type converted by casting", {
   dir = tempdir()
   datafile = tempfile('testasc', dir, fileext = '.asc')
@@ -318,5 +345,40 @@ test_that("bool is converted to integer before it is type converted by casting",
     datafile,
     blafile))
   expect_equal(as.character(as.integer(df[['bool']])), dfnew[['bool']])
+  unlink(c(datafile, blafile))
+})
+
+test_that("input_model works with lower case or mixed case types", {
+  dir = tempdir()
+  datafile = tempfile('testasc', dir, fileext = '.asc')
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : String[1]
+  B     : integer[1]
+  C     : ReaL[3,1]
+  D     : REAL[3]
+  E     : (Male, Female)
+  F     : 1..20
+  G     : 1.00..100.00
+  H     : Datetype[8]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  df = data.frame(
+    list(
+      A = rep('t',3),
+      B = 1:3,
+      C = 1.1:3.3,
+      D = 1.0:3.0,
+      E = factor(c(1,2,1), labels = c('M', 'F')),
+      F = 1:3,
+      G = c(1., 99.9, 78.5),
+      H = as.Date(rep('2001-01-01', 3))
+    )
+  )
+
+  expect_silent(write_fwf_with_model(df, datafile, blafile))
   unlink(c(datafile, blafile))
 })

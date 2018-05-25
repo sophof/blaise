@@ -73,7 +73,7 @@ extract_types_and_widths = function(bla, force_string = FALSE){
   ret = list(input = cols)
 
   normal_regex = '^(.+)\\[(\\d+),?(\\d+)?\\]$'
-  normal_types = str_detect(cols, normal_regex)
+  normal_types = stringr::str_detect(cols, normal_regex)
   ret = extract_normal(ret, normal_types, normal_regex)
 
   enum_regex = '^\\((.+)\\)$'
@@ -81,11 +81,11 @@ extract_types_and_widths = function(bla, force_string = FALSE){
   ret = extract_enum(ret, enum_types)
 
   range_regex = '^(\\d+\\.?(?:\\d+)?)\\.\\.(\\d+\\.?(?:\\d+)?)$'
-  range_types = str_detect(cols, range_regex)
+  range_types = stringr::str_detect(cols, range_regex)
   ret = extract_range(ret, range_types, range_regex)
 
-  date_regex = '^DATETYPE(\\[8\\])?$'
-  date_types = str_detect(cols, date_regex)
+  date_regex = stringr::regex('^DATETYPE(\\[8\\])?$', ignore_case = TRUE)
+  date_types = stringr::str_detect(cols, date_regex)
   ret = extract_date(ret, date_types)
 
   if (force_string){
@@ -94,6 +94,8 @@ extract_types_and_widths = function(bla, force_string = FALSE){
   if(any(is.null(ret$types)) | any(is.null(ret$widths))){
     stop('not all datatypes could be detected, model probably malformed')
   }
+
+  ret$types = toupper(ret$types)
 
   controle = is.na(ret$types) | !(ret$types %in% types)
   if(any(controle)){
