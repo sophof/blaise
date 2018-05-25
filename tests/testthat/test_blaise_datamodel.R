@@ -336,3 +336,25 @@ DATAMODEL Test
                                            'INTEGER',
                                            'REAL'))
 })
+
+test_that("DUMMY variables are accepted", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  B     : integer[2]
+  DUMMY[1]
+  D     : STRING[4]
+  ENDMODEL
+  "
+  Ncols = 2
+
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_true(length(variable_names(bla)) == Ncols)
+  expect_true(length(variable_types(bla)) == Ncols)
+  expect_true(length(variable_widths(bla)) == Ncols)
+  expect_equivalent(variable_names(bla), c('B', NA, 'D'))
+  expect_equivalent(variable_types(bla), c('INTEGER',
+                                           'DUMMY',
+                                           'STRING'))
+})

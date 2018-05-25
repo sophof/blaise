@@ -15,3 +15,12 @@ setGeneric("type",
            valueClass = "character",
            function(object) standardGeneric("type")
 )
+
+.types = c(
+  'STRING',
+  'INTEGER',
+  'REAL',
+  'DATETYPE',
+  'ENUM',
+  'DUMMY'
+)

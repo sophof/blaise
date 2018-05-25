@@ -3,14 +3,7 @@
 .check_validity <- function(object) {
   errors = character()
 
-  types = c(
-    'STRING',
-    'INTEGER',
-    'REAL',
-    'DATETYPE',
-    'ENUM'
-  )
-  if(!object@type %in% types) {
+  if(!object@type %in% .types) {
     errors = c(errors, paste('type', object@type, 'is unknown'))
   }
 
@@ -32,6 +25,10 @@
 
   if(object@type == 'DATETYPE' & object@width != 8L){
     errors = c(errors, paste('DATETYPE only supports width of 8 (YYmmdd)'))
+  }
+
+  if(object@type != 'DUMMY' & is.na(object@name)){
+    errors = c(errors, paste('Only DUMMY type can be without a name'))
   }
 
   if(length(errors) == 0) TRUE else errors
@@ -121,6 +118,22 @@ setMethod("variable",
             width = as.integer(width),
             decimals = as.integer(decimals),
             labels = labels)
+)
+
+setMethod("variable",
+          signature(
+            name = "missing",
+            type = "character",
+            width = "numeric",
+            decimals = 'missing',
+            labels = 'missing'),
+          function(type, width) new(
+            'variable',
+            name = NA_character_,
+            type = .convert_type(type),
+            width = as.integer(width),
+            decimals = NA_integer_,
+            labels = NA_character_)
 )
 
 #====================
