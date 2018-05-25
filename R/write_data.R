@@ -17,7 +17,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
     }
     else if(class(col) == 'Date') col = as.character.Date(col, format = '%Y%m%d')
     else if (is.numeric(col) & !is.na(var@decimals)){
-      info = format.info(col)
+      info = format.info(col[!nas])
       if(info[2] > var@decimals | info[1] > var@width){
         message('reducing significance for variable ',
                 name(var),
@@ -31,7 +31,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
                          nsmall = var@decimals)
     }
     else if (is.numeric(col) & is.na(var@decimals)){
-      info = format.info(col)
+      info = format.info(col[!nas])
       if(info[1] > var@width) {
         message('reducing significance for variable ',
                 name(var),

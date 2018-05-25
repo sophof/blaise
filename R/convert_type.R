@@ -23,14 +23,17 @@ convert_type = function(type){
   )
 }
 
-cast_type = function(type){
-  switch(
-    EXPR = type,
-    'STRING' = as.character,
-    'INTEGER' = as.integer,
-    'REAL' = as.numeric,
-    'DATETYPE' = function(x) as.Date.character(x, format = '%Y%m%d'),
-    'ENUM' = as.factor,
-    stop('type "', type, '" not implemented')
-  )
+cast_type = function(type, original){
+  if(original == 'Date' & type == 'STRING') function(x) as.character.Date(x, format = '%Y%m%d')
+  else{
+    switch(
+      EXPR = type,
+      'STRING' = as.character,
+      'INTEGER' = as.integer,
+      'REAL' = as.numeric,
+      'DATETYPE' = function(x) as.Date.character(x, format = '%Y%m%d'),
+      'ENUM' = as.factor,
+      stop('type "', type, '" not implemented')
+    )
+  }
 }

@@ -6,13 +6,13 @@
 convert_df = function(df, model, max.distance = 0L){
   names_df = colnames(df)
   locations = find_names(names_df, model, max.distance)
-  df = df[,locations]
+  df = df[,locations, drop = FALSE]
 
   if(ncol(df) != length(variables(model))) {
     stop("dataframe doesn't have the same numer of columns as datamodel")
   }
 
-  cast_funs = lapply(sapply(variables(model), type), cast_type)
+  cast_funs = mapply(cast_type, sapply(variables(model), type), sapply(df, class))
 
   # Turns out to be faster than a vector apply
   incorrect_type = sapply(df, function(x) convert_rtype(class(x))) !=

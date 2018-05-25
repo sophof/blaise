@@ -20,7 +20,7 @@ test_that("input_model passes an identical dataframe with common types", {
   FIELDS
   A     : STRING[1]
   B     : INTEGER[1]
-  C     : REAL[3,2]
+  C     : REAL[3,1]
   D     : REAL[3]
   E     : (Male, Female)
   F     : 1..20
@@ -88,7 +88,7 @@ test_that("REAL type is converted to correct significance with warning", {
   model = "
   DATAMODEL Test
   FIELDS
-  C     : REAL[3,2]
+  C     : REAL[3,1]
   D     : REAL[3]
   G     : 1.00..99.99
   ENDMODEL
@@ -106,7 +106,7 @@ test_that("REAL type is converted to correct significance with warning", {
   expect_message(write_fwf_with_model(df, datafile, input_model = blafile, decimal.mark = '.'))
   expect_silent(newdf <- readr::read_fwf(
     datafile,
-    col_positions = readr::fwf_widths(c(3, 3, 6)),
+    col_positions = readr::fwf_widths(c(3, 3, 5)),
     col_types = 'ddd',
     progress = FALSE))
   expect_equivalent(ncol(newdf), 3)
@@ -230,11 +230,32 @@ test_that("order in dataframe doesn't matter", {
   unlink(c(datafile, blafile))
 })
 
+test_that("Date is automatically casted to YYYYmmdd when string casting", {
+  dir = tempdir()
+  datafile = tempfile('testasc', dir, fileext = '.asc')
+  model = "
+  DATAMODEL Test
+  FIELDS
+  H     : STRING[8]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  df = data.frame(
+      H = as.Date(rep('2001-01-01', 3)),
+      stringsAsFactors = FALSE
+      )
+
+  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
+  expect_silent(file <- readr::read_lines(datafile))
+  expect_equivalent(file, rep('20010101', 3))
+  unlink(c(datafile, blafile))
+})
+
 test_that("types are converted properly and can be converted back without loss", {
   expect_type_equal = function(df, dfnew, column, cast){
-    datafile = tempfile(fileext = '.asc')
-    df[[column]] = cast(df[[column]])
-    eval(bquote(expect_equivalent(.(df)[[.(column)]], dfnew[[.(column)]], tolerance = 1e-7)))
+    dfnew[[column]] = cast(dfnew[[column]])
+    eval(bquote(expect_equal(.(df)[[.(column)]], .(dfnew)[[.(column)]], tolerance = 1e-7)))
   }
 
   dir = tempdir()
@@ -263,12 +284,12 @@ test_that("types are converted properly and can be converted back without loss",
   )
 
   expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
-  expect_silent(newdf <- read_fwf_blaise(
+  expect_silent(dfnew <- read_fwf(
     datafile,
     blafile))
   expect_type_equal(df, dfnew, 'B', as.integer)
   expect_type_equal(df, dfnew, 'C', as.double)
-  expect_type_equal(df, dfnew, 'E', as.factor)
-  expect_type_equal(df, dfnew, 'H', as.Date)
+  expect_type_equal(df, dfnew, 'E', function(x) factor(x, levels = c('M', 'F')))
+  expect_type_equal(df, dfnew, 'H', function(x) as.Date(x, format = '%Y%m%d'))
   unlink(c(datafile, blafile))
 })
