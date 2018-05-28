@@ -120,7 +120,8 @@ setMethod(
     variable = 'variable'),
   function(object, variable) {
     namen = names(object@variables)
-    if(name(variable) %in% namen) stop('duplicate variable names not allowed')
+    if(name(variable) %in% namen & !is.na(name(variable)))
+      stop('duplicate variable names not allowed')
     object@variables = append(object@variables, variable)
     l = length(object@variables)
     names(object@variables)[l] = variable@name

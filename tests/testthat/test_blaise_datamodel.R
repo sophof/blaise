@@ -346,7 +346,7 @@ test_that("DUMMY variables are accepted", {
   D     : STRING[4]
   ENDMODEL
   "
-  Ncols = 2
+  Ncols = 3
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
@@ -369,7 +369,7 @@ test_that("multiple DUMMY variables are accepted", {
   D     : STRING[4]
   ENDMODEL
   "
-  Ncols = 2
+  Ncols = 4
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
