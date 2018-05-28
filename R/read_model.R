@@ -55,7 +55,7 @@ extract_datamodelName = function(bla){
 }
 
 extract_names = function(bla){
-  stringr::str_match(bla, '^(\\S):.+$')[,2]
+  stringr::str_match(bla, '^(\\S+):.+$')[,2]
 }
 
 extract_types = function(bla, force_string = FALSE){

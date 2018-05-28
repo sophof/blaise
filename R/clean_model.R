@@ -30,7 +30,7 @@ clean_model = function(tekst){
 detect_lines = function(text){
   reg = stringr::regex(
     sprintf('(?:%s|%s|%s|%s|%s|%s)',
-      'DATAMODEL(?:\\s+\\S+|\\s*)',
+      'DATAMODEL.*',
       'FIELDS',
       'ENDMODEL',
       '.+:[\\s\\n]*[^\\(][\\w\\[\\],.]+',
