@@ -133,7 +133,7 @@ detect_reals = function(bla){
   haakjes_regex = stringr::regex('^.+:REAL\\[\\d+,\\d+\\]$', ignore_case = TRUE)
   haakjes = stringr::str_detect(bla, haakjes_regex)
 
-  range_regex = '^\\d+\\.\\d+\\.\\.\\d+\\.\\d+$'
+  range_regex = '^.+:\\d+\\.\\d+\\.\\.\\d+\\.\\d+$'
   ranges = stringr::str_detect(bla, range_regex)
   return(ranges | haakjes)
 }
@@ -146,7 +146,7 @@ get_real_widths = function(bla){
   haakjes = stringr::str_match(bla, haakjes_regex)[,2]
   widths = fill_vector(widths, haakjes)
 
-  range_regex = '^(\\d+\\.\\d+)\\.\\.(\\d+\\.\\d+)$'
+  range_regex = '^.+:(\\d+\\.\\d+)\\.\\.(\\d+\\.\\d+)$'
   start = nchar(stringr::str_match(bla, range_regex)[,2])
   end = nchar(stringr::str_match(bla, range_regex)[,3])
   ranges = pmax(start, end)
@@ -159,13 +159,13 @@ get_real_decimals = function(bla){
 
   decimals = rep(NA_integer_, length(bla))
   haakjes_regex = stringr::regex('^.+:REAL\\[\\d+,(\\d+)\\]$', ignore_case = TRUE)
-  haakjes = stringr::str_match(bla, haakjes_regex)[,2]
+  haakjes = as.integer(stringr::str_match(bla, haakjes_regex)[,2])
   decimals = fill_vector(decimals, haakjes)
 
-  range_regex = '^\\d+\\.(\\d+)\\.\\.\\d+\\.(\\d+)$'
-  startdecs = nchar(stringr::str_match(start, range_regex)[,2])
-  enddecs = nchar(stringr::str_match(end, range_regex)[,3])
-  decimals = fill_vector(widths, pmax(startdecs, enddecs))
+  range_regex = '^.+:\\d+\\.(\\d+)\\.\\.\\d+\\.(\\d+)$'
+  startdecs = nchar(stringr::str_match(bla, range_regex)[,2])
+  enddecs = nchar(stringr::str_match(bla, range_regex)[,3])
+  decimals = fill_vector(decimals, pmax(startdecs, enddecs))
 
   return(as.integer(decimals))
 }
@@ -188,12 +188,11 @@ get_enum_labels = function(bla){
 
 get_enum_widths = function(bla){
   if(all(!detect_enums(bla))) return(rep(NA_integer_, length(bla)))
-  per_enum = function(string){
-    levels = get_enum_labels(string)
-    n = length(levels)
-    nchar(n)
+  per_labels = function(x){
+    if(is.na(x[[1]])) return(NA_integer_)
+    else nchar(length(x))
   }
-  return(as.integer(lapply(bla, per_enum)))
+  lapply(get_enum_labels(bla), per_labels)
 }
 
 detect_dates = function(bla){
