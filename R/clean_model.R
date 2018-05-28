@@ -35,7 +35,7 @@ detect_lines = function(text){
       'ENDMODEL',
       '.+:[\\s\\n]*[^\\(][\\w\\[\\],.]+',
       'DUMMY\\s*(?:\\[\\d+\\])',
-      '.+:[\\s\\n]*\\([\\s\\n,\\w]+\\)'
+      '.+:[\\s\\n]*\\([\\s\\n,\\w-]+\\)'
     ),
     ignore_case = TRUE
   )
