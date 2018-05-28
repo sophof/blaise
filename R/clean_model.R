@@ -32,9 +32,9 @@ detect_lines = function(text){
     sprintf('(?:%s|%s|%s|%s)',
       'DATAMODEL.*',
       'FIELDS',
-      '.+:[\\s\\S]+?(?:(?=\\n.+:)|(?=ENDMODEL))',
       'ENDMODEL',
-      collapse = '|'),
+      '.+:[\\s\\n]*\\S+|DUMMY\\s*(?:\\[\\d+\\])?'
+    ),
     ignore_case = TRUE
   )
 
