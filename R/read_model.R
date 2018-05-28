@@ -7,35 +7,45 @@ read_model = function(blafile, force_string = FALSE){
 parse_bla = function(bla, force_string = FALSE){
   bla = clean_model(bla)
   modelname = extract_datamodelName(bla)
+  bla = remove_non_fields(bla)
   names = extract_names(bla)
-  cols = extract_types_and_widths(bla, force_string)
-  types = cols$types
-  lengths = cols$widths
-  decimals = cols$decs
-  labels = cols$levels
+  types = extract_types(bla, force_string)
+  widths = extract_widths(bla)
+  decimals = get_real_decimals(bla)
+  labels = get_enum_labels(bla)
+
+  #check if any widths are too big for the type to support
+  types = convert_ints_and_reals(names, types, widths)
 
   stopifnot(
     all(!is.na(types)),
-    all(!is.na(names)),
-    all(!is.na(lengths)),
+    all(!is.na(widths)),
     all(sapply(c(length(types),
-                 length(lengths),
+                 length(widths),
                  length(decimals),
-                 length(labels)),
+                 length(labels),
+                 length(bla)),
                function (x) x == length(names)))
   )
 
-  vars = mapply(function(name, type, length, decimals, labels){
-    variable(name, type, length, decimals, labels)
+  vars = mapply(function(name, type, width, decimals, labels){
+    variable(name, type, width, decimals, labels)
   },
   names,
   types,
-  lengths,
+  widths,
   decimals,
   labels)
 
   m = model(modelname, vars)
   return(m)
+}
+
+remove_non_fields = function(bla){
+  modelname = stringr::str_detect(bla, '^DATAMODEL')
+  FIELDS = stringr::str_detect(bla, 'FIELDS')
+  ENDMODEL = stringr::str_detect(bla, 'ENDMODEL')
+  bla[!(modelname | ENDMODEL | FIELDS)]
 }
 
 extract_datamodelName = function(bla){
@@ -44,167 +54,198 @@ extract_datamodelName = function(bla){
   return(name[2])
 }
 
-extract_cols = function(bla, group){
-  regexcols = paste0(
-    '^.*',
-    ':',
-    '.*',
-    '(\\[.+\\])?$'
-  )
-  cols = grep(regexcols, bla, ignore.case = TRUE)
-  groups = stringr::str_match_all(bla[cols], '^(.+):(.+)$')
-  output = sapply(groups, function(x) x[group])
-  return(output)
-}
-
 extract_names = function(bla){
-  extract_cols(bla, 2)
+  stringr::str_match(bla, '^(\\S):.+$')[,2]
 }
 
-extract_types_and_widths = function(bla, force_string = FALSE){
-  types = c(
-    'STRING',
-    'REAL',
-    'INTEGER',
-    'DATETYPE',
-    'ENUM'
-  )
-  cols = extract_cols(bla, 3)
-  ret = list(input = cols)
+extract_types = function(bla, force_string = FALSE){
+  haakjes_regex = '^.+:(.+)\\[(\\d+),?(\\d+)?\\]$'
+  types = stringr::str_match(bla, haakjes_regex)[,2]
 
-  normal_regex = '^(.+)\\[(\\d+),?(\\d+)?\\]$'
-  normal_types = stringr::str_detect(cols, normal_regex)
-  ret = extract_normal(ret, normal_types, normal_regex)
+  types = rep(NA_character_, length(bla))
+  types[detect_strings(bla)] = 'STRING'
+  types[detect_ints(bla)] = 'INTEGER'
+  types[detect_enums(bla)] = 'ENUM'
+  types[detect_reals(bla)] = 'REAL'
+  types[detect_dates(bla)] = 'DATETYPE'
+  types[detect_dummys(bla)] = 'DUMMY'
 
-  enum_regex = '^\\((.+)\\)$'
-  enum_types = str_detect(cols, enum_regex)
-  ret = extract_enum(ret, enum_types)
-
-  range_regex = '^(\\d+\\.?(?:\\d+)?)\\.\\.(\\d+\\.?(?:\\d+)?)$'
-  range_types = stringr::str_detect(cols, range_regex)
-  ret = extract_range(ret, range_types, range_regex)
-
-  date_regex = stringr::regex('^DATETYPE(\\[8\\])?$', ignore_case = TRUE)
-  date_types = stringr::str_detect(cols, date_regex)
-  ret = extract_date(ret, date_types)
-
-  if (force_string){
-    ret$types = replicate(length(ret$types), 'STRING')
-  }
-  if(any(is.null(ret$types)) | any(is.null(ret$widths))){
-    stop('not all datatypes could be detected, model probably malformed')
-  }
-
-  ret$types = toupper(ret$types)
-
-  controle = is.na(ret$types) | !(ret$types %in% types)
-  if(any(controle)){
-    msg = sprintf(
-      'datamodel contains unknown type(s) "%s"',
-      paste(cols[controle], collapse = '; ')
-    )
-    stop(msg)
-  }
-  ret$widths = as.integer(ret$widths)
-  if(is.null(ret$decs)) {
-    ret$decs = replicate(length(ret$types), NA_integer_)
-  }
-  else {
-    ret$decs = as.integer(ret$decs)
-  }
-
-  if(is.null(ret$levels)) ret$levels = lapply(ret$types, function(x) NULL)
-
-  return(ret)
+  if(any(is.na(types))) stop(sprintf('"%s" could not be detected as type',
+                                     paste(bla[is.na(types)], collapse = ';')))
+  return(types)
 }
 
-extract_normal = function(all, mask, regex){
-  if(all(!mask)) return(all) # if none match, return input
-  cols = all$input
+extract_widths = function(bla){
+  widths = rep(NA_integer_, length(bla))
 
-  all$types[mask] = str_match(cols[mask], regex)[,2]
-  all$widths[mask] = str_match(cols[mask], regex)[,3]
-  all$decs[mask] = str_match(cols[mask], regex)[,4]
+  widths = fill_vector(widths, get_string_widths(bla))
+  widths = fill_vector(widths, get_int_widths(bla))
+  widths = fill_vector(widths, get_real_widths(bla))
+  widths = fill_vector(widths, get_enum_widths(bla))
+  widths = fill_vector(widths, get_date_widths(bla))
+  widths = fill_vector(widths, get_dummy_widths(bla))
 
-  max_int = nchar(.Machine$integer.max)
-  big_int = (toupper(all$types[mask]) == 'INTEGER') &
-    (as.integer(all$widths[mask]) >= max_int)
-  if (any(big_int)){
-    msg = sprintf('column(s) too wide for 32bit int with width "%s", converting to double.
-                  max int is %i',
-                  paste(all$widths[big_int], collapse = '; '),
-                  .Machine$integer.max)
-    warning(msg)
-    all$types[big_int] = 'REAL'
-  }
+  if(any(is.na(widths))) stop(sprintf(' width could not be detected for "%s"',
+                                     paste(bla[is.na(widths)], collapse = ';')))
 
-  max_digits = .Machine$double.digits
-  big_float = (toupper(all$types[mask]) == 'REAL') &
-    (as.integer(all$widths[mask]) >= max_digits)
-  if (any(big_float)){
-    msg = sprintf('column(s) too wide for double with width "%s", converting to string.
-                  max float digits are %i',
-                  paste(all$widths[big_float], collapse = '; '),
-                  max_digits)
-    warning(msg)
-    all$types[big_float] = 'STRING'
-  }
-
-  return(all)
+  return(widths)
 }
 
-extract_enum = function(all, mask){
-  get_enum_levels = function(string){
-    # remove ()
+detect_strings = function(bla){
+  regex = stringr::regex('^.+:STRING\\[\\d+\\]$', ignore_case = TRUE)
+  stringr::str_detect(bla, regex)
+}
+
+get_string_widths = function(bla){
+  if(all(!detect_strings(bla))) return(rep(NA_integer_, length(bla)))
+
+  regex = stringr::regex('^.+:STRING\\[(\\d+)\\]$', ignore_case = TRUE)
+  as.integer(stringr::str_match(bla, regex)[,2])
+}
+
+
+detect_ints = function(bla){
+  haakjes_regex = stringr::regex('^.+:INTEGER\\[\\d+\\]$', ignore_case = TRUE)
+  haakjes = stringr::str_detect(bla, haakjes_regex)
+
+  range_regex = '^.+:\\d+\\.\\.\\d+$'
+  ranges = stringr::str_detect(bla, range_regex)
+  return(ranges | haakjes)
+}
+
+get_int_widths = function(bla){
+  if(all(!detect_ints(bla))) return(rep(NA_integer_, length(bla)))
+
+  widths = rep(NA_integer_, length(bla))
+  haakjes_regex = stringr::regex('^.+:INTEGER\\[(\\d+)\\]$', ignore_case = TRUE)
+  haakjes = stringr::str_match(bla, haakjes_regex)[,2]
+  widths = fill_vector(widths, haakjes)
+
+  range_regex = '^.+:(\\d+)\\.\\.(\\d+)$'
+  start = nchar(stringr::str_match(bla, range_regex)[,2])
+  end = nchar(stringr::str_match(bla, range_regex)[,3])
+  ranges = pmax(start, end)
+  widths = fill_vector(widths, ranges)
+  return(as.integer(widths))
+}
+
+detect_reals = function(bla){
+  haakjes_regex = stringr::regex('^.+:REAL\\[\\d+,\\d+\\]$', ignore_case = TRUE)
+  haakjes = stringr::str_detect(bla, haakjes_regex)
+
+  range_regex = '^\\d+\\.\\d+\\.\\.\\d+\\.\\d+$'
+  ranges = stringr::str_detect(bla, range_regex)
+  return(ranges | haakjes)
+}
+
+get_real_widths = function(bla){
+  if(all(!detect_reals(bla))) return(rep(NA_integer_, length(bla)))
+
+  widths = rep(NA_integer_, length(bla))
+  haakjes_regex = stringr::regex('^.+:REAL\\[(\\d+),\\d+\\]$', ignore_case = TRUE)
+  haakjes = stringr::str_match(bla, haakjes_regex)[,2]
+  widths = fill_vector(widths, haakjes)
+
+  range_regex = '^(\\d+\\.\\d+)\\.\\.(\\d+\\.\\d+)$'
+  start = nchar(stringr::str_match(bla, range_regex)[,2])
+  end = nchar(stringr::str_match(bla, range_regex)[,3])
+  ranges = pmax(start, end)
+  widths = fill_vector(widths, ranges)
+  return(as.integer(widths))
+}
+
+get_real_decimals = function(bla){
+  if(all(!detect_reals(bla))) return(rep(NA_integer_, length(bla)))
+
+  decimals = rep(NA_integer_, length(bla))
+  haakjes_regex = stringr::regex('^.+:REAL\\[\\d+,(\\d+)\\]$', ignore_case = TRUE)
+  haakjes = stringr::str_match(bla, haakjes_regex)[,2]
+  decimals = fill_vector(decimals, haakjes)
+
+  range_regex = '^\\d+\\.(\\d+)\\.\\.\\d+\\.(\\d+)$'
+  startdecs = nchar(stringr::str_match(start, range_regex)[,2])
+  enddecs = nchar(stringr::str_match(end, range_regex)[,3])
+  decimals = fill_vector(widths, pmax(startdecs, enddecs))
+
+  return(as.integer(decimals))
+}
+
+
+detect_enums = function(bla){
+  enum_regex = '^.+:\\((.+)\\)$'
+  stringr::str_detect(bla, enum_regex)
+}
+
+get_enum_labels = function(bla){
+  if(all(!detect_enums(bla))) return(rep(NA_character_, length(bla)))
+  # remove ()
+  per_enum = function(string){
     string = stringr::str_match(string, '\\((.+)\\)')[,2]
     trimws(unlist(stringr::str_split(string, ',')))
   }
+  return(lapply(bla, per_enum))
+}
 
-  get_enum_size = function(string){
-    levels = get_enum_levels(string)
+get_enum_widths = function(bla){
+  if(all(!detect_enums(bla))) return(rep(NA_integer_, length(bla)))
+  per_enum = function(string){
+    levels = get_enum_labels(string)
     n = length(levels)
     nchar(n)
   }
-  if(all(!mask)) return(all) # if none match, return input
-  cols = all$input
-
-  all$types[mask] = 'ENUM'
-  all$widths[mask] = vapply(cols[mask], get_enum_size, 1)
-  all$levels[mask] = lapply(cols[mask], get_enum_levels)
-  return(all)
+  return(as.integer(lapply(bla, per_enum)))
 }
 
-extract_range = function(all, mask, regex){
-  if(all(!mask)) return(all) # if none match, return input
-
-  cols = all$input
-  start = str_match(cols[mask], regex)[,2]
-  end = str_match(cols[mask], regex)[,3]
-
-  startdecs = nchar(stringr::str_match(start, '^\\d+\\.(\\d+)$')[,2])
-  enddecs = nchar(stringr::str_match(end, '^\\d+\\.(\\d+)$')[,2])
-  decs = pmax(startdecs, enddecs)
-
-  doubles = (str_detect(start, '\\.') | str_detect(end, '\\.'))
-  all$types[mask][doubles] = 'REAL'
-  all$types[mask][!doubles] = 'INTEGER'
-
-  all$decs[mask][doubles] = decs[doubles]
-
-  all$widths[mask] = mapply(function(start, end) {
-    max(nchar(start), nchar(end))
-    },
-    start,
-    end,
-    USE.NAMES = F)
-
-  return(all)
+detect_dates = function(bla){
+  date_regex = stringr::regex('^.+:DATETYPE(?:\\[8\\])?$', ignore_case = TRUE)
+  stringr::str_detect(bla, date_regex)
 }
 
-extract_date = function(all, mask){
-  if(all(!mask)) return(all) #if none match return input
+get_date_widths = function(bla){
+  widths = rep(NA_integer_, length(bla))
+  widths[detect_dates(bla)] = 8L
+  return(widths)
+}
 
-  all$types[mask] = 'DATETYPE'
-  all$widths[mask] = 8L
-  return(all)
+detect_dummys = function(bla){
+  dummy_regex = stringr::regex('^DUMMY\\[\\d+\\]$', ignore_case = TRUE)
+  stringr::str_detect(bla, dummy_regex)
+}
+
+get_dummy_widths = function(bla){
+  if(all(!detect_dummys(bla))) return(rep(NA_integer_, length(bla)))
+
+  dummy_regex = stringr::regex('^DUMMY\\[(\\d+)\\]$', ignore_case = TRUE)
+  as.integer(stringr::str_match(bla, dummy_regex)[,2])
+}
+
+convert_ints_and_reals = function(names, types, widths){
+  #ints
+  max_int = nchar(.Machine$integer.max)
+  big_int = (types == 'INTEGER') &
+    (widths >= max_int)
+
+  if (any(big_int)){
+    msg = sprintf('column(s) "%s" too wide for 32bit int with width "%s", converting to double.
+                  max int is %i',
+                  paste(names[big_int], collapse = '; '),
+                  paste(widths[big_int], collapse = '; '),
+                  max_int)
+    warning(msg)
+    types[big_int] = 'REAL'
+  }
+
+  max_digits = .Machine$double.digits
+  big_float = (types == 'REAL') &
+    (widths >= max_digits)
+  if (any(big_float)){
+    msg = sprintf('column(s) "%s" too wide for double with width "%s", converting to string.
+                  max float digits are %i',
+                  paste(names[big_float], collapse = '; '),
+                  paste(widths[big_float], collapse = '; '),
+                  max_digits)
+    warning(msg)
+    types[big_float] = 'STRING'
+  }
+  return(types)
 }
