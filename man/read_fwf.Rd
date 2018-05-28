@@ -15,8 +15,8 @@ read_fwf(datafile, modelfile, locale = readr::locale(decimal_mark = ","),
 \item{locale}{locale as specified with readr::locale(). Uses "," as default
 decimal separator. Can be used to change date_format, timezone, encoding, etc.}
 
-\item{force_string}{read all types as a string type. Will ignore typecheck so
-should always be successful.}
+\item{force_string}{read all unkown types as a string type. Will work as long
+as these types are a variation of the form "unknown:unknown[2]"}
 }
 \description{
 Use this function to read a fwf that is described by a blaise datamodel.

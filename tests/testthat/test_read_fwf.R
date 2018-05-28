@@ -131,7 +131,7 @@ test_that("string can be forced to read unknown types", {
   df = read_fwf(datafile, blafile, force_string = TRUE)
 
   expect_identical(colnames(df), c('A', 'B'))
-  expect_identical(df[[1]], c('1', '2', '3'))
+  expect_equivalent(df[[1]], c(1, 2, 3))
   expect_identical(df[[2]], c('23', '3.', '.4'))
   unlink(blafile)
   unlink(datafile)

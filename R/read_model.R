@@ -10,9 +10,9 @@ parse_bla = function(bla, force_string = FALSE){
   bla = remove_non_fields(bla)
   names = extract_names(bla)
   types = extract_types(bla, force_string)
-  widths = extract_widths(bla)
-  decimals = get_real_decimals(bla)
-  labels = get_enum_labels(bla)
+  widths = extract_widths(bla, types)
+  decimals = get_real_decimals(bla, types)
+  labels = get_enum_labels(bla, types)
 
   #check if any widths are too big for the type to support
   types = convert_ints_and_reals(names, types, widths)
@@ -70,20 +70,22 @@ extract_types = function(bla, force_string = FALSE){
   types[detect_dates(bla)] = 'DATETYPE'
   types[detect_dummys(bla)] = 'DUMMY'
 
+  if(force_string) types[detect_unknown(bla, is.na(types))] = 'STRING'
+
   if(any(is.na(types))) stop(sprintf('"%s" could not be detected as type',
                                      paste(bla[is.na(types)], collapse = ';')))
   return(types)
 }
 
-extract_widths = function(bla){
+extract_widths = function(bla, types){
   widths = rep(NA_integer_, length(bla))
 
-  widths = fill_vector(widths, get_string_widths(bla))
-  widths = fill_vector(widths, get_int_widths(bla))
-  widths = fill_vector(widths, get_real_widths(bla))
-  widths = fill_vector(widths, get_enum_widths(bla))
-  widths = fill_vector(widths, get_date_widths(bla))
-  widths = fill_vector(widths, get_dummy_widths(bla))
+  widths = fill_vector(widths, get_string_widths(bla, types))
+  widths = fill_vector(widths, get_int_widths(bla, types))
+  widths = fill_vector(widths, get_real_widths(bla, types))
+  widths = fill_vector(widths, get_enum_widths(bla, types))
+  widths = fill_vector(widths, get_date_widths(bla, types))
+  widths = fill_vector(widths, get_dummy_widths(bla, types))
 
   if(any(is.na(widths))) stop(sprintf(' width could not be detected for "%s"',
                                      paste(bla[is.na(widths)], collapse = ';')))
@@ -96,11 +98,14 @@ detect_strings = function(bla){
   stringr::str_detect(bla, regex)
 }
 
-get_string_widths = function(bla){
-  if(all(!detect_strings(bla))) return(rep(NA_integer_, length(bla)))
+get_string_widths = function(bla, types){
+  widths = rep(NA_integer_, length(bla))
+  strings = types == 'STRING'
+  if(all(!strings)) return(widths)
 
-  regex = stringr::regex('^.+:STRING\\[(\\d+)\\]$', ignore_case = TRUE)
-  as.integer(stringr::str_match(bla, regex)[,2])
+  regex = stringr::regex('^.+:.+\\[(\\d+)\\]$', ignore_case = TRUE)
+  widths[strings] = as.integer(stringr::str_match(bla[strings], regex)[,2])
+  return(widths)
 }
 
 
@@ -113,10 +118,11 @@ detect_ints = function(bla){
   return(ranges | haakjes)
 }
 
-get_int_widths = function(bla){
-  if(all(!detect_ints(bla))) return(rep(NA_integer_, length(bla)))
-
+get_int_widths = function(bla, types){
   widths = rep(NA_integer_, length(bla))
+  ints = types == 'INTEGER'
+  if(all(!ints)) return(widths)
+
   haakjes_regex = stringr::regex('^.+:INTEGER\\[(\\d+)\\]$', ignore_case = TRUE)
   haakjes = stringr::str_match(bla, haakjes_regex)[,2]
   widths = fill_vector(widths, haakjes)
@@ -138,10 +144,11 @@ detect_reals = function(bla){
   return(ranges | haakjes)
 }
 
-get_real_widths = function(bla){
-  if(all(!detect_reals(bla))) return(rep(NA_integer_, length(bla)))
-
+get_real_widths = function(bla, types){
   widths = rep(NA_integer_, length(bla))
+  reals = types == 'REAL'
+  if(all(!reals)) return(widths)
+
   haakjes_regex = stringr::regex('^.+:REAL\\[(\\d+)(?:,\\d+)?\\]$', ignore_case = TRUE)
   haakjes = stringr::str_match(bla, haakjes_regex)[,2]
   widths = fill_vector(widths, haakjes)
@@ -154,10 +161,11 @@ get_real_widths = function(bla){
   return(as.integer(widths))
 }
 
-get_real_decimals = function(bla){
-  if(all(!detect_reals(bla))) return(rep(NA_integer_, length(bla)))
-
+get_real_decimals = function(bla, types){
   decimals = rep(NA_integer_, length(bla))
+  reals = types == 'REAL'
+  if(all(!reals)) return(decimals)
+
   haakjes_regex = stringr::regex('^.+:REAL\\[\\d+(?:,(\\d+))?\\]$', ignore_case = TRUE)
   haakjes = as.integer(stringr::str_match(bla, haakjes_regex)[,2])
   decimals = fill_vector(decimals, haakjes)
@@ -176,9 +184,11 @@ detect_enums = function(bla){
   stringr::str_detect(bla, enum_regex)
 }
 
-get_enum_labels = function(bla){
-  if(all(!detect_enums(bla))) return(rep(NA_character_, length(bla)))
-  # remove ()
+get_enum_labels = function(bla, types){
+  labels = as.list(rep(NA_character_, length(bla)))
+  enums = types == 'ENUM'
+  if(all(!enums)) return(labels)
+
   per_enum = function(string){
     string = stringr::str_match(string, '\\((.+)\\)')[,2]
     trimws(unlist(stringr::str_split(string, ',')))
@@ -186,13 +196,16 @@ get_enum_labels = function(bla){
   return(lapply(bla, per_enum))
 }
 
-get_enum_widths = function(bla){
-  if(all(!detect_enums(bla))) return(rep(NA_integer_, length(bla)))
+get_enum_widths = function(bla, types){
+  widths = rep(NA_integer_, length(bla))
+  enums = types == 'ENUM'
+  if(all(!enums)) return(widths)
   per_labels = function(x){
     if(is.na(x[[1]])) return(NA_integer_)
     else nchar(length(x))
   }
-  lapply(get_enum_labels(bla), per_labels)
+  widths[enums] = lapply(get_enum_labels(bla, types)[enums], per_labels)
+  return(widths)
 }
 
 detect_dates = function(bla){
@@ -200,9 +213,10 @@ detect_dates = function(bla){
   stringr::str_detect(bla, date_regex)
 }
 
-get_date_widths = function(bla){
+get_date_widths = function(bla, types){
   widths = rep(NA_integer_, length(bla))
-  widths[detect_dates(bla)] = 8L
+  dates = types == 'DATETYPE'
+  widths[dates] = 8L
   return(widths)
 }
 
@@ -211,11 +225,14 @@ detect_dummys = function(bla){
   stringr::str_detect(bla, dummy_regex)
 }
 
-get_dummy_widths = function(bla){
-  if(all(!detect_dummys(bla))) return(rep(NA_integer_, length(bla)))
+get_dummy_widths = function(bla, types){
+  widths = rep(NA_integer_, length(bla))
+  dummys = types == 'DUMMY'
+  if(all(!dummys)) return(widths)
 
   dummy_regex = stringr::regex('^DUMMY\\[(\\d+)\\]$', ignore_case = TRUE)
-  as.integer(stringr::str_match(bla, dummy_regex)[,2])
+  widths[dummys] = as.integer(stringr::str_match(bla[dummys], dummy_regex)[,2])
+  return(widths)
 }
 
 convert_ints_and_reals = function(names, types, widths){
@@ -247,4 +264,11 @@ convert_ints_and_reals = function(names, types, widths){
     types[big_float] = 'STRING'
   }
   return(types)
+}
+
+detect_unknown = function(bla, mask){
+  regex = stringr::regex('^.+:.+\\[\\d+\\]$', ignore_case = TRUE)
+  res = rep(FALSE, length(bla))
+  res[mask] = stringr::str_detect(bla[mask], regex)
+  return(res)
 }
