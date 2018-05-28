@@ -130,7 +130,7 @@ get_int_widths = function(bla){
 }
 
 detect_reals = function(bla){
-  haakjes_regex = stringr::regex('^.+:REAL\\[\\d+,\\d+\\]$', ignore_case = TRUE)
+  haakjes_regex = stringr::regex('^.+:REAL\\[\\d+(?:,\\d+)?\\]$', ignore_case = TRUE)
   haakjes = stringr::str_detect(bla, haakjes_regex)
 
   range_regex = '^.+:\\d+\\.\\d+\\.\\.\\d+\\.\\d+$'
@@ -142,7 +142,7 @@ get_real_widths = function(bla){
   if(all(!detect_reals(bla))) return(rep(NA_integer_, length(bla)))
 
   widths = rep(NA_integer_, length(bla))
-  haakjes_regex = stringr::regex('^.+:REAL\\[(\\d+),\\d+\\]$', ignore_case = TRUE)
+  haakjes_regex = stringr::regex('^.+:REAL\\[(\\d+)(?:,\\d+)?\\]$', ignore_case = TRUE)
   haakjes = stringr::str_match(bla, haakjes_regex)[,2]
   widths = fill_vector(widths, haakjes)
 
@@ -158,7 +158,7 @@ get_real_decimals = function(bla){
   if(all(!detect_reals(bla))) return(rep(NA_integer_, length(bla)))
 
   decimals = rep(NA_integer_, length(bla))
-  haakjes_regex = stringr::regex('^.+:REAL\\[\\d+,(\\d+)\\]$', ignore_case = TRUE)
+  haakjes_regex = stringr::regex('^.+:REAL\\[\\d+(?:,(\\d+))?\\]$', ignore_case = TRUE)
   haakjes = as.integer(stringr::str_match(bla, haakjes_regex)[,2])
   decimals = fill_vector(decimals, haakjes)
 

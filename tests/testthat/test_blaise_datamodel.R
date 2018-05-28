@@ -126,7 +126,7 @@ test_that("floats lengths and decimals are detected", {
   ENDMODEL
 "
   blafile = makeblafile(model)
-  bla = read_model(blafile)
+  expect_silent({bla = read_model(blafile)})
   widths = variable_widths(bla)
   decs = variable_decimals(bla)
   expect_equivalent(widths[2], 2)
