@@ -30,6 +30,7 @@ Collate:
     'read_data.R'
     'read_fwf.R'
     'read_model.R'
+    'utils.R'
     'write_data.R'
     'write_datamodel.R'
     'write_fwf.R'
