@@ -376,9 +376,45 @@ test_that("input_model works with lower case or mixed case types", {
       F = 1:3,
       G = c(1., 99.9, 78.5),
       H = as.Date(rep('2001-01-01', 3))
-    )
+    ),
+    stringsAsFactors = FALSE
   )
 
   expect_silent(write_fwf_with_model(df, datafile, blafile))
   unlink(c(datafile, blafile))
 })
+
+test_that("DUMMY variables are written out as expected", {
+  dir = tempdir()
+  datafile = tempfile('testasc', dir, fileext = '.asc')
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : String[1]
+  DUMMY[1]
+  B     : integer[1]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  df = data.frame(
+    list(
+      A = rep('t',3),
+      B = 1:3
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  expect_silent(write_fwf_with_model(df, datafile, blafile))
+  expect_silent(newdf <- readr::read_fwf(
+    datafile,
+    col_positions = readr::fwf_widths(c(1,1,1)),
+    col_types = 'cci',
+    progress = FALSE))
+  expect_equivalent(ncol(newdf), 3)
+  expect_equivalent(newdf[[1]], rep('t',3))
+  expect_equivalent(newdf[[2]], rep(' ', 3))
+  expect_equivalent(newdf[[3]], 1L:3L)
+  unlink(c(datafile, blafile))
+})
+

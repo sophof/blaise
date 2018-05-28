@@ -227,3 +227,24 @@ test_that("integers floats of max.range produce a warning and are converted to s
   expect_equal(df[[1]], c('1', '2', c))
   expect_equal(class(df[[1]]), 'character')
 })
+
+test_that("DUMMY variables are ignored for reading", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : STRING[1]
+  DUMMY[1]
+  B     : INTEGER[1]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data = "A 1\nB 2\nC 3"
+  datafile = makedatafile(data)
+
+  expect_silent({df = read_fwf(datafile, blafile)})
+  expect_equal(df[[1]], c('A', 'B', 'C'))
+  expect_equal(df[[2]], c(1, 2, 3))
+  expect_equal(ncol(df), 2)
+  expect_equal(colnames(df), c('A', 'B'))
+})
