@@ -393,6 +393,7 @@ test_that("DUMMY variables are written out as expected", {
   A     : String[1]
   DUMMY[1]
   B     : integer[1]
+  DUMMY[2]
   ENDMODEL
   "
   blafile = makeblafile(model)
@@ -406,15 +407,9 @@ test_that("DUMMY variables are written out as expected", {
   )
 
   expect_silent(write_fwf_with_model(df, datafile, blafile))
-  expect_silent(newdf <- readr::read_fwf(
-    datafile,
-    col_positions = readr::fwf_widths(c(1,1,1)),
-    col_types = 'cci',
-    progress = FALSE))
-  expect_equivalent(ncol(newdf), 3)
-  expect_equivalent(newdf[[1]], rep('t',3))
-  expect_equivalent(newdf[[2]], rep(' ', 3))
-  expect_equivalent(newdf[[3]], 1L:3L)
+  expect_silent(lines <- readr::read_lines(datafile))
+  expect_equivalent(nchar(lines[1]), 5)
+  expect_equivalent(lines, c("t 1  ", "t 2  ", "t 3  "))
   unlink(c(datafile, blafile))
 })
 
