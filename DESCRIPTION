@@ -1,7 +1,7 @@
 Package: blaise
 Type: Package
 Title: Read and Write FWF Files in the Blaise Format
-Version: 0.3.4
+Version: 1.0.0
 Authors@R: person("Sjoerd", "Ophof", email = "sohf@cbs.nl",
                   role = c("aut", "cre"))
 Description: Can be used to read a fwf with an accompanying blaise datamodel
