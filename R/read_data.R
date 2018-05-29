@@ -16,7 +16,8 @@ read_data = function(datafile,
 
 get_positions = function(datamodel){
   widths = variable_widths(datamodel)
-  start = cumsum(widths)
+  start = c(1, cumsum(widths[1:length(widths) - 1]) + 1)
+  names(start) = names(widths)
   end = start + widths - 1
   out = Map(function(a, b) c(a, b), start, end)
   names(out) = variable_names(datamodel)
