@@ -16,6 +16,11 @@ setGeneric("type",
            function(object) standardGeneric("type")
 )
 
+setGeneric("width",
+           valueClass = "integer",
+           function(object) standardGeneric("width")
+)
+
 .types = c(
   'STRING',
   'INTEGER',

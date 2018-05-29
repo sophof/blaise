@@ -41,7 +41,8 @@ setClass(
     type = "character",
     width = "integer",
     decimals = "integer",
-    labels = "character"),
+    labels = "character",
+    location = 'integer'),
   validity = .check_validity
 )
 
@@ -143,7 +144,8 @@ setMethod('show', 'variable', function(object){
       'type    : ', object@type, '\n',
       'width   : ', object@width, '\n',
       'decimals: ', object@decimals, '\n',
-      'labels  : ', object@labels)
+      'labels  : ', object@labels, '\n',
+      'location: ', object@location)
 })
 
 
@@ -158,3 +160,22 @@ setMethod("name<-", "variable", function(object, value){
 setMethod("name", "variable", function(object) object@name)
 
 setMethod("type", "variable", function(object) object@type)
+
+setMethod("width", "variable", function(object) object@width)
+
+setGeneric("location<-",
+           valueClass = "variable",
+           function(object, value) standardGeneric("location<-")
+)
+
+setMethod("location<-", "variable", function(object, value){
+  object@location = as.integer(value)
+  object
+})
+
+setGeneric("location",
+           valueClass = "integer",
+           function(object) standardGeneric("location")
+)
+
+setMethod("location", "variable", function(object) object@location)
