@@ -2,12 +2,10 @@ read_data = function(datafile,
                      datamodel,
                      locale){
   col_types = convert_types_to_cols(datamodel)
+  positions = get_positions(datamodel)
   df = readr::read_fwf(
     datafile,
-    readr::fwf_widths(
-      variable_widths(datamodel),
-      variable_names(datamodel)
-    ),
+    positions,
     col_types = col_types,
     locale = locale
   )
@@ -16,8 +14,21 @@ read_data = function(datafile,
   return(df)
 }
 
+get_positions = function(datamodel){
+  widths = variable_widths(datamodel)
+  start = cumsum(widths)
+  end = start + widths - 1
+  out = Map(function(a, b) c(a, b), start, end)
+  names(out) = variable_names(datamodel)
+  out = out[variable_types(datamodel) != 'DUMMY']
+  return(do.call(readr::fwf_cols, out))
+}
+
 convert_factors = function(df, datamodel){
   mask = variable_types(datamodel) == 'ENUM'
+  if(!any(mask)) return(df)
+
+  mask = mask[variable_types(datamodel) != 'DUMMY']
   df[,mask] = Map(function(col, labels) factor(col, labels = labels),
                   df[,mask],
                   variable_labels(datamodel)[mask])
@@ -26,9 +37,10 @@ convert_factors = function(df, datamodel){
 
 convert_types_to_cols = function(model){
   col_types = variable_types(model)
-  col_types = Map(match_type, col_types)
+  col_types = lapply(col_types, match_type)
   names(col_types) = variable_names(model)
-  do.call(readr::cols, col_types)
+  col_types = col_types[!sapply(col_types, is.null)]
+  do.call(readr::cols_only, col_types)
 }
 
 match_type = function(type){
@@ -39,6 +51,7 @@ match_type = function(type){
     REAL = readr::col_double(),
     DATETYPE = readr::col_date(format = '%Y%m%d'),
     ENUM = readr::col_integer(),
+    DUMMY = NULL,
     stop('type "', type, '" not recognized')
   )
 }
