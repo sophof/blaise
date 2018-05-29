@@ -5,7 +5,9 @@ Version: 1.0.0
 Authors@R: person("Sjoerd", "Ophof", email = "sohf@cbs.nl",
                   role = c("aut", "cre"))
 Description: Can be used to read a fwf with an accompanying blaise datamodel
-  The same for writing such files automatically.
+  The same for writing such files automatically. When supplying a datamodel
+  during writing, the dataframe will be automatically converted to that format
+  and checked for compatability.
   Supports dataframes and tibbles.
 License: GPL-3
 Encoding: UTF-8
