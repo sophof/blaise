@@ -7,28 +7,35 @@ convert_df = function(df, model, max.distance = 0L){
   names_df = colnames(df)
   locations = find_names(names_df, model, max.distance)
   df = df[,locations, drop = FALSE]
+  zonder_dummy = sapply(variables(model), type) != 'DUMMY'
 
   # Convert logicals first to integer since the logical type doesn't exist for blaise
   df = dplyr::mutate_if(df, is.logical, as.integer)
 
-  if(ncol(df) != length(variables(model))) {
+  if(ncol(df) != length(variables(model)[zonder_dummy])) {
     stop("dataframe doesn't have the same numer of columns as datamodel")
   }
 
-  cast_funs = mapply(cast_type, sapply(variables(model), type), sapply(df, class))
+  cast_funs = mapply(cast_type, sapply(variables(model)[zonder_dummy], type), sapply(df, class))
 
   # Turns out to be faster than a vector apply
   incorrect_type = sapply(df, function(x) convert_rtype(class(x))) !=
-    variable_types(model)
+    variable_types(model)[zonder_dummy]
   for (i in 1:length(cast_funs)){
     if(incorrect_type[i]) df[,i] = cast_funs[[i]](df[,i])
   }
 
+  #insert dummy columns
+  for(dummy in dummys(model)){
+    DUMMY = paste(rep(' ', width(dummy)), collapse = '')
+    df = tibble::add_column(df, DUMMY, .before = location(dummy))
+    names(df)[location(dummy)] = NA_character_
+  }
   return(df)
 }
 
 find_names = function(names, model, max.distance){
-  LD = adist(names, variable_names(model))
+  LD = adist(names, as.character(na.omit(variable_names(model))))
   mins = apply(LD, 2, min)
   mins_loc = apply(LD, 2, which.min)
   matches = apply(LD, 2, function(x) sum(x == min(x)))
