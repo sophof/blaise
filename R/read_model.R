@@ -59,9 +59,6 @@ extract_names = function(bla){
 }
 
 extract_types = function(bla, force_string = FALSE){
-  haakjes_regex = '^.+:(.+)\\[(\\d+),?(\\d+)?\\]$'
-  types = stringr::str_match(bla, haakjes_regex)[,2]
-
   types = rep(NA_character_, length(bla))
   types[detect_strings(bla)] = 'STRING'
   types[detect_ints(bla)] = 'INTEGER'

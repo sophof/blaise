@@ -17,6 +17,8 @@ clean_model = function(tekst){
     str_replace_all("[:blank:]+", " ") %>%   # Spaties achter elkaar;
     str_replace_all("\".*\"", "") %>%        # Tekst tussen '"';
     str_replace_all(" *: *", ":") %>%        # Spaties rond ':';
+    str_replace('\\[(\\d+)\\s*(,)?\\s*(\\d+)?\\]',
+                '\\[\\1\\2\\3\\]') %>%       # Spaties tussen '[]';
     str_replace_all(" *\\[ *", "[") %>%      # Spaties rond '[';
     str_replace_all(" *\\] *", "]") %>%      # Spaties rond ']';
     str_replace_all(" *\\.\\. *", "..") %>%  # Spaties rond '..'.
@@ -29,13 +31,14 @@ clean_model = function(tekst){
 
 detect_lines = function(text){
   reg = stringr::regex(
-    sprintf('(?:%s|%s|%s|%s|%s|%s)',
-      'DATAMODEL.*',
-      'FIELDS',
-      'ENDMODEL',
-      '.+:[\\s\\n]*[^\\(][\\w\\[\\],.]+',
-      'DUMMY\\s*(?:\\[\\d+\\])',
-      '.+:[\\s\\n]*\\([\\s\\n,\\w-]+\\)'
+    sprintf('(?:%s|%s|%s|%s|%s|%s|%s)',
+            'DATAMODEL.*',
+            'FIELDS',
+            'ENDMODEL',
+            '.+:[\\s\\n]*[^\\(][\\d.,]+',
+            '.+:[\\s\\n]*[^\\(]\\w+(\\s*\\[[\\w,\\s]+\\])?',
+            'DUMMY\\s*(?:\\[\\d+\\])',
+            '.+:[\\s\\n]*\\([\\s\\n,\\w\\-]+\\)'
     ),
     ignore_case = TRUE
   )
