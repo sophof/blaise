@@ -383,3 +383,23 @@ test_that("multiple DUMMY variables are accepted", {
                                            'STRING'))
 })
 
+test_that("real with spaces is read", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : STRING[9]
+  C     : REAL[9, 2]
+  ENDMODEL
+  "
+  Ncols = 2
+
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_true(length(variable_names(bla)) == Ncols)
+  expect_true(length(variable_types(bla)) == Ncols)
+  expect_true(length(variable_widths(bla)) == Ncols)
+  expect_equivalent(variable_names(bla), c('A', 'C'))
+  expect_equivalent(variable_types(bla), c('STRING',
+                                           'REAL'))
+  expect_equivalent(variable_decimals(bla), c(NA, 2))
+})
