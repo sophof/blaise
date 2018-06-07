@@ -61,7 +61,7 @@
 #'   H = as.Date(rep('2001-01-01', 3))
 #' )
 #' )
-#' write_fwf_with_model(df, datafilename, blafilename)
+#' write_fwf_blaise_with_model(df, datafilename, blafilename)
 #'
 #'
 #' model = "
@@ -86,9 +86,9 @@
 #' ),
 #' stringsAsFactors = FALSE
 #' )
-#' write_fwf_with_model(df, datafilename, blafilename)
+#' write_fwf_blaise_with_model(df, datafilename, blafilename)
 
-write_fwf_with_model = function(df,
+write_fwf_blaise_with_model = function(df,
                                 output_data,
                                 input_model,
                                 output_model = NULL,

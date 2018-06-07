@@ -43,7 +43,7 @@ test_that("input_model passes an identical dataframe with common types", {
     )
   )
 
-  expect_silent(write_fwf_with_model(df, datafile, blafile))
+  expect_silent(write_fwf_blaise_with_model(df, datafile, blafile))
   unlink(c(datafile, blafile))
 })
 
@@ -69,7 +69,7 @@ test_that("input_model pads int and string types if width is larger than column"
     stringsAsFactors = FALSE
   )
 
-  expect_silent(write_fwf_with_model(df, datafile, blafile, decimal.mark = '.'))
+  expect_silent(write_fwf_blaise_with_model(df, datafile, blafile, decimal.mark = '.'))
   expect_silent(newdf <- readr::read_fwf(
     datafile,
     col_positions = readr::fwf_widths(c(2, 2, 3)),
@@ -103,7 +103,7 @@ test_that("REAL type is converted to correct significance with warning", {
     )
   )
 
-  expect_message(write_fwf_with_model(df, datafile, input_model = blafile, decimal.mark = '.'))
+  expect_message(write_fwf_blaise_with_model(df, datafile, input_model = blafile, decimal.mark = '.'))
   expect_silent(newdf <- readr::read_fwf(
     datafile,
     col_positions = readr::fwf_widths(c(3, 3, 5)),
@@ -136,7 +136,7 @@ test_that("larger INTS, STRINGS throw an error", {
     stringsAsFactors = FALSE
   )
 
-  expect_error(write_fwf_with_model(df, datafile, input_model = blafile))
+  expect_error(write_fwf_blaise_with_model(df, datafile, input_model = blafile))
   df = data.frame(
     list(
       A = rep('test',3),
@@ -144,7 +144,7 @@ test_that("larger INTS, STRINGS throw an error", {
     ),
     stringsAsFactors = FALSE
   )
-  expect_error(write_fwf_with_model(df, datafile, input_model = blafile))
+  expect_error(write_fwf_blaise_with_model(df, datafile, input_model = blafile))
   unlink(c(datafile, blafile))
 })
 
@@ -166,7 +166,7 @@ test_that("unavailable/unknown variables throw an error", {
     ),
     stringsAsFactors = FALSE
   )
-  expect_error(write_fwf_with_model(df, datafile, input_model = blafile))
+  expect_error(write_fwf_blaise_with_model(df, datafile, input_model = blafile))
   unlink(c(datafile, blafile))
 })
 
@@ -187,7 +187,7 @@ test_that("extra columns in dataframe are ignored", {
     ),
     stringsAsFactors = FALSE
   )
-  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
+  expect_silent(write_fwf_blaise_with_model(df, datafile, input_model = blafile))
   expect_silent(newdf <- readr::read_fwf(
     datafile,
     col_positions = readr::fwf_widths(c(3)),
@@ -218,7 +218,7 @@ test_that("order in dataframe doesn't matter", {
     stringsAsFactors = FALSE
   )
 
-  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
+  expect_silent(write_fwf_blaise_with_model(df, datafile, input_model = blafile))
   expect_silent(newdf <- readr::read_fwf(
     datafile,
     col_positions = readr::fwf_widths(c(3, 1)),
@@ -246,7 +246,7 @@ test_that("Date is automatically casted to YYYYmmdd when string casting", {
       stringsAsFactors = FALSE
       )
 
-  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
+  expect_silent(write_fwf_blaise_with_model(df, datafile, input_model = blafile))
   expect_silent(file <- readr::read_lines(datafile))
   expect_equivalent(file, rep('20010101', 3))
   unlink(c(datafile, blafile))
@@ -283,8 +283,8 @@ test_that("types are converted properly and can be converted back without loss",
     stringsAsFactors = FALSE
   )
 
-  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
-  expect_silent(dfnew <- read_fwf(
+  expect_silent(write_fwf_blaise_with_model(df, datafile, input_model = blafile))
+  expect_silent(dfnew <- read_fwf_blaise(
     datafile,
     blafile))
   expect_type_equal(df, dfnew, 'B', as.integer)
@@ -313,8 +313,8 @@ test_that("bool to INTEGER works", {
   )
   df[5,] = NA
 
-  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
-  expect_silent(dfnew <- read_fwf(
+  expect_silent(write_fwf_blaise_with_model(df, datafile, input_model = blafile))
+  expect_silent(dfnew <- read_fwf_blaise(
     datafile,
     blafile))
   expect_equal(as.integer(df[['bool']]), dfnew[['bool']])
@@ -340,8 +340,8 @@ test_that("bool is converted to integer before it is type converted by casting",
   )
   df[5,] = NA
 
-  expect_silent(write_fwf_with_model(df, datafile, input_model = blafile))
-  expect_silent(dfnew <- read_fwf(
+  expect_silent(write_fwf_blaise_with_model(df, datafile, input_model = blafile))
+  expect_silent(dfnew <- read_fwf_blaise(
     datafile,
     blafile))
   expect_equal(as.character(as.integer(df[['bool']])), dfnew[['bool']])
@@ -380,7 +380,7 @@ test_that("input_model works with lower case or mixed case types", {
     stringsAsFactors = FALSE
   )
 
-  expect_silent(write_fwf_with_model(df, datafile, blafile))
+  expect_silent(write_fwf_blaise_with_model(df, datafile, blafile))
   unlink(c(datafile, blafile))
 })
 
@@ -406,7 +406,7 @@ test_that("DUMMY variables are written out as expected", {
     stringsAsFactors = FALSE
   )
 
-  expect_silent(write_fwf_with_model(df, datafile, blafile))
+  expect_silent(write_fwf_blaise_with_model(df, datafile, blafile))
   expect_silent(lines <- readr::read_lines(datafile))
   expect_equivalent(nchar(lines[1]), 5)
   expect_equivalent(lines, c("t 1  ", "t 2  ", "t 3  "))

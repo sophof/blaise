@@ -5,8 +5,8 @@ expect_type_equal = function(df, column){
   blafile = tempfile(fileext = '.bla')
 
 
-  eval(bquote(expect_silent(write_fwf(.(df), datafile, blafile))))
-  eval(bquote(expect_silent({dfnew = read_fwf(datafile, blafile)})))
+  eval(bquote(expect_silent(write_fwf_blaise(.(df), datafile, blafile))))
+  eval(bquote(expect_silent({dfnew = read_fwf_blaise(datafile, blafile)})))
   eval(bquote(expect_equal(.(df)[[.(column)]], dfnew[[.(column)]], tolerance = 10^(-1 * getOption('digits')))))
 }
 
@@ -85,7 +85,7 @@ test_that("booleans are converted to int with a message", {
   df[5,] = NA
   datafile = tempfile(fileext = '.asc')
   blafile = tempfile(fileext = '.bla')
-  expect_message(write_fwf(df, datafile, blafile))
-  expect_silent({dfnew = read_fwf(datafile, blafile)})
+  expect_message(write_fwf_blaise(df, datafile, blafile))
+  expect_silent({dfnew = read_fwf_blaise(datafile, blafile)})
   expect_equal(as.integer(df[['bool']]), dfnew[['bool']])
 })

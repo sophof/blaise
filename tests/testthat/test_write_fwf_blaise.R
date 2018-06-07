@@ -17,15 +17,15 @@ test_that("asc is added as extension when missing", {
   dir = tempdir()
   df = data.frame(1:10)
 
-  write_fwf(df, datafilename)
+  write_fwf_blaise(df, datafilename)
   files = tools::list_files_with_exts(dir, 'asc', full.names = F)
   expect_match(files, basename(datafilename), all = FALSE)
   datafilename = tempfile()
-  write_fwf(df, datafilename)
+  write_fwf_blaise(df, datafilename)
   files = tools::list_files_with_exts(dir, 'asc', full.names = F)
   expect_match(files, basename(datafilename), all = FALSE)
   datafilename = tempfile(fileext = '.test')
-  write_fwf(df, datafilename)
+  write_fwf_blaise(df, datafilename)
   files = tools::list_files_with_exts(dir, 'test', full.names = F)
   expect_match(files, basename(datafilename), all = FALSE)
 })
@@ -36,7 +36,7 @@ test_that("bla is made automatically", {
   dir = tempdir()
   df = data.frame(1:10)
 
-  write_fwf(df, datafilename)
+  write_fwf_blaise(df, datafilename)
   files = tools::list_files_with_exts(dir, 'bla', full.names = F)
   expect_match(files, blaname, all = FALSE)
 })
@@ -48,11 +48,11 @@ test_that("custom bla can be made", {
   dir = tempdir()
   df = data.frame(1:10)
 
-  write_fwf(df, datafilename, blafilename)
+  write_fwf_blaise(df, datafilename, blafilename)
   files = tools::list_files_with_exts(dir, 'bla', full.names = F)
   expect_match(files, basename(blafilename), all = FALSE)
 
-  write_fwf(df, datafilename, blafilename2)
+  write_fwf_blaise(df, datafilename, blafilename2)
   files = tools::list_files_with_exts(dir, 'test', full.names = F)
   expect_match(files, basename(blafilename2), all = FALSE)
 })
@@ -63,7 +63,7 @@ test_that("writing of bla can be prevented", {
   dir = tempdir()
   df = data.frame(1:10)
 
-  write_fwf(df, datafilename, blafilename, write_model = FALSE)
+  write_fwf_blaise(df, datafilename, blafilename, write_model = FALSE)
   files = tools::list_files_with_exts(dir, 'bla', full.names = F)
   expect_false(any(stringr::str_detect(files, basename(blafilename))))
 })
@@ -73,7 +73,7 @@ test_that("data.frame can be written", {
   blafilename = tempfile(fileext = '.bla')
   df = data.frame(1:10)
 
-  expect_silent(write_fwf(df, datafilename, blafilename))
+  expect_silent(write_fwf_blaise(df, datafilename, blafilename))
 })
 
 test_that("tibble can be written", {
@@ -81,7 +81,7 @@ test_that("tibble can be written", {
   blafilename = tempfile(fileext = '.bla')
   df = dplyr::tibble(1:10)
 
-  expect_silent(write_fwf(df, datafilename, blafilename))
+  expect_silent(write_fwf_blaise(df, datafilename, blafilename))
 })
 
 test_that("converted dataframe is returned", {
@@ -89,7 +89,7 @@ test_that("converted dataframe is returned", {
   blafilename = tempfile(fileext = '.bla')
   df = dplyr::tibble(9:11)
 
-  expect_silent({res = write_fwf(df, datafilename, blafilename)})
+  expect_silent({res = write_fwf_blaise(df, datafilename, blafilename)})
   expect_equal(res, c(' 9', '10', '11'))
 })
 
@@ -105,13 +105,13 @@ test_that("padding direction can be supplied", {
     stringsAsFactors = FALSE
   )
 
-  expect_silent(write_fwf(df, datafile, justify = 'left'))
+  expect_silent(write_fwf_blaise(df, datafile, justify = 'left'))
   uit = readr::read_file(datafile)
   expect_equal(uit, c('t    1\nte  22\ntes333\n'))
-  expect_silent(write_fwf(df, datafile, justify = 'right'))
+  expect_silent(write_fwf_blaise(df, datafile, justify = 'right'))
   uit = readr::read_file(datafile)
   expect_equal(uit, c('  t  1\n te 22\ntes333\n'))
-  expect_silent(write_fwf(df, datafile, justify = 'centre'))
+  expect_silent(write_fwf_blaise(df, datafile, justify = 'centre'))
   uit = readr::read_file(datafile)
   expect_equal(uit, c(' t   1\nte  22\ntes333\n'))
 })

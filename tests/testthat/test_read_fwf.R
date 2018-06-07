@@ -33,7 +33,7 @@ B23,41,2210 20,20
 C34,512,120100,00"
   datafile = makedatafile(data)
 
-  expect_silent({df = read_fwf(datafile, blafile)})
+  expect_silent({df = read_fwf_blaise(datafile, blafile)})
   expect_identical(colnames(df), c('A', 'B', 'C', 'D', 'E', 'F', 'G'))
   expect_identical(df[[1]], c('A', 'B', 'C'))
   expect_equal(df[[2]], c(1, 2, 3))
@@ -62,7 +62,7 @@ test_that("different decimal separator can be used", {
 3.4"
   datafile = makedatafile(data)
 
-  expect_silent({df = read_fwf(datafile,
+  expect_silent({df = read_fwf_blaise(datafile,
                        blafile,
                        locale = readr::locale(decimal_mark =  '.'))})
   expect_equal(df[[1]], c(123, 23., 3.4))
@@ -85,7 +85,7 @@ test_that("DATETYPE can be used", {
 20120603"
   datafile = makedatafile(data)
 
-  df = read_fwf(datafile,
+  df = read_fwf_blaise(datafile,
                        blafile,
                        locale = readr::locale(date_format = '%Y%m%d'))
   expect_equal(lubridate::day(df[[1]]), c(1, 2, 3))
@@ -108,7 +108,7 @@ test_that("unknown types throw an error", {
   data = "123\n23.\n3.4"
   datafile = makedatafile(data)
 
-  expect_error(read_fwf(datafile, blafile))
+  expect_error(read_fwf_blaise(datafile, blafile))
   unlink(blafile)
   unlink(datafile)
 })
@@ -126,9 +126,9 @@ test_that("string can be forced to read unknown types", {
   data = "123\n23.\n3.4"
   datafile = makedatafile(data)
 
-  expect_silent(read_fwf(datafile, blafile, force_string = TRUE))
+  expect_silent(read_fwf_blaise(datafile, blafile, force_string = TRUE))
 
-  df = read_fwf(datafile, blafile, force_string = TRUE)
+  df = read_fwf_blaise(datafile, blafile, force_string = TRUE)
 
   expect_identical(colnames(df), c('A', 'B'))
   expect_equivalent(df[[1]], c(1, 2, 3))
@@ -152,7 +152,7 @@ test_that("dataframe is read as a tibble", {
   data = "A12,3,12\nB23,41,2\nC34,512,"
   datafile = makedatafile(data)
 
-  df = read_fwf(datafile, blafile)
+  df = read_fwf_blaise(datafile, blafile)
   expect_match(class(df), '^tbl', all = FALSE)
 })
 
@@ -169,7 +169,7 @@ test_that("empty values are read as NA", {
   data = "A1\n 2\nC "
   datafile = makedatafile(data)
 
-  expect_silent({df = read_fwf(datafile, blafile)})
+  expect_silent({df = read_fwf_blaise(datafile, blafile)})
   expect_equal(df[[1]], c('A', NA, 'C'))
   expect_equal(df[[2]], c(1, 2, NA))
 })
@@ -186,7 +186,7 @@ test_that("negative integers work", {
   data = "  1\n999\n-30"
   datafile = makedatafile(data)
 
-  expect_silent({df = read_fwf(datafile, blafile)})
+  expect_silent({df = read_fwf_blaise(datafile, blafile)})
   expect_equal(df[[1]], c(1, 999, -30))
 })
 
@@ -202,7 +202,7 @@ test_that("integers outside of max.integer range produce a warning and are conve
   data = "        1\n9999999999\n       -30"
   datafile = makedatafile(data)
 
-  expect_warning({df = read_fwf(datafile, blafile)})
+  expect_warning({df = read_fwf_blaise(datafile, blafile)})
   expect_equal(df[[1]], c(1, 9999999999, -30))
   expect_equal(class(df[[1]]), 'numeric')
 })
@@ -223,7 +223,7 @@ test_that("integers floats of max.range produce a warning and are converted to s
   data = paste(a,b,c, sep = '\n')
   datafile = makedatafile(data)
 
-  expect_warning({df = read_fwf(datafile, blafile)})
+  expect_warning({df = read_fwf_blaise(datafile, blafile)})
   expect_equal(df[[1]], c('1', '2', c))
   expect_equal(class(df[[1]]), 'character')
 })
@@ -242,7 +242,7 @@ test_that("DUMMY variables are ignored for reading", {
   data = "A 1\nB 2\nC 3"
   datafile = makedatafile(data)
 
-  expect_silent({df = read_fwf(datafile, blafile)})
+  expect_silent({df = read_fwf_blaise(datafile, blafile)})
   expect_equal(df[[1]], c('A', 'B', 'C'))
   expect_equal(df[[2]], c(1, 2, 3))
   expect_equal(ncol(df), 2)

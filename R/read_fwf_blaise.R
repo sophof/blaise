@@ -49,13 +49,13 @@
 #' datafile = tempfile('testdata', fileext = '.asc')
 #' writeLines(data, con = datafile)
 #'
-#' df = read_fwf(datafile, blafile)
+#' df = read_fwf_blaise(datafile, blafile)
 #' unlink(blafile)
 #' unlink(datafile)
 #'
 #' @export
 
-read_fwf = function(datafile,
+read_fwf_blaise = function(datafile,
                            modelfile,
                            locale = readr::locale(decimal_mark = ','),
                            force_string = FALSE){
