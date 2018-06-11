@@ -8,6 +8,7 @@ parse_bla = function(bla, force_string = FALSE){
   bla = clean_model(bla)
   modelname = extract_datamodelName(bla)
   bla = remove_non_fields(bla)
+  if(length(bla) == 0) stop('No fields found')
   names = extract_names(bla)
   types = extract_types(bla, force_string)
   widths = extract_widths(bla, types)
