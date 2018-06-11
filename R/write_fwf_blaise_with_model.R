@@ -94,7 +94,7 @@ write_fwf_blaise_with_model = function(df,
                                 output_model = NULL,
                                 decimal.mark = ',',
                                 digits = getOption('digits'),
-                                justify = 'left',
+                                justify = 'right',
                                 max.distance = 0L){
   # add asc if no file extension found
   if (tools::file_ext(output_data) == ''){
