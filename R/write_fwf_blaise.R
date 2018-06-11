@@ -49,7 +49,7 @@ write_fwf_blaise = function(df,
                      force_string = FALSE,
                      decimal.mark = ',',
                      digits = getOption('digits'),
-                     justify = 'left',
+                     justify = 'right',
                      write_model = TRUE){
   # add asc if no file extension found
   if (tools::file_ext(output_data) == ''){
