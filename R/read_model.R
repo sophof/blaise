@@ -86,7 +86,7 @@ extract_widths = function(bla, types){
   widths = fill_vector(widths, get_dummy_widths(bla, types))
 
   if(any(is.na(widths))) stop(sprintf(' width could not be detected for "%s"',
-                                     paste(bla[is.na(widths)], collapse = ';')))
+                                      paste(bla[is.na(widths)], collapse = ';')))
 
   return(widths)
 }
@@ -189,9 +189,14 @@ get_enum_labels = function(bla, types){
 
   per_enum = function(string){
     string = stringr::str_match(string, '\\((.+)\\)')[,2]
-    trimws(unlist(stringr::str_split(string, ',')))
+    labels = trimws(unlist(stringr::str_split(string, ',')))
+    if (all(stringr::str_detect(labels, '^\\w+.*\\(\\s*\\d+\\s*\\)$'))){
+      labels = stringr::str_match(labels, '\\((\\d+)\\)')[,2]
+    }
+    return(labels)
   }
-  return(lapply(bla, per_enum))
+  labels[enums] = lapply(bla[enums], per_enum)
+  return(labels)
 }
 
 get_enum_widths = function(bla, types){
@@ -200,6 +205,7 @@ get_enum_widths = function(bla, types){
   if(all(!enums)) return(widths)
   per_labels = function(x){
     if(is.na(x[[1]])) return(NA_integer_)
+    else if (all(stringr::str_detect(x, '^\\d+$'))) max(nchar(x)) # if labels are numeric (numbered enum)
     else nchar(length(x))
   }
   widths[enums] = lapply(get_enum_labels(bla, types)[enums], per_labels)
