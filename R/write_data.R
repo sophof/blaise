@@ -11,9 +11,16 @@ write_data = function(df, model, file, decimal.mark = ',', justify = 'right'){
 create_fixed_width_column = function(df, model, decimal.mark, justify){
   per_col = function(col, var){
     nas = is.na(col)
+
     if(is.factor(col)) {
-      col = as.integer(col)
-      col[!nas] = format(col[!nas], width = var@width)
+      if (all(stringr::str_detect(levels(col), '^\\d+$'))){
+        col = as.character(col)
+        col[!nas] = format(col[!nas], width = width(var), justify = justify)
+      }
+      else {
+        col = as.integer(col)
+        col[!nas] = format(col[!nas], width = var@width)
+      }
     }
 
     else if(class(col) == 'Date') col = as.character.Date(col, format = '%Y%m%d')

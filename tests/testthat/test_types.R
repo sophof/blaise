@@ -102,7 +102,7 @@ test_that("booleans are converted to int with a message", {
   expect_equal(as.integer(df[['bool']]), dfnew[['bool']])
 })
 
-test_that("numbered enums write out the same numbers as are read", {
+test_that("numbered enums write out the same numbers as are read, including NA", {
   model = "
   DATAMODEL Test
   FIELDS
@@ -121,6 +121,6 @@ test_that("numbered enums write out the same numbers as are read", {
   expect_silent(write_fwf_blaise(df, output, outputbla))
   outdata = readr::read_file(output)
   bla = read_model(outputbla)
-  expect_equal(outdata, data)
-  expect_equal(variable_widths(bla), c(1, 2))
+  expect_equal(outdata, paste0(data, '\n'))
+  expect_equivalent(variable_widths(bla), c(1, 2))
 })

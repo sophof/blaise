@@ -1,6 +1,7 @@
 get_model = function(df, digits = getOption('digits'), force_string = FALSE){
   vars = mapply(function(col, name){
-    if(is.logical(col)) col = as.integer(col)
+    if(is.factor(col) & all(stringr::str_detect(levels(col), '^\\d+$'))) col = as.character(col)
+    else if(is.logical(col)) col = as.integer(col)
     type = convert_rtype(class(col), force_string)
     width = get_width(col, digits)
     decimals = get_decimals(col, digits)
