@@ -5,15 +5,6 @@
 #' Tries to automatically match colummns by name using Levenshtein distance and will
 #' change types if required
 #'
-#' @details Currently supports the following dataformats:
-#' \itemize{
-#'   \item character = STRING,
-#'   \item integer = INTEGER,
-#'   \item numeric = REAL,
-#'   \item Date = DATETYPE,
-#'   \item factor = STRING
-#' }
-#'
 #' @param df dataframe to write
 #' @param input_model the datamodel used to convert the dataframe and write the output
 #' @param output_data path and name to output datafile. Will add .asc if no extension

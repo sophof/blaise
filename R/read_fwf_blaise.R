@@ -11,10 +11,11 @@
 #'   \item INTEGER
 #'   \item REAL
 #'   \item DATETYPE
+#'   \item ENUM (if numbered it will be converted to a factor with the numbers as labels)
 #'   }
 #'
 #' Other types will throw an error unless force_string is set to TRUE, in this
-#' case all columns will be read as a character vector.
+#' case those columns will be read as a character vector if possible.
 #'
 #' @param datafile the ascii file with the data
 #'

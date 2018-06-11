@@ -5,7 +5,7 @@
 \title{Write a fixed width ascii datafile and accompanying blaise datamodel}
 \usage{
 write_fwf_blaise(df, output_data, output_model = NULL, force_string = FALSE,
-  decimal.mark = ",", digits = getOption("digits"), justify = "left",
+  decimal.mark = ",", digits = getOption("digits"), justify = "right",
   write_model = TRUE)
 }
 \arguments{
@@ -42,11 +42,12 @@ will always write out a blaise datamodel describing the datafile as well
 \details{
 Currently supports the following dataformats:
 \itemize{
-  \item character = STRING,
-  \item integer = INTEGER,
-  \item numeric = REAL,
-  \item Date = DATETYPE,
-  \item factor = STRING
+  \item character => STRING,
+  \item integer => INTEGER,
+  \item numeric => REAL,
+  \item Date => DATETYPE,
+  \item factor => ENUM (will convert factor with numbers as labels to STRING)
+  \item logical => INTEGER
 }
 }
 \examples{

@@ -5,11 +5,12 @@
 #'
 #' @details Currently supports the following dataformats:
 #' \itemize{
-#'   \item character = STRING,
-#'   \item integer = INTEGER,
-#'   \item numeric = REAL,
-#'   \item Date = DATETYPE,
-#'   \item factor = STRING
+#'   \item character => STRING,
+#'   \item integer => INTEGER,
+#'   \item numeric => REAL,
+#'   \item Date => DATETYPE,
+#'   \item factor => ENUM (will convert factor with numbers as labels to STRING)
+#'   \item logical => INTEGER
 #' }
 #'
 #' @param df dataframe to write

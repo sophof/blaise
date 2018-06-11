@@ -5,7 +5,7 @@
 \title{Write a fixed width ascii datafile based on a given blaise datamodel}
 \usage{
 write_fwf_blaise_with_model(df, output_data, input_model, output_model = NULL,
-  decimal.mark = ",", digits = getOption("digits"), justify = "left",
+  decimal.mark = ",", digits = getOption("digits"), justify = "right",
   max.distance = 0L)
 }
 \arguments{
@@ -36,16 +36,6 @@ Write a datafile in the blaise format (fwf ascii without separators)
 using an existing datamodel. will not write out a datamodel unless explicitly asked to.
 Tries to automatically match colummns by name using Levenshtein distance and will
 change types if required
-}
-\details{
-Currently supports the following dataformats:
-\itemize{
-  \item character = STRING,
-  \item integer = INTEGER,
-  \item numeric = REAL,
-  \item Date = DATETYPE,
-  \item factor = STRING
-}
 }
 \examples{
 datafilename = tempfile('testdata', fileext = '.asc')
