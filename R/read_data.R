@@ -30,7 +30,19 @@ convert_factors = function(df, datamodel){
   if(!any(mask)) return(df)
 
   mask = mask[variable_types(datamodel) != 'DUMMY']
-  df[,mask] = Map(function(col, labels) factor(col, labels = labels),
+  per_factor = function(col, labels){
+    if (all(stringr::str_detect(labels, '^\\d+$'))){
+      factor(col,
+             levels = labels,
+             labels = labels)
+    }
+    else{
+      factor(col,
+             levels = 1:length(labels),
+             labels = labels)
+    }
+  }
+  df[,mask] = Map(per_factor,
                   df[,mask],
                   variable_labels(datamodel)[mask])
   return(df)

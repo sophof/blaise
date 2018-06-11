@@ -282,5 +282,8 @@ test_that("empty enums work", {
   datafile = makedatafile(data)
 
   expect_silent({df = read_fwf_blaise(datafile, blafile)})
-  expect_equal(df[[1]], factor(c('1', '2', '1', NA), levels = c('1', '2', '3')))
+  expect_equal(df[[1]],
+               factor(c('1', '2', '1', NA),
+                      levels = 1:3,
+                      labels = c('Male', 'Female', 'Unknown')))
 })
