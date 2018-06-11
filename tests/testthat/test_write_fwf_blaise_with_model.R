@@ -413,3 +413,29 @@ test_that("DUMMY variables are written out as expected", {
   unlink(c(datafile, blafile))
 })
 
+test_that("Numbered ENUMS are written out as expected", {
+  dir = tempdir()
+  datafile = tempfile('testasc', dir, fileext = '.asc')
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : (M (1), F(2), X(9))
+  B     : (M (1), F(2), X(10))
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  df = data.frame(
+    list(
+      A = factor(c('1', '2', '9')),
+      B = factor(c('1', '2', '10'))
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  expect_silent(write_fwf_blaise_with_model(df, datafile, blafile))
+  expect_silent(lines <- readr::read_lines(datafile))
+  expect_equivalent(lines, c("1 1", "2 2", "910"))
+  unlink(c(datafile, blafile))
+})
+
