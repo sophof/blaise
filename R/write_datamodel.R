@@ -31,6 +31,11 @@ make_field = function(name, max_char, type, width, dec = NA, levels = NA){
                     paste(levels,
                           collapse = sprintf(',\n%s', empty_line(tabwidth))))
   }
+  else if (type == 'DATETYPE'){
+    field = sprintf('  %s : %s',
+                    name,
+                    type)
+  }
   else {
     field = sprintf('  %s : %s[%s]',
                     name,
