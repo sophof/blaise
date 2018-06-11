@@ -1,5 +1,17 @@
 context("writing and reading back all types")
 
+makeblafile = function(model){
+  blafile = tempfile('testbla', fileext = '.bla')
+  writeLines(model, con = blafile)
+  return(blafile)
+}
+
+makedatafile = function(data){
+  datafile = tempfile('testdata', fileext = '.asc')
+  writeLines(data, con = datafile)
+  return(datafile)
+}
+
 expect_type_equal = function(df, column){
   datafile = tempfile(fileext = '.asc')
   blafile = tempfile(fileext = '.bla')
@@ -100,7 +112,7 @@ test_that("numbered enums write out the same numbers as are read", {
   "
   blafile = makeblafile(model)
 
-  data = "1 1\n2 2\nC910"
+  data = "1 1\n2 2\n910"
   datafile = makedatafile(data)
   output = tempfile(fileext = '.asc')
 

@@ -421,7 +421,7 @@ test_that("numbered enums work", {
                                            'ENUM'))
   expect_equivalent(variable_widths(bla), c(1, 2))
   expect_equivalent(variable_labels(bla)[[1]], c('1', '2', '9'))
-  expect_equivalent(variable_labels(bla)[[1]], c('1', '2', '10'))
+  expect_equivalent(variable_labels(bla)[[2]], c('1', '2', '10'))
 })
 
 test_that("numbered enums work when constructed vertically", {
