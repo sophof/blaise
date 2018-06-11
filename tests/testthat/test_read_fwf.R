@@ -248,3 +248,23 @@ test_that("DUMMY variables are ignored for reading", {
   expect_equal(ncol(df), 2)
   expect_equal(colnames(df), c('A', 'B'))
 })
+
+test_that("Numbered enums result in factors of their numbers", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : (Male (1), Female (2), Unknown (9))
+  B     : (M(1),F(2),X(10))
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data = "1 1\n2 2\nC910"
+  datafile = makedatafile(data)
+
+  expect_silent({df = read_fwf_blaise(datafile, blafile)})
+  expect_equal(df[[1]], factor(c('1', '2', '9')))
+  expect_equal(df[[2]], factor(c('1', '2', '10')))
+  expect_equal(ncol(df), 2)
+  expect_equal(colnames(df), c('A', 'B'))
+})

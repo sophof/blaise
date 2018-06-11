@@ -89,3 +89,23 @@ test_that("booleans are converted to int with a message", {
   expect_silent({dfnew = read_fwf_blaise(datafile, blafile)})
   expect_equal(as.integer(df[['bool']]), dfnew[['bool']])
 })
+
+test_that("numbered enums write out the same numbers as are read", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : (Male (1), Female (2), Unknown (9))
+  B     : (M(1),F(2),X(10))
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data = "1 1\n2 2\nC910"
+  datafile = makedatafile(data)
+  output = tempfile(fileext = '.asc')
+
+  expect_silent({df = read_fwf_blaise(datafile, blafile)})
+  expect_silent(write_fwf_blaise(df, output))
+  outdata = readr::read_file(output)
+  expect_equal(outdata, data)
+})

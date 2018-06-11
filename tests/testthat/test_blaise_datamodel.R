@@ -403,3 +403,21 @@ test_that("real with spaces is read", {
                                            'REAL'))
   expect_equivalent(variable_decimals(bla), c(NA, 2))
 })
+
+test_that("numbered enums work", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : (Male (1), Female (2), Unknown (9))
+  B     : (M(1),F(2),X(10))
+  ENDMODEL
+  "
+  Ncols = 2
+
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(variable_names(bla), c('A', 'B'))
+  expect_equivalent(variable_types(bla), c('ENUM',
+                                           'ENUM'))
+  expect_equivalent(variable_widths(bla), c(1, 2))
+})
