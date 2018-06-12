@@ -441,3 +441,110 @@ test_that("Numbered ENUMS are written out as expected", {
   unlink(c(datafile, blafile))
 })
 
+test_that("incompatible ENUM throws an error", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+    A     : (M , F, X)
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  datafile = tempfile('testasc', dir, fileext = '.asc')
+
+  df = data.frame(
+    list(
+      A = factor(c(1, 0, 9),
+                 levels = c(1, 0, 9),
+                 labels = c('1', '0', '9'))
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  expect_error(write_fwf_blaise_with_model(df, datafile, blafile))
+})
+
+test_that("incompatible numbered ENUM throws an error", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+    A     : (M (1), F(2), X(9))
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  datafile = tempfile('testasc', dir, fileext = '.asc')
+
+  df = data.frame(
+    list(
+      A = factor(c(1, 0, 9),
+                 levels = c(1, 0, 9),
+                 labels = c('1', '0', '9'))
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  expect_error(write_fwf_blaise_with_model(df, datafile, blafile))
+})
+
+test_that("Custom Types work when writing", {
+  model = "
+  DATAMODEL Test
+  TYPE
+    sex = (Male (1),
+           Female (2),
+           Unknown (9))
+    YesNo = (Yes (1),
+             No (0),
+             dontknow (10))
+  FIELDS
+    A     : sex
+    B     : YesNo
+    C     : STRING[1]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  datafile = tempfile('testasc', dir, fileext = '.asc')
+
+  df = data.frame(
+    list(
+      A = factor(c(1, 2, 9),
+                 levels = c(1, 2, 9),
+                 labels = c('1', '2', '9')),
+      B = factor(c(1, 2, 10),
+                 levels = c(1, 0, 10),
+                 labels = c('1', '0', '10')),
+      C = c('A','B','C')
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  expect_silent(write_fwf_blaise_with_model(df, datafile, blafile))
+  expect_silent(lines <- readr::read_lines(datafile))
+  expect_equivalent(lines, c("1 1A", "2 0B", "910C"))
+  unlink(c(datafile, blafile))
+})
+
+test_that("incompatible custom type throws an error", {
+  model = "
+  DATAMODEL Test
+  TYPE
+    sex = (Male (1),
+           Female (2),
+           Unknown (9))
+  FIELDS
+    A     : sex
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  datafile = tempfile('testasc', dir, fileext = '.asc')
+
+  df = data.frame(
+    list(
+      A = factor(c(1, 0, 9),
+                 levels = c(1, 0, 9),
+                 labels = c('1', '0', '9'))
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  expect_error(write_fwf_blaise_with_model(df, datafile, blafile))
+})

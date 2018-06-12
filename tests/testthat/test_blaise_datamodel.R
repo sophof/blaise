@@ -447,3 +447,30 @@ test_that("numbered enums work when constructed vertically", {
                                            'ENUM'))
   expect_equivalent(variable_widths(bla), c(1, 1, 2))
 })
+
+test_that("Custom Types can be read", {
+  model = "
+  DATAMODEL Test
+  TYPE
+    sex = (Male (1),
+           Female (2),
+           Unknown (9))
+    YesNo = (Yes (1),
+             No (0),
+             dontknow (10))
+  FIELDS
+    A     : sex
+    B     : YesNo
+    C     : STRING[1]
+  ENDMODEL
+  "
+  Ncols = 3
+
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(variable_names(bla), c('A', 'B', 'C'))
+  expect_equivalent(variable_types(bla), c('ENUM',
+                                           'ENUM',
+                                           'STRING'))
+  expect_equivalent(variable_widths(bla), c(1, 2, 1))
+})

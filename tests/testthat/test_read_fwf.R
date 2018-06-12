@@ -287,3 +287,83 @@ test_that("empty enums work", {
                       levels = 1:3,
                       labels = c('Male', 'Female', 'Unknown')))
 })
+
+test_that("Custom Types work", {
+  model = "
+  DATAMODEL Test
+  TYPE
+    sex = (Male (1),
+           Female (2),
+          Unknown (9))
+    YesNo = (Yes (1),
+             No (0),
+             dontknow (10))
+  FIELDS
+    A     : sex
+    B     : YesNo
+    C     : STRING[1]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  Ncols = 3
+  data = "1 1A\n2 0V\n910C"
+  datafile = makedatafile(data)
+
+  expect_silent({df = read_fwf_blaise(datafile, blafile)})
+  expect_equal(df[[1]],
+               factor(c(1, 2, 9),
+                      levels = c(1, 2, 9),
+                      labels = c('1', '2', '9')))
+  expect_equal(df[[2]],
+               factor(c(1, 0, 10),
+                      levels = c(1, 0, 10),
+                      labels = c('1', '0', '10')))
+  expect_equal(df[[3]], c('A','B','C'))
+})
+
+test_that("incompatible ENUM throws an error", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : (M , F, X)
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  data = "1\n2\n9"
+  datafile = makedatafile(data)
+
+  expect_error({df = read_fwf_blaise(datafile, blafile)})
+})
+
+test_that("incompatible numbered ENUM throws an error", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : (M (1), F(2), X(9))
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  data = "1\n2\n3"
+  datafile = makedatafile(data)
+
+  expect_error({df = read_fwf_blaise(datafile, blafile)})
+})
+
+test_that("incompatible custom type throws an error", {
+  model = "
+  DATAMODEL Test
+  TYPE
+  sex = (Male (1),
+  Female (2),
+  Unknown (9))
+  FIELDS
+  A     : sex
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  data = "1\n2\n3"
+  datafile = makedatafile(data)
+
+  expect_error({df = read_fwf_blaise(datafile, blafile)})
+})
