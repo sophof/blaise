@@ -421,6 +421,7 @@ test_that("Numbered ENUMS are written out as expected", {
   FIELDS
   A     : (M (1), F(2), X(9))
   B     : (M (1), F(2), X(10))
+  C     : (M (1), F(2), X(9))
   ENDMODEL
   "
   blafile = makeblafile(model)
@@ -428,14 +429,15 @@ test_that("Numbered ENUMS are written out as expected", {
   df = data.frame(
     list(
       A = factor(c('1', '2', '9')),
-      B = factor(c('1', '2', '10'))
+      B = c(1, 2, 10),
+      C = c('1', '2', '9')
     ),
     stringsAsFactors = FALSE
   )
 
   expect_silent(write_fwf_blaise_with_model(df, datafile, blafile))
   expect_silent(lines <- readr::read_lines(datafile))
-  expect_equivalent(lines, c("1 1", "2 2", "910"))
+  expect_equivalent(lines, c("1 11", "2 22", "9109"))
   unlink(c(datafile, blafile))
 })
 
