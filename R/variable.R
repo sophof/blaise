@@ -3,6 +3,31 @@
 .check_validity <- function(object) {
   errors = character()
 
+  #Check for sizes of ints and reals and if they can be accurately represented
+  max_int = nchar(.Machine$integer.max)
+  if(object@type == 'INTEGER' & object@width >= max_int){
+    msg = sprintf('variable "%s" too wide for 32bit int with width "%s", converting to double.
+                  max int is %i',
+                  object@name,
+                  object@width,
+                  max_int)
+    warning(msg)
+    object@type = 'REAL'
+  }
+  #real sizes
+  max_digits = .Machine$double.digits
+  if (object@type == 'REAL' & object@width >= max_digits){
+    msg = sprintf('variable "%s" too wide for double with width "%s", converting to string.
+                  max float digits are %i',
+                  object@name,
+                  object@width,
+                  max_digits)
+    warning(msg)
+    object@type = 'STRING'
+  }
+
+  # Other formal checks that will lead to errors
+  # ============================================
   if(!object@type %in% .types) {
     errors = c(errors, paste('type', object@type, 'is unknown'))
   }
@@ -163,6 +188,12 @@ setMethod("type", "variable", function(object) object@type)
 
 setMethod("width", "variable", function(object) object@width)
 
+setGeneric("get_labels",
+           valueClass = "character",
+           function(object) standardGeneric("get_labels")
+)
+setMethod("get_labels", "variable", function(object) object@labels)
+
 setGeneric("location<-",
            valueClass = "variable",
            function(object, value) standardGeneric("location<-")
@@ -173,9 +204,8 @@ setMethod("location<-", "variable", function(object, value){
   object
 })
 
-setGeneric("location",
+setGeneric("get_location",
            valueClass = "integer",
-           function(object) standardGeneric("location")
+           function(object) standardGeneric("get_location")
 )
-
-setMethod("location", "variable", function(object) object@location)
+setMethod("get_location", "variable", function(object) object@location)
