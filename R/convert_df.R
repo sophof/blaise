@@ -73,7 +73,7 @@ cast_type = function(var, original){
     original = as.character(original)
 
     if(!all(unique(original) %in% l)){
-      msg = sprintf('numbers in dataframe column (%s) do not correspond to range of indices in model (%s) for variable %s',
+      msg = sprintf('unique values in dataframe column (%s) do not correspond to range of indices in model (%s) for variable %s',
                     paste(unique(original), collapse = ';'),
                     paste(l, collapse = ';'),
                     name(var))
