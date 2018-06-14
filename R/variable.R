@@ -210,13 +210,17 @@ setGeneric("get_location",
 )
 setMethod("get_location", "variable", function(object) object@location)
 
-setGeneric("is.numered_enum",
+setGeneric("is.numbered_enum",
            valueClass = "logical",
-           function(object) standardGeneric("is.numered_enum")
+           function(object) standardGeneric("is.numbered_enum")
 )
-setMethod("is.numered_enum", "variable", function(object)
-  all(stringr::str_detect(object@labels, '^\\d+$'))
+setMethod("is.numbered_enum", "variable", function(object){
+  if(type(object) == 'ENUM')
+    return(all(stringr::str_detect(object@labels, '^\\d+$')))
+  else
+    return(FALSE)
+}
   )
-setMethod("is.numered_enum", "character", function(object)
+setMethod("is.numbered_enum", "character", function(object)
   all(stringr::str_detect(object, '^\\d+$'))
 )
