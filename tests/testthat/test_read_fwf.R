@@ -197,7 +197,7 @@ test_that("integers outside of max.integer range produce a warning and are conve
   "
   blafile = makeblafile(model)
 
-  data = "        1\n9999999999\n       -30"
+  data = "         1\n9999999999\n       -30"
   datafile = makedatafile(data)
 
   expect_warning({df = read_fwf_blaise(datafile, blafile)})
@@ -306,7 +306,7 @@ test_that("Custom Types work", {
   blafile = makeblafile(model)
 
   Ncols = 3
-  data = "1 1A\n2 0V\n910C"
+  data = "1 1A\n2 0B\n910C"
   datafile = makedatafile(data)
 
   expect_silent({df = read_fwf_blaise(datafile, blafile)})
