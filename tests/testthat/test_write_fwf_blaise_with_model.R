@@ -570,7 +570,7 @@ test_that("Custom Types work when writing", {
       A = factor(c(1, 2, 9),
                  levels = c(1, 2, 9),
                  labels = c('1', '2', '9')),
-      B = factor(c(1, 2, 10),
+      B = factor(c(1, 0, 10),
                  levels = c(1, 0, 10),
                  labels = c('1', '0', '10')),
       C = c('A','B','C')
