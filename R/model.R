@@ -78,19 +78,23 @@ setGeneric("variable_names",
 
 setMethod("variable_names", "model", function(object) sapply(object@variables, name))
 
+setMethod("variable_names", "list", function(object) sapply(object, name))
+
 setGeneric("variable_types",
            valueClass = "character",
            function(object) standardGeneric("variable_types")
 )
 
 setMethod("variable_types", "model", function(object) sapply(object@variables, type))
+setMethod("variable_types", "list", function(object) sapply(object, type))
 
 setGeneric("variable_widths",
            valueClass = "integer",
            function(object) standardGeneric("variable_widths")
 )
 
-setMethod("variable_widths", "model", function(object) sapply(object@variables, function(v) v@width))
+setMethod("variable_widths", "model", function(object) sapply(object@variables, width))
+setMethod("variable_widths", "list", function(object) sapply(object, width))
 
 setGeneric("variable_decimals",
            valueClass = "integer",
@@ -105,6 +109,7 @@ setGeneric("variable_labels",
 )
 
 setMethod("variable_labels", "model", function(object) lapply(object@variables, function(v) v@labels))
+setMethod("variable_labels", "list", function(object) lapply(object, function(v) v@labels))
 
 setGeneric("dummys",
            valueClass = "list",
@@ -116,6 +121,25 @@ setMethod("dummys", "model", function(object) {
   dummys = sapply(vars, type) == 'DUMMY'
   return(vars[dummys])
 }
+)
+
+setGeneric("get_variable",
+           valueClass = "variable",
+           function(object, name) standardGeneric("get_variable")
+)
+
+setMethod("get_variable",
+          signature(object = 'model',
+                    name = 'character'),
+          function(object, name)
+            variables(object)[[which(variable_names(object) == name)]]
+)
+
+setMethod("get_variable",
+          signature(object = 'list',
+                    name = 'character'),
+          function(object, name)
+            object[[which(variable_names(object) == name)]]
 )
 
 #=====================
