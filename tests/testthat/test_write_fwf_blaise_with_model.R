@@ -449,7 +449,7 @@ test_that("incompatible ENUM throws an error", {
   ENDMODEL
   "
   blafile = makeblafile(model)
-  datafile = tempfile('testasc', dir, fileext = '.asc')
+  datafile = tempfile('testasc', fileext = '.asc')
 
   df = data.frame(
     list(
@@ -471,7 +471,7 @@ test_that("incompatible numbered ENUM throws an error", {
   ENDMODEL
   "
   blafile = makeblafile(model)
-  datafile = tempfile('testasc', dir, fileext = '.asc')
+  datafile = tempfile('testasc', fileext = '.asc')
 
   df = data.frame(
     list(
@@ -502,7 +502,7 @@ test_that("Custom Types work when writing", {
   ENDMODEL
   "
   blafile = makeblafile(model)
-  datafile = tempfile('testasc', dir, fileext = '.asc')
+  datafile = tempfile('testasc', fileext = '.asc')
 
   df = data.frame(
     list(
@@ -535,7 +535,7 @@ test_that("incompatible custom type throws an error", {
   ENDMODEL
   "
   blafile = makeblafile(model)
-  datafile = tempfile('testasc', dir, fileext = '.asc')
+  datafile = tempfile('testasc', fileext = '.asc')
 
   df = data.frame(
     list(
