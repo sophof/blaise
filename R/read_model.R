@@ -1,278 +1,202 @@
+#' @import stringr
 read_model = function(blafile, force_string = FALSE){
   bla = readr::read_file(blafile)
-  bla = parse_bla(bla, force_string)
+  custom_types = read_custom_types(bla)
+  bla = parse_bla(bla, custom_types, force_string)
   return(bla)
 }
 
-parse_bla = function(bla, force_string = FALSE){
+parse_bla = function(bla, custom_types, force_string = FALSE){
   bla = clean_model(bla)
   modelname = extract_datamodelName(bla)
   bla = remove_non_fields(bla)
   if(length(bla) == 0) stop('No fields found')
-  names = extract_names(bla)
-  types = extract_types(bla, force_string)
-  widths = extract_widths(bla, types)
-  decimals = get_real_decimals(bla, types)
-  labels = get_enum_labels(bla, types)
 
-  #check if any widths are too big for the type to support
-  types = convert_ints_and_reals(names, types, widths)
+  make_var = function(field){
+    type = detect_type(field, custom_types)
+    switch(type,
+           STRING = make_string(field),
+           INTEGER = make_int(field),
+           REAL = make_real(field),
+           ENUM = make_enum(field),
+           DATETYPE = make_date(field),
+           DUMMY = make_dummy(field),
+           CUSTOM = make_custom(field, custom_types),
+           UNKNOWN = make_unknown(field, force_string),
+           stop('Type could not be detected')
+    )
+  }
 
-  stopifnot(
-    all(!is.na(types)),
-    all(!is.na(widths)),
-    all(sapply(c(length(types),
-                 length(widths),
-                 length(decimals),
-                 length(labels),
-                 length(bla)),
-               function (x) x == length(names)))
-  )
-
-  vars = mapply(function(name, type, width, decimals, labels){
-    variable(name, type, width, decimals, labels)
-  },
-  names,
-  types,
-  widths,
-  decimals,
-  labels)
-
+  vars = lapply(bla, make_var)
   m = model(modelname, vars)
   return(m)
 }
 
 remove_non_fields = function(bla){
-  modelname = stringr::str_detect(bla, '^DATAMODEL')
-  FIELDS = stringr::str_detect(bla, 'FIELDS')
-  ENDMODEL = stringr::str_detect(bla, 'ENDMODEL')
+  modelname = str_detect(bla, '^DATAMODEL')
+  FIELDS = str_detect(bla, 'FIELDS')
+  ENDMODEL = str_detect(bla, 'ENDMODEL')
   bla[!(modelname | ENDMODEL | FIELDS)]
 }
 
 extract_datamodelName = function(bla){
   datamodel = grep('^DATAMODEL', toupper(bla))
-  name = stringr::str_match(bla[datamodel], '^DATAMODEL (.+)$')
+  name = str_match(bla[datamodel], '^DATAMODEL (.+)$')
   return(name[2])
 }
 
-extract_names = function(bla){
-  stringr::str_match(bla, '^(\\S+):.+$')[,2]
+detect_type = function(field, custom_types){
+  if(detect_string(field)) return('STRING')
+  if(detect_int(field)) return('INTEGER')
+  if(detect_real(field)) return('REAL')
+  if(detect_enum(field)) return('ENUM')
+  if(detect_date(field)) return('DATETYPE')
+  if(detect_dummy(field)) return('DUMMY')
+  if(detect_custom(field, custom_types)) return('CUSTOM')
+  if(detect_unknown(field)) return('UNKNOWN')
 }
 
-extract_types = function(bla, force_string = FALSE){
-  types = rep(NA_character_, length(bla))
-  types[detect_strings(bla)] = 'STRING'
-  types[detect_ints(bla)] = 'INTEGER'
-  types[detect_enums(bla)] = 'ENUM'
-  types[detect_reals(bla)] = 'REAL'
-  types[detect_dates(bla)] = 'DATETYPE'
-  types[detect_dummys(bla)] = 'DUMMY'
-
-  if(force_string) types[detect_unknown(bla, is.na(types))] = 'STRING'
-
-  if(any(is.na(types))) stop(sprintf('"%s" could not be detected as type',
-                                     paste(bla[is.na(types)], collapse = ';')))
-  return(types)
+detect_string = function(field){
+  regex = regex('^.+:STRING\\[\\d+\\]$', ignore_case = TRUE)
+  str_detect(field, regex)
 }
 
-extract_widths = function(bla, types){
-  widths = rep(NA_integer_, length(bla))
-
-  widths = fill_vector(widths, get_string_widths(bla, types))
-  widths = fill_vector(widths, get_int_widths(bla, types))
-  widths = fill_vector(widths, get_real_widths(bla, types))
-  widths = fill_vector(widths, get_enum_widths(bla, types))
-  widths = fill_vector(widths, get_date_widths(bla, types))
-  widths = fill_vector(widths, get_dummy_widths(bla, types))
-
-  if(any(is.na(widths))) stop(sprintf(' width could not be detected for "%s"',
-                                      paste(bla[is.na(widths)], collapse = ';')))
-
-  return(widths)
+make_string = function(field){
+  reg = regex('(^.+):STRING\\[(\\d+)\\]$', ignore_case = TRUE)
+  name = str_match(field, reg)[,2]
+  width = as.integer(str_match(field, reg)[,3])
+  variable(name = name, type = 'STRING', width = width)
 }
 
-detect_strings = function(bla){
-  regex = stringr::regex('^.+:STRING\\[\\d+\\]$', ignore_case = TRUE)
-  stringr::str_detect(bla, regex)
-}
-
-get_string_widths = function(bla, types){
-  widths = rep(NA_integer_, length(bla))
-  strings = types == 'STRING'
-  if(all(!strings)) return(widths)
-
-  regex = stringr::regex('^.+:.+\\[(\\d+)\\]$', ignore_case = TRUE)
-  widths[strings] = as.integer(stringr::str_match(bla[strings], regex)[,2])
-  return(widths)
-}
-
-
-detect_ints = function(bla){
-  haakjes_regex = stringr::regex('^.+:INTEGER\\[\\d+\\]$', ignore_case = TRUE)
-  haakjes = stringr::str_detect(bla, haakjes_regex)
+detect_int = function(field){
+  haakjes_regex = regex('^.+:INTEGER\\[\\d+\\]$', ignore_case = TRUE)
+  haakjes = str_detect(field, haakjes_regex)
 
   range_regex = '^.+:\\d+\\.\\.\\d+$'
-  ranges = stringr::str_detect(bla, range_regex)
+  ranges = str_detect(field, range_regex)
   return(ranges | haakjes)
 }
 
-get_int_widths = function(bla, types){
-  widths = rep(NA_integer_, length(bla))
-  ints = types == 'INTEGER'
-  if(all(!ints)) return(widths)
+make_int = function(field){
+  haakjes_regex = regex('(^.+):INTEGER\\[(\\d+)\\]$', ignore_case = TRUE)
+  if(str_detect(field, haakjes_regex)){
+    name = str_match(field, haakjes_regex)[,2]
+    width = as.integer(str_match(field, haakjes_regex)[,3])
 
-  haakjes_regex = stringr::regex('^.+:INTEGER\\[(\\d+)\\]$', ignore_case = TRUE)
-  haakjes = stringr::str_match(bla, haakjes_regex)[,2]
-  widths = fill_vector(widths, haakjes)
-
-  range_regex = '^.+:(\\d+)\\.\\.(\\d+)$'
-  start = nchar(stringr::str_match(bla, range_regex)[,2])
-  end = nchar(stringr::str_match(bla, range_regex)[,3])
-  ranges = pmax(start, end)
-  widths = fill_vector(widths, ranges)
-  return(as.integer(widths))
+  }
+  else{
+    range_regex = '^(.+):(\\d+)\\.\\.(\\d+)$'
+    name = str_match(field, range_regex)[,2]
+    start = nchar(str_match(field, range_regex)[,3])
+    end = nchar(str_match(field, range_regex)[,4])
+    width = max(start, end)
+  }
+  variable(name = name, type = 'INTEGER', width = width)
 }
 
-detect_reals = function(bla){
-  haakjes_regex = stringr::regex('^.+:REAL\\[\\d+(?:,\\d+)?\\]$', ignore_case = TRUE)
-  haakjes = stringr::str_detect(bla, haakjes_regex)
+detect_real = function(field){
+  haakjes_regex = regex('^.+:REAL\\[\\d+(?:,\\d+)?\\]$', ignore_case = TRUE)
+  haakjes = str_detect(field, haakjes_regex)
 
   range_regex = '^.+:\\d+\\.\\d+\\.\\.\\d+\\.\\d+$'
-  ranges = stringr::str_detect(bla, range_regex)
+  ranges = str_detect(field, range_regex)
   return(ranges | haakjes)
 }
 
-get_real_widths = function(bla, types){
-  widths = rep(NA_integer_, length(bla))
-  reals = types == 'REAL'
-  if(all(!reals)) return(widths)
+make_real = function(field){
+  haakjes_regex = regex('(^.+):REAL\\[(\\d+)(?:,(\\d+))?\\]$',
+                        ignore_case = TRUE)
+  if(str_detect(field, haakjes_regex)){
+    name = str_match(field, haakjes_regex)[,2]
+    width = as.integer(str_match(field, haakjes_regex)[,3])
+    decimals = as.integer(str_match(field, haakjes_regex)[,4])
+  }
+  else{
+    range_regex = '^(.+):(\\d+\\.(\\d+))\\.\\.(\\d+\\.(\\d+))$'
+    name = str_match(field, range_regex)[,2]
 
-  haakjes_regex = stringr::regex('^.+:REAL\\[(\\d+)(?:,\\d+)?\\]$', ignore_case = TRUE)
-  haakjes = stringr::str_match(bla, haakjes_regex)[,2]
-  widths = fill_vector(widths, haakjes)
+    start = nchar(str_match(field, range_regex)[,3])
+    end = nchar(str_match(field, range_regex)[,5])
+    width = max(start, end)
 
-  range_regex = '^.+:(\\d+\\.\\d+)\\.\\.(\\d+\\.\\d+)$'
-  start = nchar(stringr::str_match(bla, range_regex)[,2])
-  end = nchar(stringr::str_match(bla, range_regex)[,3])
-  ranges = pmax(start, end)
-  widths = fill_vector(widths, ranges)
-  return(as.integer(widths))
+    startdecs = nchar(str_match(field, range_regex)[,4])
+    enddecs = nchar(str_match(field, range_regex)[,6])
+    decimals = max(startdecs, enddecs)
+  }
+  variable(name = name, type = 'REAL', width = width, decimals = decimals)
 }
 
-get_real_decimals = function(bla, types){
-  decimals = rep(NA_integer_, length(bla))
-  reals = types == 'REAL'
-  if(all(!reals)) return(decimals)
-
-  haakjes_regex = stringr::regex('^.+:REAL\\[\\d+(?:,(\\d+))?\\]$', ignore_case = TRUE)
-  haakjes = as.integer(stringr::str_match(bla, haakjes_regex)[,2])
-  decimals = fill_vector(decimals, haakjes)
-
-  range_regex = '^.+:\\d+\\.(\\d+)\\.\\.\\d+\\.(\\d+)$'
-  startdecs = nchar(stringr::str_match(bla, range_regex)[,2])
-  enddecs = nchar(stringr::str_match(bla, range_regex)[,3])
-  decimals = fill_vector(decimals, pmax(startdecs, enddecs))
-
-  return(as.integer(decimals))
-}
-
-
-detect_enums = function(bla){
+detect_enum = function(field){
   enum_regex = '^.+:\\((.+)\\)$'
-  stringr::str_detect(bla, enum_regex)
+  str_detect(field, enum_regex)
 }
 
-get_enum_labels = function(bla, types){
-  labels = as.list(rep(NA_character_, length(bla)))
-  enums = types == 'ENUM'
-  if(all(!enums)) return(labels)
+make_enum = function(field){
+  name = str_match(field, '^(.*):\\(.*\\)$')[,2]
+  numbered = FALSE
 
-  per_enum = function(string){
-    string = stringr::str_match(string, '\\((.+)\\)')[,2]
-    labels = trimws(unlist(stringr::str_split(string, ',')))
-    if (all(stringr::str_detect(labels, '^\\w+.*\\(\\s*\\d+\\s*\\)$'))){
-      labels = stringr::str_match(labels, '\\((\\d+)\\)')[,2]
-    }
-    return(labels)
-  }
-  labels[enums] = lapply(bla[enums], per_enum)
-  return(labels)
-}
-
-get_enum_widths = function(bla, types){
-  widths = rep(NA_integer_, length(bla))
-  enums = types == 'ENUM'
-  if(all(!enums)) return(widths)
-  per_labels = function(x){
-    if(is.na(x[[1]])) return(NA_integer_)
-    else if (all(stringr::str_detect(x, '^\\d+$'))) max(nchar(x)) # if labels are numeric (numbered enum)
-    else nchar(length(x))
-  }
-  widths[enums] = lapply(get_enum_labels(bla, types)[enums], per_labels)
-  return(widths)
-}
-
-detect_dates = function(bla){
-  date_regex = stringr::regex('^.+:DATETYPE(?:\\[8\\])?$', ignore_case = TRUE)
-  stringr::str_detect(bla, date_regex)
-}
-
-get_date_widths = function(bla, types){
-  widths = rep(NA_integer_, length(bla))
-  dates = types == 'DATETYPE'
-  widths[dates] = 8L
-  return(widths)
-}
-
-detect_dummys = function(bla){
-  dummy_regex = stringr::regex('^DUMMY\\[\\d+\\]$', ignore_case = TRUE)
-  stringr::str_detect(bla, dummy_regex)
-}
-
-get_dummy_widths = function(bla, types){
-  widths = rep(NA_integer_, length(bla))
-  dummys = types == 'DUMMY'
-  if(all(!dummys)) return(widths)
-
-  dummy_regex = stringr::regex('^DUMMY\\[(\\d+)\\]$', ignore_case = TRUE)
-  widths[dummys] = as.integer(stringr::str_match(bla[dummys], dummy_regex)[,2])
-  return(widths)
-}
-
-convert_ints_and_reals = function(names, types, widths){
-  #ints
-  max_int = nchar(.Machine$integer.max)
-  big_int = (types == 'INTEGER') &
-    (widths >= max_int)
-
-  if (any(big_int)){
-    msg = sprintf('column(s) "%s" too wide for 32bit int with width "%s", converting to double.
-                  max int is %i',
-                  paste(names[big_int], collapse = '; '),
-                  paste(widths[big_int], collapse = '; '),
-                  max_int)
-    warning(msg)
-    types[big_int] = 'REAL'
+  labels = str_match(field, '\\((.+)\\)')[,2]
+  labels = trimws(unlist(str_split(labels, ',')))
+  if (all(str_detect(labels, '^\\w+.*\\(\\s*\\d+\\s*\\)$'))){
+    labels = str_match(labels, '\\((\\d+)\\)')[,2]
+    numbered = TRUE
   }
 
-  max_digits = .Machine$double.digits
-  big_float = (types == 'REAL') &
-    (widths >= max_digits)
-  if (any(big_float)){
-    msg = sprintf('column(s) "%s" too wide for double with width "%s", converting to string.
-                  max float digits are %i',
-                  paste(names[big_float], collapse = '; '),
-                  paste(widths[big_float], collapse = '; '),
-                  max_digits)
-    warning(msg)
-    types[big_float] = 'STRING'
-  }
-  return(types)
+  if(numbered) width = max(nchar(labels))
+  else width = nchar(length(labels))
+
+  variable(name = name, type = 'ENUM', width = width, labels = labels)
 }
 
-detect_unknown = function(bla, mask){
-  regex = stringr::regex('^.+:.+\\[\\d+\\]$', ignore_case = TRUE)
-  res = rep(FALSE, length(bla))
-  res[mask] = stringr::str_detect(bla[mask], regex)
-  return(res)
+detect_date = function(field){
+  date_regex = regex('^.+:DATETYPE(?:\\[8\\])?$', ignore_case = TRUE)
+  str_detect(field, date_regex)
+}
+
+make_date = function(field){
+  date_regex = regex('^(.+):DATETYPE(?:\\[8\\])?$', ignore_case = TRUE)
+  name = str_match(field, date_regex)[,2]
+  variable(name = name, type = 'DATETYPE', width = 8L)
+}
+
+detect_dummy = function(field){
+  dummy_regex = regex('^DUMMY\\[\\d+\\]$', ignore_case = TRUE)
+  str_detect(field, dummy_regex)
+}
+
+make_dummy = function(field){
+  dummy_regex = regex('^DUMMY\\[(\\d+)\\]$', ignore_case = TRUE)
+  width = as.integer(str_match(field, dummy_regex)[,2])
+  variable(type = 'DUMMY', width = width)
+}
+
+detect_custom = function(field, custom_types){
+  if(is.null(custom_types)) return(FALSE)
+  types = variable_names(custom_types)
+  reg_types = regex(paste(paste0('^.*:', types, '$'), collapse = '|'),
+                    ignore_case = TRUE)
+  str_detect(field, reg_types)
+}
+
+make_custom = function(field, custom_types){
+  if(is.null(custom_types)) stop('no custom types available')
+  reg_types = regex('^(\\w+):(\\w+)$', ignore_case = TRUE)
+  name = str_match(field, reg_types)[,2]
+  type = str_match(field, reg_types)[,3]
+  custom_type = get_variable(custom_types, type)
+  variable(name = name, type = 'ENUM', width = width(custom_type), labels = get_labels(custom_type))
+}
+
+detect_unknown = function(field){
+  regex = regex('^\\w+:\\w+\\[\\d+\\]$', ignore_case = TRUE)
+  str_detect(field, regex)
+}
+
+make_unknown = function(field, force_string){
+  if(!force_string) stop('Type could not be detected for ', field)
+  reg_unknown = regex('^(\\w+):(\\w+)\\[(\\d+)\\]$')
+  name = str_match(field, reg_unknown)[,2]
+  type = str_match(field, reg_unknown)[,3]
+  width = str_match(field, reg_unknown)[,4]
+  variable(name = name, type = 'STRING', width = width)
 }
