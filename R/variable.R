@@ -1,33 +1,9 @@
 #' @include generics.R
+#' @include utils.R
 
 .check_validity <- function(object) {
   errors = character()
 
-  #Check for sizes of ints and reals and if they can be accurately represented
-  max_int = nchar(.Machine$integer.max)
-  if(object@type == 'INTEGER' & object@width >= max_int){
-    msg = sprintf('variable "%s" too wide for 32bit int with width "%s", converting to double.
-                  max int is %i',
-                  object@name,
-                  object@width,
-                  max_int)
-    warning(msg)
-    object@type = 'REAL'
-  }
-  #real sizes
-  max_digits = .Machine$double.digits
-  if (object@type == 'REAL' & object@width >= max_digits){
-    msg = sprintf('variable "%s" too wide for double with width "%s", converting to string.
-                  max float digits are %i',
-                  object@name,
-                  object@width,
-                  max_digits)
-    warning(msg)
-    object@type = 'STRING'
-  }
-
-  # Other formal checks that will lead to errors
-  # ============================================
   if(!object@type %in% .types) {
     errors = c(errors, paste('type', object@type, 'is unknown'))
   }
@@ -75,6 +51,32 @@ setClass(
 # Constructors
 .convert_type = function(type) toupper(type)
 
+.check_size = function(object){
+  #Check for sizes of ints and reals and if they can be accurately represented
+  max_int = nchar(.Machine$integer.max)
+  if(object@type == 'INTEGER' & object@width >= max_int){
+    msg = trimall(sprintf('variable "%s" too wide for 32bit int with width "%s",
+                        converting to double. max int is %i',
+                          object@name,
+                          object@width,
+                          max_int))
+    warning(msg)
+    object@type = 'REAL'
+  }
+  #real sizes
+  max_digits = .Machine$double.digits
+  if (object@type == 'REAL' & object@width >= max_digits){
+    msg = trimall(sprintf('variable "%s" too wide for double with width "%s",
+                        converting to string. max float digits are %i',
+                          object@name,
+                          object@width,
+                          max_digits))
+    warning(msg)
+    object@type = 'STRING'
+  }
+  return(object)
+}
+
 setGeneric("variable",
            valueClass = 'variable',
            function(name, type, width, decimals, labels) standardGeneric("variable")
@@ -95,6 +97,7 @@ setMethod("variable",
               width = as.integer(width),
               decimals = NA_integer_,
               labels = NA_character_)
+            .check_size(object)
           }
 )
 
@@ -105,13 +108,16 @@ setMethod("variable",
             width = "numeric",
             decimals = 'numeric',
             labels = 'missingOrNULL'),
-          function(name, type, width, decimals, labels) new(
+          function(name, type, width, decimals, labels) {
+            object = new(
             'variable',
             name = name,
             type = .convert_type(type),
             width = as.integer(width),
             decimals = if_else(as.integer(decimals) == 0, NA_integer_, as.integer(decimals)),
             labels = NA_character_)
+            .check_size(object)
+          }
 )
 
 setMethod("variable",
