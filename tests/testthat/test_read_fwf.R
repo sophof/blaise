@@ -126,9 +126,7 @@ test_that("string can be forced to read unknown types", {
   data = "123\n23.\n3.4"
   datafile = makedatafile(data)
 
-  expect_silent(read_fwf_blaise(datafile, blafile, force_string = TRUE))
-
-  df = read_fwf_blaise(datafile, blafile, force_string = TRUE)
+  expect_silent({df = read_fwf_blaise(datafile, blafile, force_string = TRUE)})
 
   expect_identical(colnames(df), c('A', 'B'))
   expect_equivalent(df[[1]], c(1, 2, 3))
