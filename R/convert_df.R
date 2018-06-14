@@ -16,16 +16,10 @@ convert_df = function(df, model, max.distance = 0L){
     stop("dataframe doesn't have the same numer of columns as datamodel")
   }
 
-  cast_funs = mapply(cast_type, sapply(variables(model)[zonder_dummy], type), sapply(df, class))
+  for (i in 1:ncol(df))
+      df[[i]] = cast_type(variables(model)[zonder_dummy][[i]], df[[i]])
 
-  # Turns out to be faster than a vector apply
-  incorrect_type = sapply(df, function(x) convert_rtype(class(x))) !=
-    variable_types(model)[zonder_dummy]
-  for (i in 1:length(cast_funs)){
-    if(incorrect_type[i]) df[,i] = cast_funs[[i]](df[,i])
-  }
-
-  #insert dummy columns
+  # insert dummy columns
   for(dummy in dummys(model)){
     DUMMY = paste(rep(' ', width(dummy)), collapse = '')
     df = tibble::add_column(df, DUMMY, .before = get_location(dummy))
@@ -65,4 +59,69 @@ find_names = function(names, model, max.distance){
   }
 
   return(apply(LD, 2, which.min))
+}
+
+cast_type = function(var, original){
+  # cast dates to string
+  if(class(original) == 'Date' & type(var) == 'STRING') {
+    return(as.character.Date(original, format = '%Y%m%d'))
+  }
+
+  # Numbered ENUMS
+  else if(is.numbered_enum(var)){
+    l = as.integer(var@labels)
+    original = as.character(original)
+
+    if(!all(unique(original) %in% l)){
+      msg = sprintf('numbers in dataframe column (%s) do not correspond to range of indices in model (%s) for variable %s',
+                    paste(unique(original), collapse = ';'),
+                    paste(l, collapse = ';'),
+                    name(var))
+      stop(msg)
+    }
+    return(factor(original, levels = l, labels = var@labels))
+  }
+
+  # Normal ENUMS
+  else if(type(var) == 'ENUM'){
+    l_original = unique(as.character(original))
+    if(all(stringr::str_detect(l_original, '^\\d+$'))) l = 1:length(var@labels)
+    else l = var@labels
+
+    if(!all(toupper(l_original) %in% toupper(l))){
+      msg = sprintf('numbers in dataframe column (%s) do not correspond to range of indices in model (%s) for variable %s',
+                    paste(unique(original), collapse = ';'),
+                    paste(l, collapse = ';'),
+                    name(var))
+      stop(msg)
+    }
+    return(factor(original, levels = l, labels = var@labels))
+  }
+
+  else if(is.numeric(original) & type(var) == 'ENUM'){
+    if (all(stringr::str_detect(var@labels, '^\\d+$'))) l = as.integer(var@labels)
+    else l = 1:length(var@labels)
+
+    if(!all(unique(original) %in% l)){
+      msg = sprintf('numbers in dataframe column (%s) do not correspond to range or labels in model (%s) for variable %s',
+                    paste(unique(original), collapse = ';'),
+                    paste(l, collapse = ';'),
+                    name(var))
+      stop(msg)
+    }
+    return(factor(original, levels = l, labels = var@labels))
+  }
+
+  # all other cases use a generic cast
+  else{
+    switch(
+      EXPR = type(var),
+      'STRING' = return(as.character(original)),
+      'INTEGER' = return(as.integer(original)),
+      'REAL' = return(as.numeric(original)),
+      'DATETYPE' = return(as.Date.character(original, format = '%Y%m%d')),
+      'ENUM' = return(as.factor(original)),
+      stop('type "', type(var), '" not implemented')
+    )
+  }
 }
