@@ -27,24 +27,27 @@ get_positions = function(datamodel){
 
 convert_factors = function(df, datamodel){
   mask = variable_types(datamodel) == 'ENUM'
+  mask = mask[variable_types(datamodel) != 'DUMMY'] # required because DUMMY types are in datamodel but not in df
   if(!any(mask)) return(df)
 
-  mask = mask[variable_types(datamodel) != 'DUMMY']
-  per_factor = function(col, labels){
-    if (all(stringr::str_detect(labels, '^\\d+$'))){
-      factor(col,
-             levels = labels,
-             labels = labels)
+  per_factor = function(col, labels, name){
+    if (all(stringr::str_detect(labels, '^\\d+$'))) l = labels # this will read numbered enums correctly
+    else l = 1:length(labels)
+    if(any(!(unique(na.omit(col)) %in% l))){
+      missing = unique(na.omit(col))[!(unique(na.omit(col)) %in% l)]
+      msg = sprintf('integer(s) "%s" have no associated label for variable %s',
+                    paste(missing, collapse = ';'),
+                    name)
+      stop(msg)
     }
-    else{
-      factor(col,
-             levels = 1:length(labels),
-             labels = labels)
-    }
+    factor(col,
+           levels = l,
+           labels = labels)
   }
   df[,mask] = Map(per_factor,
                   df[,mask],
-                  variable_labels(datamodel)[mask])
+                  variable_labels(datamodel)[mask],
+                  variable_names(datamodel)[mask])
   return(df)
 }
 
