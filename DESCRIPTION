@@ -30,6 +30,7 @@ Collate:
     'get_model.R'
     'variable.R'
     'model.R'
+    'read_custom_types.R'
     'read_data.R'
     'read_fwf_blaise.R'
     'read_model.R'
