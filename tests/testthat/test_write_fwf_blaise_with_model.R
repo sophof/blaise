@@ -413,6 +413,34 @@ test_that("DUMMY variables are written out as expected", {
   unlink(c(datafile, blafile))
 })
 
+test_that("ENUMS are written out as expected", {
+  dir = tempdir()
+  datafile = tempfile('testasc', dir, fileext = '.asc')
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : (M, F, X)
+  B     : (M, F, X)
+  C     : (M, F, X)
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  df = data.frame(
+    list(
+      A = factor(c('1', '2', '3')),
+      B = c(1, 2, 3),
+      C = c('1', '2', '3')
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  expect_silent(write_fwf_blaise_with_model(df, datafile, blafile))
+  expect_silent(lines <- readr::read_lines(datafile))
+  expect_equivalent(lines, c("111", "222", "333"))
+  unlink(c(datafile, blafile))
+})
+
 test_that("Numbered ENUMS are written out as expected", {
   dir = tempdir()
   datafile = tempfile('testasc', dir, fileext = '.asc')
@@ -459,7 +487,40 @@ test_that("incompatible ENUM throws an error", {
     ),
     stringsAsFactors = FALSE
   )
+  expect_error(write_fwf_blaise_with_model(df, datafile, blafile))
 
+  model = "
+  DATAMODEL Test
+  FIELDS
+    A     : (M , F, X)
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  datafile = tempfile('testasc', fileext = '.asc')
+
+  df = data.frame(
+    list(
+      A = factor(c('M', 'F', 'Onbekend'))
+    ),
+    stringsAsFactors = FALSE
+  )
+  expect_error(write_fwf_blaise_with_model(df, datafile, blafile))
+
+  model = "
+  DATAMODEL Test
+  FIELDS
+    A     : (M , F, X)
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  datafile = tempfile('testasc', fileext = '.asc')
+
+  df = data.frame(
+    list(
+      A = c(1,2,9)
+    ),
+    stringsAsFactors = FALSE
+  )
   expect_error(write_fwf_blaise_with_model(df, datafile, blafile))
 })
 
