@@ -5,3 +5,11 @@ fill_vector = function(input_vector, replacement_vector){
   input_vector[nas] = replacement_vector[nas]
   return(input_vector)
 }
+
+#' @import stringr
+#' @import dplyr
+trimall = function(string){
+  str_trim(string) %>%
+    str_replace_all('\\n|\\r', ' ') %>%
+    str_replace_all('\\s+', ' ')
+}
