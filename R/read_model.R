@@ -184,7 +184,7 @@ make_custom = function(field, custom_types){
   name = str_match(field, reg_types)[,2]
   type = str_match(field, reg_types)[,3]
   custom_type = get_variable(custom_types, type)
-  variable(name = name, type = 'ENUM', width = width(custom_type), labels = get_labels(custom_type))
+  variable(name = name, type = 'ENUM', width = width(custom_type), labels = custom_type@labels)
 }
 
 detect_unknown = function(field){

@@ -194,12 +194,6 @@ setMethod("type", "variable", function(object) object@type)
 
 setMethod("width", "variable", function(object) object@width)
 
-setGeneric("get_labels",
-           valueClass = "character",
-           function(object) standardGeneric("get_labels")
-)
-setMethod("get_labels", "variable", function(object) object@labels)
-
 setGeneric("location<-",
            valueClass = "variable",
            function(object, value) standardGeneric("location<-")
