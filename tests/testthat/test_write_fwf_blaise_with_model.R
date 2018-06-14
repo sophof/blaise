@@ -289,7 +289,7 @@ test_that("types are converted properly and can be converted back without loss",
     blafile))
   expect_type_equal(df, dfnew, 'B', as.integer)
   expect_type_equal(df, dfnew, 'C', as.double)
-  expect_type_equal(df, dfnew, 'E', function(x) factor(x, levels = c('M', 'F')))
+  expect_type_equal(df, dfnew, 'E', function(x) factor(x, labels = c('M', 'F')))
   expect_type_equal(df, dfnew, 'H', function(x) as.Date(x, format = '%Y%m%d'))
   unlink(c(datafile, blafile))
 })
@@ -439,7 +439,7 @@ test_that("ENUMS are written out as expected", {
 
   expect_silent(write_fwf_blaise_with_model(df, datafile, blafile))
   expect_silent(lines <- readr::read_lines(datafile))
-  expect_equivalent(lines, c("111", "222", "333"))
+  expect_equivalent(lines, c("1111", "2222", "3333"))
   unlink(c(datafile, blafile))
 })
 

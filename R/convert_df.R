@@ -98,18 +98,9 @@ cast_type = function(var, original){
     return(factor(original, levels = l, labels = var@labels))
   }
 
-  else if(is.numeric(original) & type(var) == 'ENUM'){
-    if (all(stringr::str_detect(var@labels, '^\\d+$'))) l = as.integer(var@labels)
-    else l = 1:length(var@labels)
-
-    if(!all(unique(original) %in% l)){
-      msg = sprintf('numbers in dataframe column (%s) do not correspond to range or labels in model (%s) for variable %s',
-                    paste(unique(original), collapse = ';'),
-                    paste(l, collapse = ';'),
-                    name(var))
-      stop(msg)
-    }
-    return(factor(original, levels = l, labels = var@labels))
+  else if(type(var) == 'STRING' & is.factor(original)){
+    if(all(stringr::str_detect(levels(original), '^\\d+$'))) return(as.character(original))
+    else return(as.integer(original))
   }
 
   # all other cases use a generic cast
