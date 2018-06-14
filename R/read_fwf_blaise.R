@@ -12,6 +12,7 @@
 #'   \item REAL
 #'   \item DATETYPE
 #'   \item ENUM (if numbered it will be converted to a factor with the numbers as labels)
+#'   \item custom types (internally the same as numbered ENUM)
 #'   }
 #'
 #' Other types will throw an error unless force_string is set to TRUE, in this

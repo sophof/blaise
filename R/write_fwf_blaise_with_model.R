@@ -3,7 +3,7 @@
 #' @description Write a datafile in the blaise format (fwf ascii without separators)
 #' using an existing datamodel. will not write out a datamodel unless explicitly asked to.
 #' Tries to automatically match colummns by name using Levenshtein distance and will
-#' change types if required
+#' change types if required and possible.
 #'
 #' @param df dataframe to write
 #' @param input_model the datamodel used to convert the dataframe and write the output
@@ -46,7 +46,7 @@
 #'   B = 1:3,
 #'   C = 1.1:3.3,
 #'   D = 1.0:3.0,
-#'   E = factor(c(1,2,1), labels = c('M', 'F')),
+#'   E = factor(c(1,2,1), labels = c('Male', 'Female')),
 #'   F = 1:3,
 #'   G = c(1., 99.9, 78.5),
 #'   H = as.Date(rep('2001-01-01', 3))
@@ -70,7 +70,7 @@
 #' df = data.frame(
 #' list(
 #' A = rep('t',3),
-#' E = factor(c(1,2,1), labels = c('M', 'F')),
+#' E = factor(c(1,2,1), labels = c('Male', 'Female')),
 #' B = 1:3,
 #' C = 1.1:3.3,
 #' H = as.Date(rep('2001-01-01', 3))
