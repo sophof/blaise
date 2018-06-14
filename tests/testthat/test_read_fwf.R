@@ -295,7 +295,8 @@ test_that("Custom Types work", {
     sex = (Male (1),
            Female (2),
           Unknown (9))
-    YesNo = (Yes (1),
+    YesNo = (
+             Yes (1),
              No (0),
              dontknow (10))
   FIELDS
@@ -355,8 +356,8 @@ test_that("incompatible custom type throws an error", {
   DATAMODEL Test
   TYPE
   sex = (Male (1),
-  Female (2),
-  Unknown (9))
+         Female (2),
+         Unknown (9))
   FIELDS
   A     : sex
   ENDMODEL
