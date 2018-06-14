@@ -13,7 +13,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
     nas = is.na(col)
 
     if(is.factor(col)) {
-      if (all(stringr::str_detect(levels(col), '^\\d+$'))){
+      if (is.numbered_enum(levels(col))){
         col = as.character(col)
         col[!nas] = format(col[!nas], width = width(var), justify = justify)
       }

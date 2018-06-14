@@ -31,7 +31,7 @@ convert_factors = function(df, datamodel){
   if(!any(mask)) return(df)
 
   per_factor = function(col, labels, name){
-    if (all(stringr::str_detect(labels, '^\\d+$'))) l = labels # this will read numbered enums correctly
+    if (is.numered_enum(labels)) l = labels # this will read numbered enums correctly
     else l = 1:length(labels)
     if(any(!(unique(na.omit(col)) %in% l))){
       missing = unique(na.omit(col))[!(unique(na.omit(col)) %in% l)]
