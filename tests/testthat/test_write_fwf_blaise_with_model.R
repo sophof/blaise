@@ -422,6 +422,7 @@ test_that("ENUMS are written out as expected", {
   A     : (M, F, X)
   B     : (M, F, X)
   C     : (M, F, X)
+  D     : STRING[1]
   ENDMODEL
   "
   blafile = makeblafile(model)
@@ -430,7 +431,8 @@ test_that("ENUMS are written out as expected", {
     list(
       A = factor(c('1', '2', '3')),
       B = c(1, 2, 3),
-      C = c('1', '2', '3')
+      C = c('1', '2', '3'),
+      D = factor(c(1,2,3), labels = c('Male', 'Female', 'Unknown'))
     ),
     stringsAsFactors = FALSE
   )
