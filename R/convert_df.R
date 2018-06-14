@@ -28,8 +28,8 @@ convert_df = function(df, model, max.distance = 0L){
   #insert dummy columns
   for(dummy in dummys(model)){
     DUMMY = paste(rep(' ', width(dummy)), collapse = '')
-    df = tibble::add_column(df, DUMMY, .before = location(dummy))
-    names(df)[location(dummy)] = NA_character_
+    df = tibble::add_column(df, DUMMY, .before = get_location(dummy))
+    names(df)[get_location(dummy)] = NA_character_
   }
   return(df)
 }
