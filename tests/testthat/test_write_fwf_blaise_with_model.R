@@ -36,7 +36,7 @@ test_that("input_model passes an identical dataframe with common types", {
       B = 1:3,
       C = 1.1:3.3,
       D = 1.0:3.0,
-      E = factor(c(1,2,1), labels = c('M', 'F')),
+      E = factor(c(1,2,1), labels = c('Male', 'Female')),
       F = 1:3,
       G = c(1., 99.9, 78.5),
       H = as.Date(rep('2001-01-01', 3))
@@ -372,7 +372,7 @@ test_that("input_model works with lower case or mixed case types", {
       B = 1:3,
       C = 1.1:3.3,
       D = 1.0:3.0,
-      E = factor(c(1,2,1), labels = c('M', 'F')),
+      E = factor(c(1,2,1), labels = c('MALE', 'FEMALE')),
       F = 1:3,
       G = c(1., 99.9, 78.5),
       H = as.Date(rep('2001-01-01', 3))
