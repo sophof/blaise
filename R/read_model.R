@@ -197,6 +197,6 @@ make_unknown = function(field, force_string){
   reg_unknown = regex('^(\\w+):(\\w+)\\[(\\d+)\\]$')
   name = str_match(field, reg_unknown)[,2]
   type = str_match(field, reg_unknown)[,3]
-  width = str_match(field, reg_unknown)[,4]
+  width = as.integer(str_match(field, reg_unknown)[,4])
   variable(name = name, type = 'STRING', width = width)
 }
