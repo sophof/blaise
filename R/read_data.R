@@ -27,7 +27,7 @@ get_positions = function(datamodel){
 
 convert_factors = function(df, datamodel){
   mask = variable_types(datamodel) == 'ENUM'
-  mask = mask[variable_types(datamodel) != 'DUMMY'] # required because DUMMY types are in datamodel but not in df
+  mask_df = mask[variable_types(datamodel) != 'DUMMY'] # required because DUMMY types are in datamodel but not in df
   if(!any(mask)) return(df)
 
   per_factor = function(col, labels, name){
@@ -44,8 +44,9 @@ convert_factors = function(df, datamodel){
            levels = l,
            labels = labels)
   }
-  df[,mask] = Map(per_factor,
-                  df[,mask],
+  stopifnot(sum(mask) == sum(mask_df))
+  df[,mask_df] = Map(per_factor,
+                  df[,mask_df],
                   variable_labels(datamodel)[mask],
                   variable_names(datamodel)[mask])
   return(df)
