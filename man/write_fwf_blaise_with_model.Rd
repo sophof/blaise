@@ -29,7 +29,8 @@ a good number in general. Will prevent double matches and will pick te best matc
 for each variable in the datamodel.}
 }
 \value{
-dataframe written
+output as it is written to file as a character vector.
+Does so invisibly, will not print but can be assigned.
 }
 \description{
 Write a datafile in the blaise format (fwf ascii without separators)
