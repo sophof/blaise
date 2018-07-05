@@ -17,8 +17,6 @@
 #' @param output_data path and name to output datafile. Will add .asc if no extension
 #' @param output_model path and name to output datamodel. If NULL will use the
 #' same name as output_data with .bla extension unless and input_model is given.
-#' @param force_string If TRUE, will force unknown/unsupported column types to
-#' string, otherwise these will throw an error
 #' @param decimal.mark decimal mark to use. Default is ".".
 #' @param digits how many significant digits are to be used for numeric and
 #' complex x. The default uses getOption("digits"). This is a suggestion:
@@ -48,7 +46,6 @@
 write_fwf_blaise = function(df,
                      output_data,
                      output_model = NULL,
-                     force_string = FALSE,
                      decimal.mark = '.',
                      digits = getOption('digits'),
                      justify = 'right',
@@ -63,7 +60,7 @@ write_fwf_blaise = function(df,
     output_model = paste0(output_model, '.bla')
   }
 
-  model = get_model(df, digits, force_string)
+  model = get_model(df, digits)
   df = write_data(df, model, file = output_data, decimal.mark, justify = justify)
   if(write_model) write_datamodel(model, output_model)
   return(invisible(df))

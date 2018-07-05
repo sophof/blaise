@@ -4,9 +4,8 @@
 \alias{write_fwf_blaise}
 \title{Write a fixed width ascii datafile and accompanying blaise datamodel}
 \usage{
-write_fwf_blaise(df, output_data, output_model = NULL, force_string = FALSE,
-  decimal.mark = ".", digits = getOption("digits"), justify = "right",
-  write_model = TRUE)
+write_fwf_blaise(df, output_data, output_model = NULL, decimal.mark = ".",
+  digits = getOption("digits"), justify = "right", write_model = TRUE)
 }
 \arguments{
 \item{df}{dataframe to write}
@@ -15,9 +14,6 @@ write_fwf_blaise(df, output_data, output_model = NULL, force_string = FALSE,
 
 \item{output_model}{path and name to output datamodel. If NULL will use the
 same name as output_data with .bla extension unless and input_model is given.}
-
-\item{force_string}{If TRUE, will force unknown/unsupported column types to
-string, otherwise these will throw an error}
 
 \item{decimal.mark}{decimal mark to use. Default is ".".}
 

@@ -1,12 +1,12 @@
 #' @import stringr
-read_model = function(blafile, force_string = FALSE){
+read_model = function(blafile){
   bla = readr::read_file(blafile)
   custom_types = read_custom_types(bla)
-  bla = parse_bla(bla, custom_types, force_string)
+  bla = parse_bla(bla, custom_types)
   return(bla)
 }
 
-parse_bla = function(bla, custom_types, force_string = FALSE){
+parse_bla = function(bla, custom_types){
   bla = clean_model(bla)
   modelname = extract_datamodelName(bla)
   bla = remove_non_fields(bla)
@@ -22,7 +22,6 @@ parse_bla = function(bla, custom_types, force_string = FALSE){
            DATETYPE = make_date(field),
            DUMMY = make_dummy(field),
            CUSTOM = make_custom(field, custom_types),
-           UNKNOWN = make_unknown(field, force_string),
            stop('Type could not be detected')
     )
   }
@@ -53,7 +52,6 @@ detect_type = function(field, custom_types){
   if(detect_date(field)) return('DATETYPE')
   if(detect_dummy(field)) return('DUMMY')
   if(detect_custom(field, custom_types)) return('CUSTOM')
-  if(detect_unknown(field)) return('UNKNOWN')
 }
 
 detect_string = function(field){
@@ -185,18 +183,4 @@ make_custom = function(field, custom_types){
   type = str_match(field, reg_types)[,3]
   custom_type = get_variable(custom_types, type)
   variable(name = name, type = 'ENUM', width = width(custom_type), labels = custom_type@labels)
-}
-
-detect_unknown = function(field){
-  regex = regex('^\\w+:\\w+\\[\\d+\\]$', ignore_case = TRUE)
-  str_detect(field, regex)
-}
-
-make_unknown = function(field, force_string){
-  if(!force_string) stop('Type could not be detected for ', field)
-  reg_unknown = regex('^(\\w+):(\\w+)\\[(\\d+)\\]$')
-  name = str_match(field, reg_unknown)[,2]
-  type = str_match(field, reg_unknown)[,3]
-  width = as.integer(str_match(field, reg_unknown)[,4])
-  variable(name = name, type = 'STRING', width = width)
 }

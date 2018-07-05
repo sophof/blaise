@@ -113,28 +113,6 @@ test_that("unknown types throw an error", {
   unlink(datafile)
 })
 
-test_that("string can be forced to read unknown types", {
-  model = "
-  DATAMODEL Test
-  FIELDS
-  A     : INTEGER[1]
-  B     : ONZIN[2]
-  ENDMODEL
-  "
-  blafile = makeblafile(model)
-
-  data = "123\n23.\n3.4"
-  datafile = makedatafile(data)
-
-  expect_silent({df = read_fwf_blaise(datafile, blafile, force_string = TRUE)})
-
-  expect_identical(colnames(df), c('A', 'B'))
-  expect_equivalent(df[[1]], c(1, 2, 3))
-  expect_identical(df[[2]], c('23', '3.', '.4'))
-  unlink(blafile)
-  unlink(datafile)
-})
-
 test_that("dataframe is read as a tibble", {
   model = "
   DATAMODEL Test

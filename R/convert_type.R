@@ -1,4 +1,4 @@
-convert_rtype = function(type, force_string = FALSE){
+convert_rtype = function(type){
   switch(
     EXPR = type,
     'character' = 'STRING',
@@ -6,8 +6,7 @@ convert_rtype = function(type, force_string = FALSE){
     'numeric' = 'REAL',
     'Date' = 'DATETYPE',
     'factor' = 'ENUM',
-    if (force_string) 'STRING'
-    else stop('type "', type, '" not implemented')
+    stop('type "', type, '" not implemented')
   )
 }
 

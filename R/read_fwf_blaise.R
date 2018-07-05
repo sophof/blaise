@@ -25,9 +25,6 @@
 #' @param locale locale as specified with readr::locale(). Uses "." as default
 #' decimal separator. Can be used to change date_format, timezone, encoding, etc.
 #'
-#' @param force_string read all unkown types as a string type. Will work as long
-#' as these types are a variation of the form "unknown:unknown[2]"
-#'
 #' @examples
 #' model = "
 #' DATAMODEL Test
@@ -59,9 +56,8 @@
 
 read_fwf_blaise = function(datafile,
                            modelfile,
-                           locale = readr::locale(),
-                           force_string = FALSE){
-  bla = read_model(modelfile, force_string)
+                           locale = readr::locale()){
+  bla = read_model(modelfile)
   data = read_data(datafile, bla, locale)
   return(data)
 }

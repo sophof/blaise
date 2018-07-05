@@ -4,8 +4,7 @@
 \alias{read_fwf_blaise}
 \title{Read a fixed width ascii datafile using a blaise datamodel}
 \usage{
-read_fwf_blaise(datafile, modelfile, locale = readr::locale(),
-  force_string = FALSE)
+read_fwf_blaise(datafile, modelfile, locale = readr::locale())
 }
 \arguments{
 \item{datafile}{the ascii file with the data}
@@ -14,9 +13,6 @@ read_fwf_blaise(datafile, modelfile, locale = readr::locale(),
 
 \item{locale}{locale as specified with readr::locale(). Uses "." as default
 decimal separator. Can be used to change date_format, timezone, encoding, etc.}
-
-\item{force_string}{read all unkown types as a string type. Will work as long
-as these types are a variation of the form "unknown:unknown[2]"}
 }
 \description{
 Use this function to read a fwf that is described by a blaise datamodel.
