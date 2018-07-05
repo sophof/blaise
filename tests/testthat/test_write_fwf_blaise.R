@@ -90,7 +90,7 @@ test_that("converted dataframe is returned", {
   df = dplyr::tibble(9:11)
 
   expect_silent({res = write_fwf_blaise(df, datafilename, blafilename)})
-  expect_equal(res, c(' 9', '10', '11'))
+  expect_equal(res, df)
 })
 
 test_that("padding direction can be supplied", {
