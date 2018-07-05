@@ -28,9 +28,9 @@ test_that("correct data and datamodel can be read and reproduced", {
   blafile = makeblafile(model)
 
   data =
-"A12,3,121 1  1,00
-B23,41,2210 20,20
-C34,512,120100,00"
+"A12.3.121 1  1.00
+B23.41.2210 20.20
+C34.512.120100.00"
   datafile = makedatafile(data)
 
   expect_silent({df = read_fwf_blaise(datafile, blafile)})
@@ -58,13 +58,13 @@ test_that("different decimal separator can be used", {
 
   data =
 "123
-23.
-3.4"
+23,
+3,4"
   datafile = makedatafile(data)
 
   expect_silent({df = read_fwf_blaise(datafile,
                        blafile,
-                       locale = readr::locale(decimal_mark =  '.'))})
+                       locale = readr::locale(decimal_mark =  ','))})
   expect_equal(df[[1]], c(123, 23., 3.4))
   unlink(blafile)
   unlink(datafile)
@@ -147,7 +147,7 @@ test_that("dataframe is read as a tibble", {
   "
   blafile = makeblafile(model)
 
-  data = "A12,3,12\nB23,41,2\nC34,512,"
+  data = "A12.3.12\nB23.41.2\nC34.512."
   datafile = makedatafile(data)
 
   df = read_fwf_blaise(datafile, blafile)

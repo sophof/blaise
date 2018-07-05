@@ -3,6 +3,7 @@ read_data = function(datafile,
                      locale){
   col_types = convert_types_to_cols(datamodel)
   positions = get_positions(datamodel)
+
   df = readr::read_fwf(
     datafile,
     positions,

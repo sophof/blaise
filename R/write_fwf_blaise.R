@@ -19,7 +19,7 @@
 #' same name as output_data with .bla extension unless and input_model is given.
 #' @param force_string If TRUE, will force unknown/unsupported column types to
 #' string, otherwise these will throw an error
-#' @param decimal.mark decimal mark to use. Default is ",".
+#' @param decimal.mark decimal mark to use. Default is ".".
 #' @param digits how many significant digits are to be used for numeric and
 #' complex x. The default uses getOption("digits"). This is a suggestion:
 #' enough decimal places will be used so that the smallest (in magnitude) number
@@ -48,7 +48,7 @@ write_fwf_blaise = function(df,
                      output_data,
                      output_model = NULL,
                      force_string = FALSE,
-                     decimal.mark = ',',
+                     decimal.mark = '.',
                      digits = getOption('digits'),
                      justify = 'right',
                      write_model = TRUE){

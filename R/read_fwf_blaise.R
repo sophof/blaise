@@ -3,26 +3,26 @@
 #' @description
 #' Use this function to read a fwf that is described by a blaise datamodel.
 #' Only handles files with a single datamodel.
+#' If this function throws a warning, try using readr::problems() on the result,
+#' this will usually show an error in the used locale.
 #'
 #' @details
-#' Currently handles the following types:
+#' Handles the following types:
 #' \itemize{
 #'   \item STRING
 #'   \item INTEGER
 #'   \item REAL
 #'   \item DATETYPE
 #'   \item ENUM (if numbered it will be converted to a factor with the numbers as labels)
-#'   \item custom types (internally the same as numbered ENUM)
+#'   \item custom types (same as a numbered ENUM)
 #'   }
 #'
-#' Other types will throw an error unless force_string is set to TRUE, in this
-#' case those columns will be read as a character vector if possible.
 #'
 #' @param datafile the ascii file with the data
 #'
 #' @param modelfile the datamodel describing the data
 #'
-#' @param locale locale as specified with readr::locale(). Uses "," as default
+#' @param locale locale as specified with readr::locale(). Uses "." as default
 #' decimal separator. Can be used to change date_format, timezone, encoding, etc.
 #'
 #' @param force_string read all unkown types as a string type. Will work as long
@@ -59,7 +59,7 @@
 
 read_fwf_blaise = function(datafile,
                            modelfile,
-                           locale = readr::locale(decimal_mark = ','),
+                           locale = readr::locale(),
                            force_string = FALSE){
   bla = read_model(modelfile, force_string)
   data = read_data(datafile, bla, locale)
