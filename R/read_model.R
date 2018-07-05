@@ -52,6 +52,7 @@ detect_type = function(field, custom_types){
   if(detect_date(field)) return('DATETYPE')
   if(detect_dummy(field)) return('DUMMY')
   if(detect_custom(field, custom_types)) return('CUSTOM')
+  stop('No type detected for ', field)
 }
 
 detect_string = function(field){
