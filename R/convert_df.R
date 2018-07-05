@@ -105,7 +105,7 @@ cast_type = function(var, original){
   }
 
   # Convert double to INTEGER
-  else if(type(var) == 'INTEGER' & is.numeric(original)){
+  else if(type(var) == 'INTEGER' & is.double(original)){
     if(any(original%%1!=0))
       stop('column converted to INTEGER vector ', name(var), ' contains decimal values')
     if(max(nchar(original)) > width(var)){
@@ -115,6 +115,7 @@ cast_type = function(var, original){
                     width(var))
       stop(msg)
     }
+    return(as.integer(original))
   }
 
   # all other cases use a generic cast
@@ -123,7 +124,7 @@ cast_type = function(var, original){
       EXPR = type(var),
       'STRING' = return(as.character(original)),
       'INTEGER' = return(as.integer(original)),
-      'REAL' = return(as.numeric(original)),
+      'REAL' = return(as.double(original)),
       'DATETYPE' = return(as.Date.character(original, format = '%Y%m%d')),
       'ENUM' = return(as.factor(original)),
       stop('type "', type(var), '" not implemented')
