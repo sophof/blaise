@@ -12,6 +12,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
   per_col = function(col, var){
     nas = is.na(col)
 
+    # Factors
     if(is.factor(col)) {
       if (is.numbered_enum(levels(col))){
         col = as.character(col)
@@ -23,8 +24,10 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
       }
     }
 
+    # Dates
     else if(class(col) == 'Date') col = as.character.Date(col, format = '%Y%m%d')
 
+    # Doubles with specific decimals
     else if (is.numeric(col) & !is.na(var@decimals)){
       info = format.info(col[!nas])
       if(info[2] > var@decimals | info[1] > var@width){
@@ -37,9 +40,11 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
                          decimal.mark = decimal.mark,
                          digits = var@width - 1,
                          width = var@width,
-                         nsmall = var@decimals)
+                         nsmall = var@decimals,
+                         scientific = FALSE)
     }
 
+    # Doubles with no specific decimals
     else if (is.numeric(col) & is.na(var@decimals)){
       info = format.info(col[!nas])
       if(info[1] > var@width) {
@@ -51,9 +56,11 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
       col[!nas] = format(col[!nas],
                          decimal.mark = decimal.mark,
                          width = var@width,
-                         digits = var@width - 1)
+                         digits = var@width - 1,
+                         scientific = FALSE)
     }
 
+    # logicals
     else if(is.logical(col)){
       message('variable ',
               name(var),
@@ -62,7 +69,12 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
       col[!nas] = format(col[!nas], width = var@width)
     }
 
-    else col[!nas] = format(col[!nas], decimal.mark = decimal.mark, width = var@width, justify = justify)
+    # The rest
+    else col[!nas] = format(col[!nas],
+                            decimal.mark = decimal.mark,
+                            width = var@width,
+                            justify = justify,
+                            scientific = FALSE)
 
     col = replace_NA(col, var@width)
     nmax = format.info(col)[1]
