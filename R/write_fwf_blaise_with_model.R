@@ -18,7 +18,8 @@
 #' a good number in general. Will prevent double matches and will pick te best match
 #' for each variable in the datamodel.
 #'
-#' @return dataframe written to file. Does so invisibly, will not print but can be assigned.
+#' @return output as it is written to file as a character vector.
+#' Does so invisibly, will not print but can be assigned.
 #' @export
 #'
 #' @examples

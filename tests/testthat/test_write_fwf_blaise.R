@@ -84,13 +84,13 @@ test_that("tibble can be written", {
   expect_silent(write_fwf_blaise(df, datafilename, blafilename))
 })
 
-test_that("converted dataframe is returned", {
+test_that("output is returned as character vector", {
   datafilename = tempfile(fileext = '.asc')
   blafilename = tempfile(fileext = '.bla')
   df = dplyr::tibble(9:11)
 
   expect_silent({res = write_fwf_blaise(df, datafilename, blafilename)})
-  expect_equal(res, df)
+  expect_equal(res, c(" 9", "10", "11"))
 })
 
 test_that("padding direction can be supplied", {

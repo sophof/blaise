@@ -29,7 +29,8 @@
 #' @param write_model logical that can be used to disabling the automatic writing of a
 #' datamodel
 #'
-#' @return dataframe written to file. Does so invisibly, will not print but can be assigned.
+#' @return output as it is written to file as a character vector.
+#' Does so invisibly, will not print but can be assigned.
 #'
 #' @export
 #'

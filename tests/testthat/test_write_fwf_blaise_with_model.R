@@ -612,19 +612,17 @@ test_that("incompatible custom type throws an error", {
   expect_error(write_fwf_blaise_with_model(df, datafile, blafile))
 })
 
-test_that("converted dataframe is returned", {
+test_that("lines of output are returned", {
   df = dplyr::tibble(A = 9:11)
-  converted_df = df
-  converted_df[,1] = as.character(df[,1])
   model = "
   DATAMODEL Test
   FIELDS
-  A     : STRING[2]
+  A     : REAL[4,1]
   ENDMODEL
 "
   blafile = makeblafile(model)
   datafile = tempfile('testasc', fileext = '.asc')
 
   expect_silent({res = write_fwf_blaise_with_model(df, datafile, blafile)})
-  expect_equal(res, converted_df)
+  expect_equal(res, c(" 9,0", "10,0", "11,0"))
 })
