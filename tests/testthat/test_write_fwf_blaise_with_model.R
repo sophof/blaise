@@ -626,3 +626,46 @@ test_that("lines of output are returned", {
   expect_silent({res = write_fwf_blaise_with_model(df, datafile, blafile)})
   expect_equal(res, c(" 9,0", "10,0", "11,0"))
 })
+
+
+test_that("doubles can be written as long ints without warning when they have no decimals", {
+  df = dplyr::tibble(A = rep(9999999999,10))
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : INTEGER[10]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  datafile = tempfile('testasc', fileext = '.asc')
+
+  expect_silent({res = write_fwf_blaise_with_model(df, datafile, blafile)})
+})
+
+test_that("doubles converted to int throw an error if they have decimals", {
+  df = dplyr::tibble(A = rep(1.1,10))
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : INTEGER[3]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  datafile = tempfile('testasc', fileext = '.asc')
+
+  expect_error({res = write_fwf_blaise_with_model(df, datafile, blafile)})
+})
+
+test_that("doubles converted to int throw an error if they are too wide", {
+  df = dplyr::tibble(A = rep(11111,10))
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : INTEGER[3]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  datafile = tempfile('testasc', fileext = '.asc')
+
+  expect_error({res = write_fwf_blaise_with_model(df, datafile, blafile)})
+})

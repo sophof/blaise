@@ -98,9 +98,23 @@ cast_type = function(var, original){
     return(factor(original, levels = l, labels = var@labels))
   }
 
+  # Convert factor to STRING
   else if(type(var) == 'STRING' & is.factor(original)){
     if(all(stringr::str_detect(levels(original), '^\\d+$'))) return(as.character(original))
     else return(as.integer(original))
+  }
+
+  # Convert double to INTEGER
+  else if(type(var) == 'INTEGER' & is.numeric(original)){
+    if(any(original%%1!=0))
+      stop('column converted to INTEGER vector ', name(var), ' contains decimal values')
+    if(max(nchar(original)) > width(var)){
+      msg = sprintf('column converted to INTEGER vector %s has max width %i while model has only %i',
+                    name(var),
+                    max(nchar(original)),
+                    width(var))
+      stop(msg)
+    }
   }
 
   # all other cases use a generic cast
