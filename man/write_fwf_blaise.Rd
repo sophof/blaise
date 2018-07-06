@@ -5,7 +5,8 @@
 \title{Write a fixed width ascii datafile and accompanying blaise datamodel}
 \usage{
 write_fwf_blaise(df, output_data, output_model = NULL, decimal.mark = ".",
-  digits = getOption("digits"), justify = "right", write_model = TRUE)
+  digits = getOption("digits"), justify = "right", write_model = TRUE,
+  model_name = NULL)
 }
 \arguments{
 \item{df}{dataframe to write}
@@ -27,6 +28,9 @@ Defaults to right-justified (padded on the left), can be "left", "right" or "cen
 
 \item{write_model}{logical that can be used to disabling the automatic writing of a
 datamodel}
+
+\item{model_name}{Custom name that can be given to the datamodel. Default is the
+name of the dataframe}
 }
 \value{
 output as it is written to file as a character vector.
