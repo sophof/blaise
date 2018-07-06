@@ -70,3 +70,25 @@ test_that("boolean is converted to INTEGER", {
   expect_equal(variable_types(m1), variable_types(m2))
   expect_equal(variable_widths(m1), variable_widths(m2))
 })
+
+test_that("Name can be given to datamodel", {
+  df = data.frame(
+    A = rep(1L,10)
+  )
+
+  datafile = tempfile(fileext = '.bla')
+  dir = tempdir()
+
+  expect_silent(write_datamodel(get_model(df), datafile, name = 'test'))
+  file = readr::read_file(datafile)
+  model ='
+  DATAMODEL test
+  FIELDS
+  A     : INTEGER[1]
+  ENDMODEL
+  '
+  blafile = makeblafile(model)
+  source = read_model(datafile)
+  test = read_model(blafile)
+  expect_equal(name(source), name(test))
+})

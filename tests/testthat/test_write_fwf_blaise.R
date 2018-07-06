@@ -115,3 +115,45 @@ test_that("padding direction can be supplied", {
   uit = readr::read_file(datafile)
   expect_equal(uit, c(' t   1\nte  22\ntes333\n'))
 })
+
+test_that("Automatic name to datamodel", {
+  df = data.frame(
+    A = rep(1L,10)
+  )
+
+  datafile = tempfile(fileext = '.asc')
+  blafile = tempfile(fileext = '.asc')
+
+  expect_silent(write_fwf_blaise(df, datafile, blafile))
+  model ='
+  DATAMODEL df
+  FIELDS
+  A     : INTEGER[1]
+  ENDMODEL
+  '
+  testblafile = makeblafile(model)
+  source = read_model(blafile)
+  test = read_model(testblafile)
+  expect_equal(name(source), name(test))
+})
+
+test_that("custom name to datamodel", {
+  df = data.frame(
+    A = rep(1L,10)
+  )
+
+  datafile = tempfile(fileext = '.asc')
+  blafile = tempfile(fileext = '.asc')
+
+  expect_silent(write_fwf_blaise(df, datafile, blafile, model_name = 'test'))
+  model ='
+  DATAMODEL test
+  FIELDS
+  A     : INTEGER[1]
+  ENDMODEL
+  '
+  testblafile = makeblafile(model)
+  source = read_model(blafile)
+  test = read_model(testblafile)
+  expect_equal(name(source), name(test))
+})
