@@ -13,3 +13,12 @@ trimall = function(string){
     str_replace_all('\\n|\\r', ' ') %>%
     str_replace_all('\\s+', ' ')
 }
+
+# http://adv-r.had.co.nz/beyond-exception-handling.html
+# Hiermee kun je conditions aanmaken zodat errors hogerop afgehandeld kunnen worden
+condition <- function(subclass, message, call = sys.call(-1), ...) {
+  structure(
+    class = c(subclass, "condition"),
+    list(message = message, call = call, ...)
+  )
+}
