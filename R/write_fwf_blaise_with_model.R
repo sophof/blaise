@@ -93,7 +93,10 @@ write_fwf_blaise_with_model = function(df,
     output_data = paste0(output_data, '.asc')
   }
 
-  model = read_model(input_model)
+  model = withCallingHandlers(
+    read_model(input_model),
+    integer_size_warning = function(w) invokeRestart('use_value')
+  )
   df = convert_df(df, model, max.distance = max.distance)
   df = write_data(df, model, file = output_data, decimal.mark, justify = justify)
   if(!is.null(output_model)) write_datamodel(model, output_model)
