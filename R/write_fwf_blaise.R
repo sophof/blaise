@@ -26,6 +26,8 @@
 #' Defaults to right-justified (padded on the left), can be "left", "right" or "centre".
 #' @param write_model logical that can be used to disabling the automatic writing of a
 #' datamodel
+#' @param model_name Custom name that can be given to the datamodel. Default is the
+#' name of the dataframe
 #'
 #' @return output as it is written to file as a character vector.
 #' Does so invisibly, will not print but can be assigned.
@@ -49,7 +51,8 @@ write_fwf_blaise = function(df,
                      decimal.mark = '.',
                      digits = getOption('digits'),
                      justify = 'right',
-                     write_model = TRUE){
+                     write_model = TRUE,
+                     model_name = NULL){
   # add asc if no file extension found
   if (tools::file_ext(output_data) == ''){
     output_data = paste0(output_data, '.asc')
@@ -59,9 +62,13 @@ write_fwf_blaise = function(df,
     output_model = tools::file_path_sans_ext(output_data)
     output_model = paste0(output_model, '.bla')
   }
+  # Set model name to name of dataframe if not given
+  if(is.null(model_name)){
+    model_name = deparse(substitute(df))
+  }
 
   model = get_model(df, digits)
   df = write_data(df, model, file = output_data, decimal.mark, justify = justify)
-  if(write_model) write_datamodel(model, output_model)
+  if(write_model) write_datamodel(model, output_model, name = model_name)
   return(invisible(df))
 }
