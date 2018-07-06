@@ -59,9 +59,14 @@ setClass(
                         converting to double. max int is %i',
                           object@name,
                           object@width,
-                          max_int))
-    warning(msg)
-    object@type = 'REAL'
+                          .Machine$integer.max))
+    withRestarts(
+      {
+        warning(condition(c('integer_size_warning', 'warning'), message = msg, call = FALSE))
+        object@type = 'REAL'
+      },
+      use_value = function() {}
+    )
   }
   #real sizes
   max_digits = .Machine$double.digits
@@ -71,8 +76,13 @@ setClass(
                           object@name,
                           object@width,
                           max_digits))
-    warning(msg)
-    object@type = 'STRING'
+    withRestarts(
+      {
+        warning(condition(c('real_size_warning', 'warning'), message = msg, call = FALSE))
+        object@type = 'STRING'
+      },
+      use_value = function() {}
+    )
   }
   return(object)
 }
@@ -110,12 +120,12 @@ setMethod("variable",
             labels = 'missingOrNULL'),
           function(name, type, width, decimals, labels) {
             object = new(
-            'variable',
-            name = name,
-            type = .convert_type(type),
-            width = as.integer(width),
-            decimals = if_else(as.integer(decimals) == 0, NA_integer_, as.integer(decimals)),
-            labels = NA_character_)
+              'variable',
+              name = name,
+              type = .convert_type(type),
+              width = as.integer(width),
+              decimals = if_else(as.integer(decimals) == 0, NA_integer_, as.integer(decimals)),
+              labels = NA_character_)
             .check_size(object)
           }
 )
@@ -220,7 +230,7 @@ setMethod("is.numbered_enum", "variable", function(object){
   else
     return(FALSE)
 }
-  )
+)
 setMethod("is.numbered_enum", "character", function(object)
   all(stringr::str_detect(object, '^\\d+$'))
 )
