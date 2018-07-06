@@ -45,9 +45,9 @@ G     : 1.00..100.00
 ENDMODEL
 "
 data =
-"A12,3,121 1  1,00
-B23,41,2210 20,20
-C34,512,120100,00"
+"A12.3.121 1  1.00
+B23.41.2210 20.20
+C34.512.120100.00"
 
 blafile = tempfile('testbla', fileext = '.bla')
 writeLines(model, con = blafile)
