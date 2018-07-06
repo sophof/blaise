@@ -78,7 +78,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
 
     col = replace_NA(col, var@width)
     nmax = format.info(col)[1]
-    if(var@width < nmax){
+    if(width(var) < nmax){
       stop('width in datamodel smaller than number of characters of largest element for variable: ',
            name(var))
     }
