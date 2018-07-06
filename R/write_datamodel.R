@@ -1,4 +1,4 @@
-write_datamodel = function(model, filepath){
+write_datamodel = function(model, filepath, name = NULL){
   maxwidth = max(nchar(variable_names(model)))
 
   fields = Map(make_field,
@@ -8,7 +8,7 @@ write_datamodel = function(model, filepath){
                variable_widths(model),
                variable_decimals(model),
                variable_labels(model))
-  header = 'DATAMODEL\nFIELDS'
+  header = paste0('DATAMODEL ', name, '\nFIELDS')
   content = paste(fields, collapse = '\n')
   footer = 'ENDMODEL'
   text = paste(header, content, footer, sep = '\n')
