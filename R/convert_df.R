@@ -106,16 +106,10 @@ cast_type = function(var, original){
 
   # Convert double to INTEGER
   else if(type(var) == 'INTEGER' & is.double(original)){
-    if(any(original%%1!=0))
-      stop('column converted to INTEGER vector ', name(var), ' contains decimal values')
-    if(max(nchar(original)) > width(var)){
-      msg = sprintf('column converted to INTEGER vector %s has max width %i while model has only %i',
-                    name(var),
-                    max(nchar(original)),
-                    width(var))
-      stop(msg)
-    }
-    return(as.integer(original))
+    if(any(floor(original) != original))
+      stop('column to be converted to INTEGER vector ', name(var), ' contains decimal values')
+    else
+      return(format(original, scientific = FALSE))
   }
 
   # all other cases use a generic cast
