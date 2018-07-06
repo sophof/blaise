@@ -629,11 +629,11 @@ test_that("lines of output are returned", {
 
 
 test_that("doubles can be written as long ints without warning when they have no decimals", {
-  df = dplyr::tibble(A = rep(9999999999,10))
+  df = dplyr::tibble(A = rep(1e+20,10))
   model = "
   DATAMODEL Test
   FIELDS
-  A     : INTEGER[10]
+  A     : INTEGER[21]
   ENDMODEL
   "
   blafile = makeblafile(model)
