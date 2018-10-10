@@ -88,4 +88,4 @@ setGeneric("decimals",
 )
 setMethod("decimals", "variable_real", function(object) object@decimals)
 # Will be called if variable is NOT a real
-setMethod("decimals", "variable", function(object) integer())
+setMethod("decimals", "variable", function(object) NA_integer_)

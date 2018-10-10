@@ -97,14 +97,14 @@ setGeneric("enum_levels",
            function(object) standardGeneric("enum_levels")
 )
 setMethod("enum_levels", "variable_enum", function(object) object@levels)
-setMethod("enum_levels", "variable", function(object) integer())
+setMethod("enum_levels", "variable", function(object) NA_integer_)
 
 setGeneric("enum_labels",
            valueClass = "character",
            function(object) standardGeneric("enum_labels")
 )
 setMethod("enum_labels", "variable_enum", function(object) object@labels)
-setMethod("enum_labels", "variable", function(object) character())
+setMethod("enum_labels", "variable", function(object) NA_character_)
 
 #======================
 # Checks

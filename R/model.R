@@ -111,8 +111,8 @@ setGeneric("variable_labels",
            function(object, value) standardGeneric("variable_labels")
 )
 
-setMethod("variable_labels", "model", function(object) lapply(variables(object), function(v) v@labels))
-setMethod("variable_labels", "list", function(object) lapply(object, function(v) v@labels))
+setMethod("variable_labels", "model", function(object) lapply(variables(object), enum_labels))
+setMethod("variable_labels", "list", function(object) lapply(object, enum_labels))
 
 setGeneric("dummys",
            valueClass = "list",

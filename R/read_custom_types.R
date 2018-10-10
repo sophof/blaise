@@ -15,7 +15,7 @@ parse_type = function(type){
   l = str_match_all(type, '(\\w+)\\((\\d+)\\)')[[1]]
   labels = l[,2]
   indices = l[,3]
-  variable(name, type = 'ENUM', width = max(nchar(indices)), labels = indices)
+  variable_enum(name, width = max(nchar(indices)), labels = indices)
 }
 
 extract_custom_types = function(block){

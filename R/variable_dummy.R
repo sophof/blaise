@@ -19,7 +19,7 @@ setMethod("variable_dummy",
           function(width)
             new(
               'variable_dummy',
-              name = character(),
+              name = NA_character_,
               type = "DUMMY",
               width = as.integer(width)
             )
