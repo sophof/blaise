@@ -1,3 +1,6 @@
+#' @include variable.R generics.R model.R
+NULL
+
 # Convert a dataframe to conform to a given blaise datamodel
 #
 # Will try and match columns with the fields in the datamodel by name using

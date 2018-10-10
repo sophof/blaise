@@ -1,3 +1,6 @@
+#' @include variable.R generics.R model.R
+NULL
+
 read_data = function(datafile,
                      datamodel,
                      locale){
