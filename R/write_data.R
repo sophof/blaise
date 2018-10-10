@@ -20,7 +20,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
       }
       else {
         col = as.integer(col)
-        col[!nas] = format(col[!nas], width = var@width)
+        col[!nas] = format(col[!nas], width = width(var))
       }
     }
 
@@ -28,35 +28,35 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
     else if(class(col) == 'Date') col = as.character.Date(col, format = '%Y%m%d')
 
     # Doubles with specific decimals
-    else if (is.numeric(col) & !is.na(var@decimals)){
+    else if (is.numeric(col) & !is.na(decimals(var))){
       info = format.info(col[!nas])
-      if(info[2] > var@decimals | info[1] > var@width){
+      if(info[2] > decimals(var) | info[1] > width(var)){
         message('reducing significance for variable ',
                 name(var),
                 ' since the datamodel requires less significance')
-        col = round(col, var@decimals)
+        col = round(col, decimals(var))
       }
-      col[!nas] = format(round(col[!nas], var@decimals),
+      col[!nas] = format(round(col[!nas], decimals(var)),
                          decimal.mark = decimal.mark,
-                         digits = var@width - 1,
-                         width = var@width,
-                         nsmall = var@decimals,
+                         digits = width(var) - 1,
+                         width = width(var),
+                         nsmall = decimals(var),
                          scientific = FALSE)
     }
 
     # Doubles with no specific decimals
-    else if (is.numeric(col) & is.na(var@decimals)){
+    else if (is.numeric(col) & is.na(decimals(var))){
       info = format.info(col[!nas])
-      if(info[1] > var@width) {
+      if(info[1] > width(var)) {
         message('reducing significance for variable ',
                 name(var),
                 ' since the datamodel requires less significance')
-        col = signif(col, var@width - 1)
+        col = signif(col, width(var) - 1)
       }
       col[!nas] = format(col[!nas],
                          decimal.mark = decimal.mark,
-                         width = var@width,
-                         digits = var@width - 1,
+                         width = width(var),
+                         digits = width(var) - 1,
                          scientific = FALSE)
     }
 
@@ -66,23 +66,23 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
               name(var),
               ' is automatically converted from logical to integer')
       col = as.integer(col)
-      col[!nas] = format(col[!nas], width = var@width)
+      col[!nas] = format(col[!nas], width = width(var))
     }
 
     # The rest
     else col[!nas] = format(col[!nas],
                             decimal.mark = decimal.mark,
-                            width = var@width,
+                            width = width(var),
                             justify = justify,
                             scientific = FALSE)
 
-    col = replace_NA(col, var@width)
+    col = replace_NA(col, width(var))
     nmax = format.info(col)[1]
     if(width(var) < nmax){
       stop('width in datamodel smaller than number of characters of largest element for variable: ',
            name(var))
     }
-    if(var@width > nmax){
+    if(width(var) > nmax){
       stop('width in datamodel larger than number of characters of largest element for variable: ',
            name(var))
     }

@@ -6,7 +6,16 @@ get_model = function(df, digits = getOption('digits')){
     width = get_width(col, digits)
     decimals = get_decimals(col, digits)
     labels = get_labels(col)
-    variable(name, type, width, decimals, labels)
+    switch(
+      EXPR = type,
+      STRING = variable_string(name, width),
+      INTEGER =variable_integer(name, width),
+      REAL = variable_real(name, width, decimals),
+      DATETYPE = variable_date(name),
+      ENUM = variable_enum(name, width, labels),
+      DUMMY = variable_dummy(width),
+      stop('type "', type, '" not recognized')
+      )
   },
   df,
   colnames(df)

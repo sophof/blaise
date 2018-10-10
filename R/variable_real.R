@@ -5,7 +5,7 @@
 .check_validity_real <- function(object) {
   errors = character()
 
-  if(!is.na(decimals(object)) & decimals(object) > (width(object) - 2))
+  if(!is.na(decimals(object)) & decimals(object) != 0 & decimals(object) > (width(object) - 2))
     errors = c(errors, 'decimals have to be at least 2 smaller than width')
 
   if(length(errors) == 0) TRUE else errors
