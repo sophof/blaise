@@ -30,7 +30,7 @@ setMethod("model", signature(name='character', variables="variable"),
             m = new('model', name = name)
             m = addVariable(m, variables)
             return(m)
-            })
+          })
 
 setMethod("model", signature(name='character', variables="list"),
           function(name, variables, ...) {
@@ -49,7 +49,7 @@ setMethod("model", signature(name='character', variables="list"),
 # Show method
 setMethod('show', 'model', function(object){
   cat('blaise datamodel: ', object@name, '\n\n')
-  print(object@variables)
+  print(variables(object))
 })
 
 
@@ -76,7 +76,7 @@ setGeneric("variable_names",
            function(object) standardGeneric("variable_names")
 )
 
-setMethod("variable_names", "model", function(object) sapply(object@variables, name))
+setMethod("variable_names", "model", function(object) sapply(variables(object), name))
 
 setMethod("variable_names", "list", function(object) sapply(object, name))
 
@@ -85,7 +85,7 @@ setGeneric("variable_types",
            function(object) standardGeneric("variable_types")
 )
 
-setMethod("variable_types", "model", function(object) sapply(object@variables, type))
+setMethod("variable_types", "model", function(object) sapply(variables(object), type))
 setMethod("variable_types", "list", function(object) sapply(object, type))
 
 setGeneric("variable_widths",
@@ -93,7 +93,7 @@ setGeneric("variable_widths",
            function(object) standardGeneric("variable_widths")
 )
 
-setMethod("variable_widths", "model", function(object) sapply(object@variables, width))
+setMethod("variable_widths", "model", function(object) sapply(variables(object), width))
 setMethod("variable_widths", "list", function(object) sapply(object, width))
 
 setGeneric("variable_decimals",
@@ -101,14 +101,17 @@ setGeneric("variable_decimals",
            function(object) standardGeneric("variable_decimals")
 )
 
-setMethod("variable_decimals", "model", function(object) sapply(object@variables, function(v) v@decimals))
+setMethod("variable_decimals", "model", function(object) {
+  vapply(variables(object), decimals, 1L)
+}
+)
 
 setGeneric("variable_labels",
            valueClass = "list",
            function(object, value) standardGeneric("variable_labels")
 )
 
-setMethod("variable_labels", "model", function(object) lapply(object@variables, function(v) v@labels))
+setMethod("variable_labels", "model", function(object) lapply(variables(object), function(v) v@labels))
 setMethod("variable_labels", "list", function(object) lapply(object, function(v) v@labels))
 
 setGeneric("dummys",
@@ -117,7 +120,7 @@ setGeneric("dummys",
 )
 
 setMethod("dummys", "model", function(object) {
-  vars = object@variables
+  vars = variables(object)
   dummys = sapply(vars, type) == 'DUMMY'
   return(vars[dummys])
 }
@@ -155,8 +158,8 @@ setMethod(
     object = 'model',
     variable = 'variable'),
   function(object, variable) {
-    namen = names(object@variables)
-    if(name(variable) %in% namen & !is.na(name(variable)))
+    namen = names(variables(object))
+    if(name(variable) %in% namen & !is.dummy(variable))
       stop('duplicate variable names not allowed')
     location(variable) = length(object@variables) + 1
     object@variables = append(object@variables, variable)

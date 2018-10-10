@@ -21,3 +21,15 @@ convert_type = function(type){
     stop('type "', type, '" not implemented')
   )
 }
+
+convert_laftype = function(type){
+  switch(
+    EXPR = type,
+    'STRING' = 'character',
+    'INTEGER' = 'integer',
+    'REAL' = 'numeric',
+    'DATETYPE' = 'character',
+    'ENUM' = 'factor',
+    stop('type "', type, '" not implemented')
+  )
+}

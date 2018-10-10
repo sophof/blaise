@@ -19,9 +19,24 @@ setMethod("variable_dummy",
           function(width)
             new(
               'variable_dummy',
-              name = NA_character_,
+              name = character(),
               type = "DUMMY",
               width = as.integer(width)
             )
 )
 
+#======================
+# Checks
+setGeneric("is.dummy",
+           valueClass = "logical",
+           function(object) standardGeneric("is.dummy")
+)
+setMethod("is.dummy", "variable_dummy",
+          function(object)
+            TRUE
+)
+# This will only be called if the variable is not of type variable_enum
+setMethod("is.dummy", "variable",
+          function(object)
+            FALSE
+)

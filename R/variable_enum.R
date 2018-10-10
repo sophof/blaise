@@ -92,17 +92,19 @@ setMethod('show', 'variable_enum', function(object){
 
 #======================
 # accessors
-setGeneric("levels",
+setGeneric("enum_levels",
            valueClass = "integer",
-           function(object) standardGeneric("levels")
+           function(object) standardGeneric("enum_levels")
 )
-setMethod("levels", "variable_enum", function(object) object@levels)
+setMethod("enum_levels", "variable_enum", function(object) object@levels)
+setMethod("enum_levels", "variable", function(object) integer())
 
-setGeneric("labels",
+setGeneric("enum_labels",
            valueClass = "character",
-           function(object) standardGeneric("labels")
+           function(object) standardGeneric("enum_labels")
 )
-setMethod("labels", "variable_enum", function(object) object@labels)
+setMethod("enum_labels", "variable_enum", function(object) object@labels)
+setMethod("enum_labels", "variable", function(object) character())
 
 #======================
 # Checks

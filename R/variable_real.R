@@ -87,3 +87,5 @@ setGeneric("decimals",
            function(object) standardGeneric("decimals")
 )
 setMethod("decimals", "variable_real", function(object) object@decimals)
+# Will be called if variable is NOT a real
+setMethod("decimals", "variable", function(object) integer())

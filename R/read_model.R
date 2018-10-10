@@ -64,7 +64,7 @@ make_string = function(field){
   reg = regex('(^.+):STRING\\[(\\d+)\\]$', ignore_case = TRUE)
   name = str_match(field, reg)[,2]
   width = as.integer(str_match(field, reg)[,3])
-  variable(name = name, type = 'STRING', width = width)
+  variable_string(name = name, width = width)
 }
 
 detect_int = function(field){
@@ -90,7 +90,7 @@ make_int = function(field){
     end = nchar(str_match(field, range_regex)[,4])
     width = max(start, end)
   }
-  variable(name = name, type = 'INTEGER', width = width)
+  variable_integer(name = name, width = width)
 }
 
 detect_real = function(field){
@@ -122,7 +122,7 @@ make_real = function(field){
     enddecs = nchar(str_match(field, range_regex)[,6])
     decimals = max(startdecs, enddecs)
   }
-  variable(name = name, type = 'REAL', width = width, decimals = decimals)
+  variable_real(name = name, width = width, decimals = decimals)
 }
 
 detect_enum = function(field){
@@ -139,12 +139,13 @@ make_enum = function(field){
   if (all(str_detect(labels, '^\\w+.*\\(\\s*\\d+\\s*\\)$'))){
     labels = str_match(labels, '\\((\\d+)\\)')[,2]
     numbered = TRUE
+
   }
 
   if(numbered) width = max(nchar(labels))
   else width = nchar(length(labels))
 
-  variable(name = name, type = 'ENUM', width = width, labels = labels)
+  variable_enum(name = name, width = width, labels = labels)
 }
 
 detect_date = function(field){
@@ -155,7 +156,7 @@ detect_date = function(field){
 make_date = function(field){
   date_regex = regex('^(.+):DATETYPE(?:\\[8\\])?$', ignore_case = TRUE)
   name = str_match(field, date_regex)[,2]
-  variable(name = name, type = 'DATETYPE', width = 8L)
+  variable_date(name = name, width = 8L)
 }
 
 detect_dummy = function(field){
@@ -166,7 +167,7 @@ detect_dummy = function(field){
 make_dummy = function(field){
   dummy_regex = regex('^DUMMY\\[(\\d+)\\]$', ignore_case = TRUE)
   width = as.integer(str_match(field, dummy_regex)[,2])
-  variable(type = 'DUMMY', width = width)
+  variable_dummy(width = width)
 }
 
 detect_custom = function(field, custom_types){
@@ -183,5 +184,5 @@ make_custom = function(field, custom_types){
   name = str_match(field, reg_types)[,2]
   type = str_match(field, reg_types)[,3]
   custom_type = get_variable(custom_types, type)
-  variable(name = name, type = 'ENUM', width = width(custom_type), labels = custom_type@labels)
+  variable_enum(name = name, width = width(custom_type), labels = custom_type@labels)
 }
