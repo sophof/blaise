@@ -26,11 +26,11 @@ ENDMODEL
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_true(length(variable_names(bla)) == Ncols)
-  expect_true(length(variable_types(bla)) == Ncols)
-  expect_true(length(variable_widths(bla)) == Ncols)
-  expect_equivalent(variable_names(bla), c('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'))
-  expect_equivalent(variable_types(bla), c('STRING',
+  expect_true(length(model_names(bla)) == Ncols)
+  expect_true(length(model_types(bla)) == Ncols)
+  expect_true(length(model_widths(bla)) == Ncols)
+  expect_equivalent(model_names(bla), c('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'))
+  expect_equivalent(model_types(bla), c('STRING',
                                            'INTEGER',
                                            'REAL',
                                            'STRING',
@@ -69,7 +69,7 @@ ENDMODEL
 "
   blafile = makeblafile(model)
   bla = read_model(blafile)
-  types = variable_types(bla)
+  types = model_types(bla)
   expect_equivalent(types[1], 'STRING')
   expect_equivalent(types[2], 'INTEGER')
   expect_equivalent(types[3], 'REAL')
@@ -91,7 +91,7 @@ test_that("names are detected", {
   "
   blafile = makeblafile(model)
   bla = read_model(blafile)
-  expect_equivalent(variable_names(bla), c('A', 'B', 'C', 'D'))
+  expect_equivalent(model_names(bla), c('A', 'B', 'C', 'D'))
 })
 
 test_that("lengths are detected", {
@@ -107,7 +107,7 @@ test_that("lengths are detected", {
 "
   blafile = makeblafile(model)
   bla = read_model(blafile)
-  widths = variable_widths(bla)
+  widths = model_widths(bla)
   expect_equivalent(widths[1], 9)
   expect_equivalent(widths[2], 2)
   expect_equivalent(widths[3], 9)
@@ -127,8 +127,8 @@ test_that("floats lengths and decimals are detected", {
 "
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  widths = variable_widths(bla)
-  decs = variable_decimals(bla)
+  widths = model_widths(bla)
+  decs = model_decimals(bla)
   expect_equivalent(widths[2], 2)
   expect_equivalent(widths[3], 9)
   expect_true(is.na(decs[1]))
@@ -148,14 +148,14 @@ test_that("ENUMS get correctly read", {
   "
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equivalent(variable_names(bla), c('A', 'B', 'C'))
-  expect_equivalent(variable_types(bla), c('ENUM', 'ENUM', 'INTEGER'))
-  expect_equivalent(variable_widths(bla), c(1, 2, 3))
-  expect_equivalent(variable_labels(bla)[[1]],
+  expect_equivalent(model_names(bla), c('A', 'B', 'C'))
+  expect_equivalent(model_types(bla), c('ENUM', 'ENUM', 'INTEGER'))
+  expect_equivalent(model_widths(bla), c(1, 2, 3))
+  expect_equivalent(model_labels(bla)[[1]],
                c('Male', 'Female'))
-  expect_equivalent(variable_labels(bla)[[2]],
+  expect_equivalent(model_labels(bla)[[2]],
                c('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
-  expect_equivalent(variable_labels(bla)[[3]],
+  expect_equivalent(model_labels(bla)[[3]],
                NA_character_)
 })
 
@@ -169,7 +169,7 @@ ENDMODEL
 "
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equivalent(variable_types(bla), c('INTEGER', 'REAL'))
+  expect_equivalent(model_types(bla), c('INTEGER', 'REAL'))
 })
 
 test_that("Only 8 width or empty datetypes work", {
@@ -213,9 +213,9 @@ test_that("field descriptions over multiple lines work", {
   "
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equivalent(variable_names(bla), 'A')
-  expect_equivalent(variable_types(bla), 'STRING')
-  expect_equivalent(variable_widths(bla), 9)
+  expect_equivalent(model_names(bla), 'A')
+  expect_equivalent(model_types(bla), 'STRING')
+  expect_equivalent(model_widths(bla), 9)
 
   model =
     "
@@ -227,9 +227,9 @@ test_that("field descriptions over multiple lines work", {
   "
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equivalent(variable_names(bla), 'A')
-  expect_equivalent(variable_types(bla), 'ENUM')
-  expect_equivalent(variable_widths(bla), 1)
+  expect_equivalent(model_names(bla), 'A')
+  expect_equivalent(model_types(bla), 'ENUM')
+  expect_equivalent(model_widths(bla), 1)
 })
 
 
@@ -323,11 +323,11 @@ DATAMODEL Test
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_true(length(variable_names(bla)) == Ncols)
-  expect_true(length(variable_types(bla)) == Ncols)
-  expect_true(length(variable_widths(bla)) == Ncols)
-  expect_equivalent(variable_names(bla), c('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'))
-  expect_equivalent(variable_types(bla), c('STRING',
+  expect_true(length(model_names(bla)) == Ncols)
+  expect_true(length(model_types(bla)) == Ncols)
+  expect_true(length(model_widths(bla)) == Ncols)
+  expect_equivalent(model_names(bla), c('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'))
+  expect_equivalent(model_types(bla), c('STRING',
                                            'INTEGER',
                                            'REAL',
                                            'STRING',
@@ -350,11 +350,11 @@ test_that("DUMMY variables are accepted", {
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_true(length(variable_names(bla)) == Ncols)
-  expect_true(length(variable_types(bla)) == Ncols)
-  expect_true(length(variable_widths(bla)) == Ncols)
-  expect_equivalent(variable_names(bla), c('B', NA, 'D'))
-  expect_equivalent(variable_types(bla), c('INTEGER',
+  expect_true(length(model_names(bla)) == Ncols)
+  expect_true(length(model_types(bla)) == Ncols)
+  expect_true(length(model_widths(bla)) == Ncols)
+  expect_equivalent(model_names(bla), c('B', NA, 'D'))
+  expect_equivalent(model_types(bla), c('INTEGER',
                                            'DUMMY',
                                            'STRING'))
 })
@@ -373,11 +373,11 @@ test_that("multiple DUMMY variables are accepted", {
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_true(length(variable_names(bla)) == Ncols)
-  expect_true(length(variable_types(bla)) == Ncols)
-  expect_true(length(variable_widths(bla)) == Ncols)
-  expect_equivalent(variable_names(bla), c('B', NA, NA, 'D'))
-  expect_equivalent(variable_types(bla), c('INTEGER',
+  expect_true(length(model_names(bla)) == Ncols)
+  expect_true(length(model_types(bla)) == Ncols)
+  expect_true(length(model_widths(bla)) == Ncols)
+  expect_equivalent(model_names(bla), c('B', NA, NA, 'D'))
+  expect_equivalent(model_types(bla), c('INTEGER',
                                            'DUMMY',
                                            'DUMMY',
                                            'STRING'))
@@ -395,13 +395,13 @@ test_that("real with spaces is read", {
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_true(length(variable_names(bla)) == Ncols)
-  expect_true(length(variable_types(bla)) == Ncols)
-  expect_true(length(variable_widths(bla)) == Ncols)
-  expect_equivalent(variable_names(bla), c('A', 'C'))
-  expect_equivalent(variable_types(bla), c('STRING',
+  expect_true(length(model_names(bla)) == Ncols)
+  expect_true(length(model_types(bla)) == Ncols)
+  expect_true(length(model_widths(bla)) == Ncols)
+  expect_equivalent(model_names(bla), c('A', 'C'))
+  expect_equivalent(model_types(bla), c('STRING',
                                            'REAL'))
-  expect_equivalent(variable_decimals(bla), c(NA, 2))
+  expect_equivalent(model_decimals(bla), c(NA, 2))
 })
 
 test_that("numbered enums work", {
@@ -416,12 +416,12 @@ test_that("numbered enums work", {
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equivalent(variable_names(bla), c('A', 'B'))
-  expect_equivalent(variable_types(bla), c('ENUM',
+  expect_equivalent(model_names(bla), c('A', 'B'))
+  expect_equivalent(model_types(bla), c('ENUM',
                                            'ENUM'))
-  expect_equivalent(variable_widths(bla), c(1, 2))
-  expect_equivalent(variable_labels(bla)[[1]], c('1', '2', '9'))
-  expect_equivalent(variable_labels(bla)[[2]], c('1', '2', '10'))
+  expect_equivalent(model_widths(bla), c(1, 2))
+  expect_equivalent(model_labels(bla)[[1]], c('1', '2', '9'))
+  expect_equivalent(model_labels(bla)[[2]], c('1', '2', '10'))
 })
 
 test_that("numbered enums work when constructed vertically", {
@@ -441,11 +441,11 @@ test_that("numbered enums work when constructed vertically", {
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equivalent(variable_names(bla), c('A', NA, 'B'))
-  expect_equivalent(variable_types(bla), c('ENUM',
+  expect_equivalent(model_names(bla), c('A', NA, 'B'))
+  expect_equivalent(model_types(bla), c('ENUM',
                                            'DUMMY',
                                            'ENUM'))
-  expect_equivalent(variable_widths(bla), c(1, 1, 2))
+  expect_equivalent(model_widths(bla), c(1, 1, 2))
 })
 
 test_that("Custom Types can be read", {
@@ -468,11 +468,11 @@ test_that("Custom Types can be read", {
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equivalent(variable_names(bla), c('A', 'B', 'C'))
-  expect_equivalent(variable_types(bla), c('ENUM',
+  expect_equivalent(model_names(bla), c('A', 'B', 'C'))
+  expect_equivalent(model_types(bla), c('ENUM',
                                            'ENUM',
                                            'STRING'))
-  expect_equivalent(variable_widths(bla), c(1, 2, 1))
+  expect_equivalent(model_widths(bla), c(1, 2, 1))
 })
 
 test_that("complex datamodel uit de praktijk", {
@@ -817,18 +817,18 @@ test_that("complex datamodel uit de praktijk", {
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_true(length(variable_names(bla)) == Ncols)
-  expect_true(length(variable_types(bla)) == Ncols)
-  expect_true(length(variable_widths(bla)) == Ncols)
-  expect_equivalent(variable_names(bla)[69], 'TypeNationaliteitklasse')
-  expect_equivalent(variable_widths(bla)[69], 2L)
-  expect_equivalent(variable_labels(bla)[[69]], c("1","2","3","4","5","6","7","9","10","11","99"))
-  expect_equivalent(variable_names(bla)[50], 'OntvangtWWUitkering')
-  expect_equivalent(variable_widths(bla)[50], 1L)
-  expect_equivalent(variable_names(bla)[44], NA_character_)
-  expect_equivalent(variable_widths(bla)[44], 1L)
-  expect_equivalent(variable_names(bla)[34], 'IngeschrevenOp20150331')
-  expect_equivalent(variable_widths(bla)[34], 3L)
+  expect_true(length(model_names(bla)) == Ncols)
+  expect_true(length(model_types(bla)) == Ncols)
+  expect_true(length(model_widths(bla)) == Ncols)
+  expect_equivalent(model_names(bla)[69], 'TypeNationaliteitklasse')
+  expect_equivalent(model_widths(bla)[69], 2L)
+  expect_equivalent(model_labels(bla)[[69]], c("1","2","3","4","5","6","7","9","10","11","99"))
+  expect_equivalent(model_names(bla)[50], 'OntvangtWWUitkering')
+  expect_equivalent(model_widths(bla)[50], 1L)
+  expect_equivalent(model_names(bla)[44], NA_character_)
+  expect_equivalent(model_widths(bla)[44], 1L)
+  expect_equivalent(model_names(bla)[34], 'IngeschrevenOp20150331')
+  expect_equivalent(model_widths(bla)[34], 3L)
 })
 
 

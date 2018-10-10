@@ -36,6 +36,7 @@ Collate:
     'read_data_laf.R'
     'read_fwf_blaise.R'
     'read_model.R'
+    'variable_custom.R'
     'variable_date.R'
     'variable_dummy.R'
     'variable_enum.R'

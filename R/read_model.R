@@ -172,7 +172,7 @@ make_dummy = function(field){
 
 detect_custom = function(field, custom_types){
   if(is.null(custom_types)) return(FALSE)
-  types = variable_names(custom_types)
+  types = model_names(custom_types)
   reg_types = regex(paste(paste0('^.*:', types, '$'), collapse = '|'),
                     ignore_case = TRUE)
   str_detect(field, reg_types)
@@ -184,5 +184,5 @@ make_custom = function(field, custom_types){
   name = str_match(field, reg_types)[,2]
   type = str_match(field, reg_types)[,3]
   custom_type = get_variable(custom_types, type)
-  variable_enum(name = name, width = width(custom_type), labels = custom_type@labels)
+  variable_from_custom(name, custom_type)
 }

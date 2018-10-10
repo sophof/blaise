@@ -1,13 +1,13 @@
 write_datamodel = function(model, filepath, name = NULL){
-  maxwidth = max(nchar(variable_names(model)))
+  maxwidth = max(nchar(model_names(model)))
 
   fields = Map(make_field,
-               variable_names(model),
+               model_names(model),
                maxwidth,
-               variable_types(model),
-               variable_widths(model),
-               variable_decimals(model),
-               variable_labels(model))
+               model_types(model),
+               model_widths(model),
+               model_decimals(model),
+               model_labels(model))
   header = paste0('DATAMODEL ', name, '\nFIELDS')
   content = paste(fields, collapse = '\n')
   footer = 'ENDMODEL'

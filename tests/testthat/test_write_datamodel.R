@@ -39,11 +39,11 @@ test_that("all types are accepted", {
   blafile = makeblafile(model)
   m1 = read_model(datafile)
   m2 = read_model(blafile)
-  expect_equal(variable_names(m1), variable_names(m2))
-  expect_equal(variable_types(m1), variable_types(m2))
-  expect_equal(variable_widths(m1), variable_widths(m2))
-  expect_equal(variable_decimals(m1), variable_decimals(m2))
-  expect_equal(variable_labels(m1), variable_labels(m2))
+  expect_equal(model_names(m1), model_names(m2))
+  expect_equal(model_types(m1), model_types(m2))
+  expect_equal(model_widths(m1), model_widths(m2))
+  expect_equal(model_decimals(m1), model_decimals(m2))
+  expect_equal(model_labels(m1), model_labels(m2))
 })
 
 test_that("boolean is converted to INTEGER", {
@@ -66,9 +66,9 @@ test_that("boolean is converted to INTEGER", {
   blafile = makeblafile(model)
   m1 = read_model(datafile)
   m2 = read_model(blafile)
-  expect_equal(variable_names(m1), variable_names(m2))
-  expect_equal(variable_types(m1), variable_types(m2))
-  expect_equal(variable_widths(m1), variable_widths(m2))
+  expect_equal(model_names(m1), model_names(m2))
+  expect_equal(model_types(m1), model_types(m2))
+  expect_equal(model_widths(m1), model_widths(m2))
 })
 
 test_that("Name can be given to datamodel", {

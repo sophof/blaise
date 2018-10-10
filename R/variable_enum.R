@@ -78,7 +78,7 @@ setMethod("variable_enum",
             labels = "character",
             levels = "character"),
           function(name, width, labels, levels)
-            variable_enum(name, width, labels, as.integer(levels))
+            variable_enum(name, width, labels = labels, levels = as.integer(levels))
 )
 
 #====================
@@ -86,25 +86,15 @@ setMethod("variable_enum",
 setMethod('show', 'variable_enum', function(object){
   callNextMethod(object)
   cat('\n',
-      'labels  : ', paste(sprintf("(%i:'%s')", levels(object), labels(object)), collapse = '|') , '\n',
+      'labels  : ', paste(sprintf("(%i:'%s')", variable_levels(object), variable_labels(object)), collapse = '|') , '\n',
       'numbered: ', is.numbered_enum(object))
 })
 
 #======================
 # accessors
-setGeneric("enum_levels",
-           valueClass = "integer",
-           function(object) standardGeneric("enum_levels")
-)
-setMethod("enum_levels", "variable_enum", function(object) object@levels)
-setMethod("enum_levels", "variable", function(object) NA_integer_)
 
-setGeneric("enum_labels",
-           valueClass = "character",
-           function(object) standardGeneric("enum_labels")
-)
-setMethod("enum_labels", "variable_enum", function(object) object@labels)
-setMethod("enum_labels", "variable", function(object) NA_character_)
+setMethod("variable_levels", "variable_enum", function(object) object@levels)
+setMethod("variable_labels", "variable_enum", function(object) object@labels)
 
 #======================
 # Checks

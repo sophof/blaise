@@ -1,6 +1,6 @@
 write_data = function(df, model, file, decimal.mark = '.', justify = 'right'){
   uit = create_fixed_width_column(df, model, decimal.mark, justify)
-  if (format.info(uit)[1] != sum(variable_widths(model))){
+  if (format.info(uit)[1] != sum(model_widths(model))){
     stop('total output width is not the sum of the individual column widths')
   }
 

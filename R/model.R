@@ -71,48 +71,48 @@ setGeneric("variables",
 
 setMethod("variables", "model", function(object) object@variables)
 
-setGeneric("variable_names",
+setGeneric("model_names",
            valueClass = "character",
-           function(object) standardGeneric("variable_names")
+           function(object) standardGeneric("model_names")
 )
 
-setMethod("variable_names", "model", function(object) sapply(variables(object), name))
+setMethod("model_names", "model", function(object) sapply(variables(object), name))
 
-setMethod("variable_names", "list", function(object) sapply(object, name))
+setMethod("model_names", "list", function(object) sapply(object, name))
 
-setGeneric("variable_types",
+setGeneric("model_types",
            valueClass = "character",
-           function(object) standardGeneric("variable_types")
+           function(object) standardGeneric("model_types")
 )
 
-setMethod("variable_types", "model", function(object) sapply(variables(object), type))
-setMethod("variable_types", "list", function(object) sapply(object, type))
+setMethod("model_types", "model", function(object) sapply(variables(object), type))
+setMethod("model_types", "list", function(object) sapply(object, type))
 
-setGeneric("variable_widths",
+setGeneric("model_widths",
            valueClass = "integer",
-           function(object) standardGeneric("variable_widths")
+           function(object) standardGeneric("model_widths")
 )
 
-setMethod("variable_widths", "model", function(object) sapply(variables(object), width))
-setMethod("variable_widths", "list", function(object) sapply(object, width))
+setMethod("model_widths", "model", function(object) sapply(variables(object), width))
+setMethod("model_widths", "list", function(object) sapply(object, width))
 
-setGeneric("variable_decimals",
+setGeneric("model_decimals",
            valueClass = "integer",
-           function(object) standardGeneric("variable_decimals")
+           function(object) standardGeneric("model_decimals")
 )
 
-setMethod("variable_decimals", "model", function(object) {
+setMethod("model_decimals", "model", function(object) {
   vapply(variables(object), decimals, 1L)
 }
 )
 
-setGeneric("variable_labels",
+setGeneric("model_labels",
            valueClass = "list",
-           function(object, value) standardGeneric("variable_labels")
+           function(object, value) standardGeneric("model_labels")
 )
 
-setMethod("variable_labels", "model", function(object) lapply(variables(object), enum_labels))
-setMethod("variable_labels", "list", function(object) lapply(object, enum_labels))
+setMethod("model_labels", "model", function(object) lapply(variables(object), variable_labels))
+setMethod("model_labels", "list", function(object) lapply(object, variable_labels))
 
 setGeneric("dummys",
            valueClass = "list",
@@ -135,14 +135,14 @@ setMethod("get_variable",
           signature(object = 'model',
                     name = 'character'),
           function(object, name)
-            variables(object)[[which(variable_names(object) == name)]]
+            variables(object)[[which(model_names(object) == name)]]
 )
 
 setMethod("get_variable",
           signature(object = 'list',
                     name = 'character'),
           function(object, name)
-            object[[which(variable_names(object) == name)]]
+            object[[which(model_names(object) == name)]]
 )
 
 #=====================

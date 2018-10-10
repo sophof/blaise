@@ -32,7 +32,7 @@ convert_df = function(df, model, max.distance = 0L){
 }
 
 find_names = function(names, model, max.distance){
-  LD = adist(names, as.character(na.omit(variable_names(model))))
+  LD = adist(names, as.character(na.omit(model_names(model))))
   mins = apply(LD, 2, min)
   mins_loc = apply(LD, 2, which.min)
   matches = apply(LD, 2, function(x) sum(x == min(x)))
@@ -40,7 +40,7 @@ find_names = function(names, model, max.distance){
   if(any(mins > max.distance)){
     msg = paste0(
       'column(s) "',
-      paste(variable_names(model)[mins > max.distance], collapse = '; '),
+      paste(model_names(model)[mins > max.distance], collapse = '; '),
       '" do not match any names in dataframe')
     stop(msg)
   }

@@ -61,3 +61,16 @@ setGeneric("get_location",
            function(object) standardGeneric("get_location")
 )
 setMethod("get_location", "variable", function(object) object@location)
+
+setGeneric("variable_levels",
+           valueClass = "integer",
+           function(object) standardGeneric("variable_levels")
+)
+setMethod("variable_levels", "variable", function(object) NA_integer_)
+
+setGeneric("variable_labels",
+           valueClass = "character",
+           function(object) standardGeneric("variable_labels")
+)
+setMethod("variable_labels", "variable", function(object) NA_character_)
+

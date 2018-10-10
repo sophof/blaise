@@ -19,19 +19,19 @@ read_data = function(datafile,
 }
 
 get_positions = function(datamodel){
-  widths = variable_widths(datamodel)
+  widths = model_widths(datamodel)
   start = c(1, cumsum(widths[1:length(widths) - 1]) + 1)
   names(start) = names(widths)
   end = start + widths - 1
   out = Map(function(a, b) c(a, b), start, end)
-  names(out) = variable_names(datamodel)
-  out = out[variable_types(datamodel) != 'DUMMY']
+  names(out) = model_names(datamodel)
+  out = out[model_types(datamodel) != 'DUMMY']
   return(do.call(readr::fwf_cols, out))
 }
 
 convert_factors = function(df, datamodel){
-  mask = variable_types(datamodel) == 'ENUM'
-  mask_df = mask[variable_types(datamodel) != 'DUMMY'] # required because DUMMY types are in datamodel but not in df
+  mask = model_types(datamodel) == 'ENUM'
+  mask_df = mask[model_types(datamodel) != 'DUMMY'] # required because DUMMY types are in datamodel but not in df
   if(!any(mask)) return(df)
 
   per_factor = function(col, labels, name){
@@ -51,15 +51,15 @@ convert_factors = function(df, datamodel){
   stopifnot(sum(mask) == sum(mask_df))
   df[,mask_df] = Map(per_factor,
                   df[,mask_df],
-                  variable_labels(datamodel)[mask],
-                  variable_names(datamodel)[mask])
+                  model_labels(datamodel)[mask],
+                  model_names(datamodel)[mask])
   return(df)
 }
 
 convert_types_to_cols = function(model){
-  col_types = variable_types(model)
+  col_types = model_types(model)
   col_types = lapply(col_types, match_type)
-  names(col_types) = variable_names(model)
+  names(col_types) = model_names(model)
   col_types = col_types[!sapply(col_types, is.null)]
   do.call(readr::cols_only, col_types)
 }

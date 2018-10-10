@@ -121,5 +121,5 @@ test_that("numbered enums write out the same numbers as are read, including NA",
   outdata = readr::read_file(output)
   bla = read_model(outputbla)
   expect_equal(outdata, paste0(data, '\n'))
-  expect_equivalent(variable_widths(bla), c(1, 2))
+  expect_equivalent(model_widths(bla), c(1, 2))
 })
