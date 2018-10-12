@@ -1,6 +1,3 @@
-setClassUnion("missingOrNULL", c("missing", "NULL"))
-setClassUnion("characterOrNULL", c("character", "NULL"))
-
 setGeneric("name<-",
            valueClass = "variable",
            function(object, value) standardGeneric("name<-")
