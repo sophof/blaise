@@ -132,20 +132,17 @@ detect_enum = function(field){
 
 make_enum = function(field){
   name = str_match(field, '^(.*):\\(.*\\)$')[,2]
-  numbered = FALSE
-
   labels = str_match(field, '\\((.+)\\)')[,2]
   labels = trimws(unlist(str_split(labels, ',')))
-  if (all(str_detect(labels, '^\\w+.*\\(\\s*\\d+\\s*\\)$'))){
-    labels = str_match(labels, '\\((\\d+)\\)')[,2]
-    numbered = TRUE
-
+  num_reg = "^(\\w+)\\s*\\(\\s*(\\d+)\\s*\\)\\s*$"
+  if (all(str_detect(labels, num_reg))){
+    levels = str_match(labels, num_reg)[,3]
+    labels = str_match(labels, num_reg)[,2]
+    var = variable_enum(name = name, labels = labels, levels = levels)
+  } else{
+    var = variable_enum(name = name, labels = labels)
   }
-
-  if(numbered) width = max(nchar(labels))
-  else width = nchar(length(labels))
-
-  variable_enum(name = name, width = width, labels = labels)
+  return(var)
 }
 
 detect_date = function(field){

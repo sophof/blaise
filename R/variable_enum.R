@@ -5,11 +5,14 @@
 .check_validity_enum <- function(object) {
   errors = character()
 
-  if(is.na(object@labels[1]))
+  if(any(is.na(variable_labels(object))))
     errors = c(errors, 'type ENUM requires labels to be known')
 
   if(is.na(object@numbered[1]))
     errors = c(errors, 'type ENUM requires "@numbered" to be known')
+
+  if(any(is.na(variable_levels(object))))
+    errors = c(errors, 'NA levels not allowed in enum')
 
   if(length(errors) == 0) TRUE else errors
 }
@@ -28,23 +31,23 @@ setClass(
 # Constructors
 setGeneric("variable_enum",
            valueClass = 'variable_enum',
-           function(name, width, labels, levels) standardGeneric("variable_enum")
+           function(name, labels, levels) standardGeneric("variable_enum")
 )
 
 setMethod("variable_enum",
           signature(
             name = "character",
-            width = "numeric",
             labels = "character",
             levels = "missing"),
-          function(name, width, labels) {
+          function(name, labels) {
+            levels = 1:length(labels)
             new(
               'variable_enum',
               name = name,
               type = "ENUM",
-              width = as.integer(width),
+              width = max(nchar(levels)),
               labels = labels,
-              levels = 1:length(labels),
+              levels = levels,
               numbered = FALSE
               )
           }
@@ -53,17 +56,16 @@ setMethod("variable_enum",
 setMethod("variable_enum",
           signature(
             name = "character",
-            width = "numeric",
             labels = "character",
             levels = "numeric"),
-          function(name, width, labels, levels) {
+          function(name, labels, levels) {
             levels = as.integer(levels)
             num = !all(levels == 1:length(levels))
             new(
               'variable_enum',
               name = name,
               type = "ENUM",
-              width = as.integer(width),
+              width = max(nchar(levels)),
               labels = labels,
               levels = levels,
               numbered = num
@@ -74,11 +76,10 @@ setMethod("variable_enum",
 setMethod("variable_enum",
           signature(
             name = "character",
-            width = "numeric",
             labels = "character",
             levels = "character"),
-          function(name, width, labels, levels)
-            variable_enum(name, width, labels = labels, levels = as.integer(levels))
+          function(name, labels, levels)
+            variable_enum(name, labels = labels, levels = as.integer(levels))
 )
 
 #====================

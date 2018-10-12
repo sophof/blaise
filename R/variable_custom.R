@@ -27,21 +27,20 @@ setClass(
 # Constructors
 setGeneric("variable_custom",
            valueClass = 'variable_custom',
-           function(name, width, labels, levels) standardGeneric("variable_custom")
+           function(name, labels, levels) standardGeneric("variable_custom")
 )
 
 setMethod("variable_custom",
           signature(
             name = "character",
-            width = "numeric",
             labels = "character",
             levels = "numeric"),
-          function(name, width, labels, levels)
+          function(name, labels, levels)
             new(
               'variable_custom',
               name = name,
               type = "ENUM",
-              width = as.integer(width),
+              width = max(nchar(as.integer(levels))),
               labels = labels,
               levels = as.integer(levels)
             )
@@ -50,14 +49,13 @@ setMethod("variable_custom",
 setMethod("variable_custom",
           signature(
             name = "character",
-            width = "numeric",
             labels = "character",
             levels = "character"),
-          function(name, width, labels, levels)
-            variable_custom(name, width, labels = labels, levels = as.integer(levels))
+          function(name, labels, levels)
+            variable_custom(name, labels = labels, levels = as.integer(levels))
 )
 
-# Use this to build a variable from a custom type
+# Use this to build an enum variable from a custom type
 setGeneric("variable_from_custom",
            valueClass = 'variable_enum',
            function(name, custom_type) standardGeneric("variable_from_custom")
@@ -70,8 +68,8 @@ setMethod("variable_from_custom",
           function(name, custom_type)
             variable_enum(
               name = name,
-              width = width(custom_type),
               labels = as.character(variable_levels(custom_type)),
+              levels = variable_levels(custom_type)
             )
 )
 
