@@ -114,6 +114,14 @@ setGeneric("model_labels",
 setMethod("model_labels", "model", function(object) lapply(variables(object), variable_labels))
 setMethod("model_labels", "list", function(object) lapply(object, variable_labels))
 
+setGeneric("model_levels",
+           valueClass = "list",
+           function(object, value) standardGeneric("model_levels")
+)
+
+setMethod("model_levels", "model", function(object) lapply(variables(object), variable_levels))
+setMethod("model_levels", "list", function(object) lapply(object, variable_levels))
+
 setGeneric("dummys",
            valueClass = "list",
            function(object) standardGeneric("dummys")
