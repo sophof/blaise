@@ -417,11 +417,13 @@ test_that("numbered enums work", {
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
   expect_equivalent(model_names(bla), c('A', 'B'))
-  expect_equivalent(model_types(bla), c('ENUM',
-                                           'ENUM'))
+  expect_equivalent(model_types(bla), c('ENUM', 'ENUM'))
   expect_equivalent(model_widths(bla), c(1, 2))
-  expect_equivalent(model_labels(bla)[[1]], c('1', '2', '9'))
-  expect_equivalent(model_labels(bla)[[2]], c('1', '2', '10'))
+  expect_equal(sapply(variables(bla), is.numbered_enum), c(A = T, B = T))
+  expect_equivalent(model_labels(bla)[[1]], c('Male', 'Female', 'Unknown'))
+  expect_equivalent(model_labels(bla)[[2]], c('M', 'F', 'X'))
+  expect_equivalent(model_levels(bla)[[1]], c(1, 2, 9))
+  expect_equivalent(model_levels(bla)[[2]], c(1, 2, 10))
 })
 
 test_that("numbered enums work when constructed vertically", {
