@@ -71,19 +71,8 @@ cast_type = function(var, original){
   }
 
   # Numbered ENUMS
-  else if(is.numbered_enum(var)){
-    l = as.integer(var@labels)
-    original = as.character(original)
-
-    if(!all(unique(original) %in% l)){
-      msg = sprintf('unique values in dataframe column (%s) do not correspond to range of indices in model (%s) for variable %s',
-                    paste(unique(original), collapse = ';'),
-                    paste(l, collapse = ';'),
-                    name(var))
-      stop(msg)
-    }
-    return(factor(original, levels = l, labels = var@labels))
-  }
+  else if(is.numbered_enum(var))
+    return(cast_numbered_enum(var, original))
 
   # Normal ENUMS
   else if(type(var) == 'ENUM'){
@@ -127,4 +116,24 @@ cast_type = function(var, original){
       stop('type "', type(var), '" not implemented')
     )
   }
+}
+
+cast_numbered_enum = function(var, original){
+  if(is.factor(original))
+    org_levels = levels(original)
+  else
+    org_levels = unique(original)
+
+  if(!all(org_levels %in% variable_levels(var)) & !all(org_levels %in% variable_labels(var))){
+    msg = sprintf('unique values in dataframe column (%s) do not correspond to indices or labels in model (%s|%s) for variable %s',
+                  paste(unique(original), collapse = ';'),
+                  paste(variable_levels(var), collapse = ';'),
+                  paste(variable_labels(var), collapse = ';'),
+                  name(var))
+    stop(msg)
+  }
+  if(all(org_levels %in% variable_levels(var)))
+    return(factor(original, levels = variable_levels(var), labels = variable_levels(var)))
+  else
+    return(factor(original, levels = variable_labels(var), labels = variable_levels(var)))
 }
