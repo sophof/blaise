@@ -12,7 +12,7 @@ get_model = function(df, digits = getOption('digits')){
       INTEGER =variable_integer(name, width),
       REAL = variable_real(name, width, decimals),
       DATETYPE = variable_date(name),
-      ENUM = variable_enum(name, width, labels),
+      ENUM = variable_enum(name, labels = labels),
       DUMMY = variable_dummy(width),
       stop('type "', type, '" not recognized')
       )
