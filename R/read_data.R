@@ -3,7 +3,8 @@ NULL
 
 read_data = function(datafile,
                      datamodel,
-                     locale){
+                     locale,
+                     numbered_enum = TRUE){
   col_types = convert_types_to_cols(datamodel)
   positions = get_positions(datamodel)
 
@@ -14,7 +15,7 @@ read_data = function(datafile,
     locale = locale
   )
 
-  df = convert_factors(df, datamodel)
+  df = convert_factors(df, datamodel, numbered_enum)
   return(df)
 }
 
@@ -29,30 +30,35 @@ get_positions = function(datamodel){
   return(do.call(readr::fwf_cols, out))
 }
 
-convert_factors = function(df, datamodel){
+convert_factors = function(df, datamodel, convert_numbered){
   mask = model_types(datamodel) == 'ENUM'
   mask_df = mask[model_types(datamodel) != 'DUMMY'] # required because DUMMY types are in datamodel but not in df
   if(!any(mask)) return(df)
 
-  per_factor = function(col, labels, name){
-    if (is.numbered_enum(labels)) l = labels # this will read numbered enums correctly
-    else l = 1:length(labels)
-    if(any(!(unique(na.omit(col)) %in% l))){
-      missing = unique(na.omit(col))[!(unique(na.omit(col)) %in% l)]
+  per_factor = function(col, labels, levels, name, numbered){
+    if(any(!(unique(na.omit(col)) %in% levels))){
+      missing = unique(na.omit(col))[!(unique(na.omit(col)) %in% levels)]
       msg = sprintf('integer(s) "%s" have no associated label for variable %s',
                     paste(missing, collapse = ';'),
                     name)
       stop(msg)
     }
+    if (numbered)
+      labels = as.character(levels) # this will read numbered enums correctly
     factor(col,
-           levels = l,
+           levels = levels,
            labels = labels)
   }
+
   stopifnot(sum(mask) == sum(mask_df))
+  numbered = sapply(variables(datamodel)[mask], is.numbered_enum) & convert_numbered
   df[,mask_df] = Map(per_factor,
                   df[,mask_df],
                   model_labels(datamodel)[mask],
-                  model_names(datamodel)[mask])
+                  model_levels(datamodel)[mask],
+                  model_names(datamodel)[mask],
+                  numbered
+                  )
   return(df)
 }
 

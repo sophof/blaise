@@ -17,6 +17,8 @@
 #'   \item custom types (same as a numbered ENUM)
 #'   }
 #'
+#' If you want the numbered enums to be converted to their labels, this is possible
+#' by changing the "numbered_enum" parameter
 #'
 #' @param datafile the ascii file with the data
 #'
@@ -24,6 +26,12 @@
 #'
 #' @param locale locale as specified with readr::locale(). Uses "." as default
 #' decimal separator. Can be used to change date_format, timezone, encoding, etc.
+#'
+#' @param numbered_enum use actual labels instead of numbers for enums that use non-
+#' standard numbering in the datamodel. With the default 'TRUE' (Male (1), Female (2), Unknown (9))
+#' will be read as a factor with labels (1, 2, 9). With FALSE it will be read as a factor
+#' (Male, Female, Unknown). beware that when writing a dataframe read with FALSE will result in an
+#' enum with levels (1, 2, 3) since R does not support custom numbering for factors!
 #'
 #' @examples
 #' model = "
@@ -56,8 +64,9 @@
 
 read_fwf_blaise = function(datafile,
                            modelfile,
-                           locale = readr::locale()){
+                           locale = readr::locale(),
+                           numbered_enum = TRUE){
   bla = read_model(modelfile)
-  data = read_data(datafile, bla, locale)
+  data = read_data(datafile, bla, locale, numbered_enum)
   return(data)
 }

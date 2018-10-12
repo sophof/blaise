@@ -15,7 +15,7 @@ parse_type = function(type){
   l = str_match_all(type, '(\\w+)\\((\\d+)\\)')[[1]]
   labels = l[,2]
   indices = l[,3]
-  variable_custom(name, width = max(nchar(indices)), labels = labels, levels = indices)
+  variable_custom(name, labels = labels, levels = indices)
 }
 
 extract_custom_types = function(block){

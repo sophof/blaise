@@ -247,6 +247,25 @@ test_that("Numbered enums result in factors of their numbers", {
   expect_equal(colnames(df), c('A', 'B'))
 })
 
+test_that("Numbered enums can also be parsed by label", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : (Male (1), Female (2), Unknown (9))
+  B     : (M(1),F(2),X(10))
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data = "1 1\n2 2\n910"
+  datafile = makedatafile(data)
+
+  expect_silent({df = read_fwf_blaise(datafile, blafile, numbered_enum = FALSE)})
+  expect_equal(df[[1]], factor(c('Male', 'Female', 'Unknown'), levels = c('Male', 'Female', 'Unknown')))
+  expect_equal(df[[2]], factor(c('M', 'F', 'X'), levels = c('M', 'F', 'X')))
+  expect_equal(colnames(df), c('A', 'B'))
+})
+
 test_that("empty enums work", {
   model = "
   DATAMODEL Test
