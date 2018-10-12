@@ -26,7 +26,7 @@ has this many significant digits.}
 \item{justify}{direction of padding for STRING type when data is smaller than the width.
 Defaults to right-justified (padded on the left), can be "left", "right" or "centre".}
 
-\item{write_model}{logical that can be used to disabling the automatic writing of a
+\item{write_model}{logical that can be used to disable the automatic writing of a
 datamodel}
 
 \item{model_name}{Custom name that can be given to the datamodel. Default is the

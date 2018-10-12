@@ -31,7 +31,7 @@
 #' standard numbering in the datamodel. With the default 'TRUE' (Male (1), Female (2), Unknown (9))
 #' will be read as a factor with labels (1, 2, 9). With FALSE it will be read as a factor
 #' (Male, Female, Unknown). beware that when writing a dataframe read with FALSE will result in an
-#' enum with levels (1, 2, 3) since R does not support custom numbering for factors!
+#' enum with levels (1, 2, 3) unless defined by an existint model, since R does not support custom numbering for factors!
 #'
 #' @examples
 #' model = "
