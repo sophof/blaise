@@ -30,8 +30,12 @@
 #' @param numbered_enum use actual labels instead of numbers for enums that use non-
 #' standard numbering in the datamodel. With the default 'TRUE' (Male (1), Female (2), Unknown (9))
 #' will be read as a factor with labels (1, 2, 9). With FALSE it will be read as a factor
-#' (Male, Female, Unknown). beware that when writing a dataframe read with FALSE will result in an
+#' (Male, Female, Unknown). beware that writing a dataframe read with FALSE will result in an
 #' enum with levels (1, 2, 3) unless defined by an existint model, since R does not support custom numbering for factors!
+#'
+#' @param output Define which output to use. Either "data.frame" (default) or "LaF". LaF does not support
+#' Datetypes, so these are converted to characters. Using LaF basically takes over
+#' the parsing of the datamodel from LaF, since this is more robust and accepts more types of input.
 #'
 #' @examples
 #' model = "
@@ -65,8 +69,14 @@
 read_fwf_blaise = function(datafile,
                            modelfile,
                            locale = readr::locale(),
-                           numbered_enum = TRUE){
+                           numbered_enum = TRUE,
+                           output = 'data.frame'){
   bla = read_model(modelfile)
-  data = read_data(datafile, bla, locale, numbered_enum)
+  data = switch(
+    tolower(output),
+    data.frame = read_data(datafile, bla, locale, numbered_enum),
+    laf = read_data_laf(datafile, bla, locale, numbered_enum),
+    stop(sprintf('unknown output parameter "%s"', output))
+  )
   return(data)
 }
