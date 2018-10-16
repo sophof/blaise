@@ -35,7 +35,7 @@ setMethod("is.dummy", "variable_dummy",
           function(object)
             TRUE
 )
-# This will only be called if the variable is not of type variable_enum
+# This will only be called if the variable is not of type variable_dummy
 setMethod("is.dummy", "variable",
           function(object)
             FALSE

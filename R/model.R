@@ -166,9 +166,19 @@ setMethod(
     object = 'model',
     variable = 'variable'),
   function(object, variable) {
-    namen = names(variables(object))
-    if(name(variable) %in% namen & !is.dummy(variable))
+    namen = sapply(variables(object), name)
+    if(is.dummy(variable)){
+      dummy_names = stringr::str_extract(namen, '(?<=^DUMMY)\\d+$')
+      if(all(is.na(dummy_names)))
+        max_i = 0
+      else
+        max_i = max(as.integer(dummy_names), na.rm = TRUE)
+      name(variable) = paste0('DUMMY', max_i + 1)
+    }
+
+    if(name(variable) %in% namen)
       stop('duplicate variable names not allowed')
+
     location(variable) = length(object@variables) + 1
     object@variables = append(object@variables, variable)
     l = length(object@variables)
