@@ -183,7 +183,7 @@ test_that("integers outside of max.integer range produce a warning and are conve
   expect_equal(class(df[[1]]), 'numeric')
 })
 
-test_that("integers floats of max.range produce a warning and are converted to string", {
+test_that("floats of max.range produce a warning and are converted to string", {
   model = "
   DATAMODEL Test
   FIELDS
