@@ -26,13 +26,14 @@ convert_df = function(df, model, max.distance = 0L){
   for(dummy in dummys(model)){
     DUMMY = paste(rep(' ', width(dummy)), collapse = '')
     df = tibble::add_column(df, DUMMY, .before = get_location(dummy))
-    names(df)[get_location(dummy)] = NA_character_
+    names(df)[get_location(dummy)] = name(dummy)
   }
   return(df)
 }
 
 find_names = function(names, model, max.distance){
-  LD = adist(names, as.character(na.omit(model_names(model))))
+  mnames = as.character(model_names(variables_without_dummys(model)))
+  LD = adist(names, mnames)
   mins = apply(LD, 2, min)
   mins_loc = apply(LD, 2, which.min)
   matches = apply(LD, 2, function(x) sum(x == min(x)))
