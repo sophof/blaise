@@ -353,7 +353,7 @@ test_that("DUMMY variables are accepted", {
   expect_true(length(model_names(bla)) == Ncols)
   expect_true(length(model_types(bla)) == Ncols)
   expect_true(length(model_widths(bla)) == Ncols)
-  expect_equivalent(model_names(bla), c('B', NA, 'D'))
+  expect_equivalent(model_names(bla), c('B', 'DUMMY1', 'D'))
   expect_equivalent(model_types(bla), c('INTEGER',
                                            'DUMMY',
                                            'STRING'))
@@ -376,7 +376,7 @@ test_that("multiple DUMMY variables are accepted", {
   expect_true(length(model_names(bla)) == Ncols)
   expect_true(length(model_types(bla)) == Ncols)
   expect_true(length(model_widths(bla)) == Ncols)
-  expect_equivalent(model_names(bla), c('B', NA, NA, 'D'))
+  expect_equivalent(model_names(bla), c('B', 'DUMMY1', 'DUMMY2', 'D'))
   expect_equivalent(model_types(bla), c('INTEGER',
                                            'DUMMY',
                                            'DUMMY',
@@ -443,7 +443,7 @@ test_that("numbered enums work when constructed vertically", {
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equivalent(model_names(bla), c('A', NA, 'B'))
+  expect_equivalent(model_names(bla), c('A', 'DUMMY1', 'B'))
   expect_equivalent(model_types(bla), c('ENUM',
                                            'DUMMY',
                                            'ENUM'))
@@ -827,7 +827,7 @@ test_that("complex datamodel uit de praktijk", {
   expect_equivalent(model_labels(bla)[[69]], c("1","2","3","4","5","6","7","9","10","11","99"))
   expect_equivalent(model_names(bla)[50], 'OntvangtWWUitkering')
   expect_equivalent(model_widths(bla)[50], 1L)
-  expect_equivalent(model_names(bla)[44], NA_character_)
+  expect_equivalent(model_names(bla)[44], 'DUMMY2')
   expect_equivalent(model_widths(bla)[44], 1L)
   expect_equivalent(model_names(bla)[34], 'IngeschrevenOp20150331')
   expect_equivalent(model_widths(bla)[34], 3L)
