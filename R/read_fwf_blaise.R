@@ -34,7 +34,8 @@
 #' enum with levels (1, 2, 3) unless defined by an existint model, since R does not support custom numbering for factors!
 #'
 #' @param output Define which output to use. Either "data.frame" (default) or "LaF". LaF does not support
-#' Datetypes, so these are converted to characters. Using LaF basically takes over
+#' Datetypes, so these are converted to characters. Using LaF, DUMMY vasiables also can't
+#' be ignored, these are read as empty character vectors. Using LaF basically takes over
 #' the parsing of the datamodel from LaF, since this is more robust and accepts more types of input.
 #'
 #' @examples
