@@ -30,6 +30,7 @@ convert_laftype = function(type){
     'REAL' = 'numeric',
     'DATETYPE' = 'character',
     'ENUM' = 'factor',
+    'DUMMY' = 'character',
     stop('type "', type, '" not implemented')
   )
 }
