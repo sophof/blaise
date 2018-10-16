@@ -134,6 +134,18 @@ setMethod("dummys", "model", function(object) {
 }
 )
 
+setGeneric("variables_without_dummys",
+           valueClass = "list",
+           function(object) standardGeneric("variables_without_dummys")
+)
+
+setMethod("variables_without_dummys", "model", function(object) {
+  vars = variables(object)
+  dummys = sapply(vars, is.dummy)
+  return(vars[!dummys])
+}
+)
+
 setGeneric("get_variable",
            valueClass = "variable",
            function(object, name) standardGeneric("get_variable")
