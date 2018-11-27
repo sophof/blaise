@@ -337,6 +337,21 @@ DATAMODEL Test
                                            'REAL'))
 })
 
+test_that("lowercase DATAMODEL etc. works", {
+  model = "
+Datamodel Test
+  Fields
+  A     : String[9]
+  Endmodel
+  "
+
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_true(length(model_names(bla)) == 1)
+  expect_equivalent(model_names(bla), 'A')
+  expect_equivalent(model_types(bla), c('STRING'))
+})
+
 test_that("DUMMY variables are accepted", {
   model = "
   DATAMODEL Test
