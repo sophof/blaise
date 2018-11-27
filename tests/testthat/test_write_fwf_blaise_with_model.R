@@ -384,6 +384,30 @@ test_that("input_model works with lower case or mixed case types", {
   unlink(c(datafile, blafile))
 })
 
+test_that("input_model works with different case variable names", {
+  dir = tempdir()
+  datafile = tempfile('testasc', dir, fileext = '.asc')
+  model = "
+  DATAMODEL Test
+  FIELDS
+  a     : String[1]
+  b     : integer[1]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  df = data.frame(
+    list(
+      A = rep('t',3),
+      B = 1:3
+    ),
+    stringsAsFactors = FALSE
+  )
+
+  expect_silent(write_fwf_blaise_with_model(df, datafile, blafile))
+  unlink(c(datafile, blafile))
+})
+
 test_that("DUMMY variables are written out as expected", {
   dir = tempdir()
   datafile = tempfile('testasc', dir, fileext = '.asc')
