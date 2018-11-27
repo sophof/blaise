@@ -33,7 +33,7 @@ convert_df = function(df, model, max.distance = 0L){
 
 find_names = function(names, model, max.distance){
   mnames = as.character(model_names(variables_without_dummys(model)))
-  LD = adist(names, mnames)
+  LD = adist(names, mnames, ignore.case = TRUE)
   mins = apply(LD, 2, min)
   mins_loc = apply(LD, 2, which.min)
   matches = apply(LD, 2, function(x) sum(x == min(x)))
