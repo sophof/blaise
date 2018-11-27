@@ -87,20 +87,81 @@ test_that("DATETYPE can be used, will be read as character", {
   unlink(datafile)
 })
 
-test_that("empty values are read as NA", {
+test_that("empty values are read as NA, this does not work for strings", {
   model = "
   DATAMODEL Test
   FIELDS
   A     : STRING[1]
   B     : INTEGER[1]
+  C     : (Man, Vrouw)
   ENDMODEL
   "
   blafile = makeblafile(model)
 
-  data = "A1\n 2\nC "
+  data = "A1 \n 22\nC 1"
   datafile = makedatafile(data)
 
   expect_silent({df = read_fwf_blaise(datafile, blafile, output = "laf")[,]})
-  expect_equal(df[[1]], c('A', NA, 'C'))
+  expect_equal(df[[1]], c('A', '', 'C'))
   expect_equal(df[[2]], c(1, 2, NA))
+  expect_equal(df[[3]], factor(c(NA, 'Vrouw', 'Man'), levels = c('Man', 'Vrouw')))
+})
+
+test_that("integers outside of max.integer range produce a warning and are converted to double", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  B     : INTEGER[10]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data = "         1\n9999999999\n       -30"
+  datafile = makedatafile(data)
+
+  expect_warning({df = read_fwf_blaise(datafile, blafile, output = "laf")[,]})
+  expect_equal(df[[1]], c(1, 9999999999, -30))
+  expect_equal(class(df[[1]]), 'numeric')
+})
+
+test_that("floats of max.range produce a warning and are converted to string", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  B     : REAL[54]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  leeg50 = strrep(' ', 50)
+  a = paste0(strrep(' ', 50), '   1')
+  b = paste0(strrep(' ', 50), '   2')
+  c = strrep('9', 54)
+  data = paste(a,b,c, sep = '\n')
+  datafile = makedatafile(data)
+
+  expect_warning({df = read_fwf_blaise(datafile, blafile, output = "laf")[,]})
+  expect_equal(df[[1]], c('1', '2', c))
+  expect_equal(class(df[[1]]), 'character')
+})
+
+test_that("DUMMY variables are read as empty character vector", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : STRING[1]
+  DUMMY[1]
+  B     : INTEGER[1]
+  C     : (M, F)
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+
+  data = "A 11\nB 22\nC 31"
+  datafile = makedatafile(data)
+
+  expect_silent({df = read_fwf_blaise(datafile, blafile, output = "laf")[,]})
+  expect_equal(colnames(df), c('A', 'DUMMY1', 'B', 'C'))
+  expect_equal(ncol(df), 4)
+  expect_equal(df[[2]], character(3))
 })
