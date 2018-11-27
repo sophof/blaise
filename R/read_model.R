@@ -32,16 +32,16 @@ parse_bla = function(bla, custom_types){
 }
 
 remove_non_fields = function(bla){
-  modelname = str_detect(bla, '^DATAMODEL')
-  FIELDS = str_detect(bla, 'FIELDS')
-  ENDMODEL = str_detect(bla, 'ENDMODEL')
+  modelname = str_detect(bla, regex('^DATAMODEL', ignore_case = TRUE))
+  FIELDS = str_detect(bla, regex('FIELDS', ignore_case = TRUE))
+  ENDMODEL = str_detect(bla, regex('ENDMODEL', ignore_case = TRUE))
   bla[!(modelname | ENDMODEL | FIELDS)]
 }
 
 extract_datamodelName = function(bla){
   datamodel = grep('^DATAMODEL', toupper(bla))
-  name = str_match(bla[datamodel], '^DATAMODEL (.+)$')
-  return(name[2])
+  name = str_match(bla[datamodel], regex('^DATAMODEL (.+)$', ignore_case = TRUE))[2]
+  return(name)
 }
 
 detect_type = function(field, custom_types){
