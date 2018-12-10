@@ -157,3 +157,16 @@ test_that("custom name to datamodel", {
   test = read_model(testblafile)
   expect_equal(name(source), name(test))
 })
+
+test_that("dataframe can be written with only one row", {
+  df = data.frame(
+    A = 'A',
+    B = 1L,
+    C = 2.50
+  )
+
+  datafile = tempfile(fileext = '.asc')
+  blafile = tempfile(fileext = '.asc')
+
+  expect_silent(write_fwf_blaise(df, datafile, blafile, model_name = 'test'))
+})

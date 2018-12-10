@@ -89,7 +89,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
     return(col)
   }
 
-  uit = mapply(per_col, df, variables(model))
+  uit = as.data.frame(mapply(per_col, df, variables(model), SIMPLIFY = FALSE))
   uit = apply(uit, 1, paste, collapse = '')
   return(uit)
 }
