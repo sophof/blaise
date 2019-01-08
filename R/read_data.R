@@ -26,6 +26,12 @@ get_positions = function(datamodel){
   end = start + widths - 1
   out = Map(function(a, b) c(a, b), start, end)
   names(out) = model_names(datamodel)
+
+  # If last type is a string, the fwf is usually 'ragged'. allow readr to read
+  # this by setting the end position to NA for that column
+  if (model_types(datamodel)[length(out)] == "STRING"){
+    out[[length(out)]][2] = NA
+  }
   out = out[model_types(datamodel) != 'DUMMY']
   return(do.call(readr::fwf_cols, out))
 }
