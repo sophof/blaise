@@ -95,6 +95,23 @@ test_that("DATETYPE can be used", {
   unlink(datafile)
 })
 
+test_that("character type at the end can also be shorter than supplied size", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  TYPE
+  A : INTEGER[2]
+  B : STRING[2]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  data = "11 a\n22bb\n33c"
+  datafile = makedatafile(data)
+
+  expect_silent({df = read_fwf_blaise(datafile, blafile)})
+})
+
+
 test_that("unknown types throw an error", {
   model = "
   DATAMODEL Test
