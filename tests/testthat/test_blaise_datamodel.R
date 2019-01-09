@@ -54,6 +54,18 @@ test_that("Unknown datatypes throw an error", {
   expect_error(read_model(blafile))
 })
 
+test_that("Empty STRING or large STRING throws an error", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A     : STRING[0]
+  B     : STRING[256]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_error(read_model(blafile))
+})
+
 test_that("datatypes are detected", {
   model =
 "
