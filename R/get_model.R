@@ -42,8 +42,13 @@ get_width = function(col, digits){
     max(normal(col), 3)
   }
 
+  string = function(col){
+    max(normal(col), 1)
+  }
+
   switch(
     EXPR = class(col)[1],
+    character = string(col),
     Date = date(col),
     factor = factor(col),
     numeric = real(col),
