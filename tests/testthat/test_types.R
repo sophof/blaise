@@ -136,11 +136,15 @@ test_that("numbered enums write out the same numbers as are read, including NA",
   expect_equivalent(model_widths(bla), c(1, 2))
 })
 
-test_that("Reals with borderline small values", {
+test_that("Reals with borderline 'small' values", {
   df = data.frame(
-    one = as.numeric(1:9)
+    one = as.numeric(1:9),
+    two = as.numeric(11:19),
+    large_int = as.numeric(9999:10007)
   )
   df[5,] = NA
 
   expect_type_equal(df, 'one')
+  expect_type_equal(df, 'two')
+  expect_type_equal(df, 'large_int')
 })

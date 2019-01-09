@@ -170,3 +170,16 @@ test_that("dataframe can be written with only one row", {
 
   expect_silent(write_fwf_blaise(df, datafile, blafile, model_name = 'test'))
 })
+
+test_that("dataframe can be written with small reals", {
+  df = data.frame(
+    A = as.numeric(1:9),
+    B = as.numeric(11:19),
+    C = as.numeric(99:107)
+  )
+
+  datafile = tempfile(fileext = '.asc')
+  blafile = tempfile(fileext = '.asc')
+
+  expect_silent(write_fwf_blaise(df, datafile, blafile, model_name = 'test'))
+})

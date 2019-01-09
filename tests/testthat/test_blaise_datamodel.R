@@ -120,7 +120,7 @@ test_that("floats lengths and decimals are detected", {
   DATAMODEL Test
   FIELDS
   A     : STRING[9]
-  B     : REAL[2]
+  B     : REAL[3]
   C     : REAL[9,2]
   D     : STRING[4]
   ENDMODEL
@@ -129,7 +129,7 @@ test_that("floats lengths and decimals are detected", {
   expect_silent({bla = read_model(blafile)})
   widths = model_widths(bla)
   decs = model_decimals(bla)
-  expect_equivalent(widths[2], 2)
+  expect_equivalent(widths[2], 3)
   expect_equivalent(widths[3], 9)
   expect_true(is.na(decs[1]))
   expect_true(is.na(decs[2]))

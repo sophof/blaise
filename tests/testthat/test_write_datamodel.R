@@ -92,3 +92,30 @@ test_that("Name can be given to datamodel", {
   test = read_model(blafile)
   expect_equal(name(source), name(test))
 })
+
+test_that("small REALs are accepted but padded", {
+  df = data.frame(
+    A = as.numeric(1:9),
+    B = as.numeric(11:19),
+    C = as.numeric(101:109)
+  )
+
+  datafile = tempfile(fileext = '.bla')
+  dir = tempdir()
+
+  expect_silent(write_datamodel(get_model(df), datafile, name = 'test'))
+  file = readr::read_file(datafile)
+  model ='
+  DATAMODEL test
+  FIELDS
+  A     : REAL[3]
+  B     : REAL[3]
+  C     : REAL[3]
+  ENDMODEL
+  '
+  blafile = makeblafile(model)
+  m1 = read_model(datafile)
+  m2 = read_model(blafile)
+  expect_equal(model_types(m1), model_types(m2))
+  expect_equal(model_widths(m1), model_widths(m2))
+})
