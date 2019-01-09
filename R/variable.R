@@ -8,6 +8,9 @@
     errors = c(errors, paste('type', object@type, 'is unknown'))
   }
 
+  if((width(object) < 1))
+    errors = c(errors, 'width of any variable must be > 0')
+
   if(length(errors) == 0) TRUE else errors
 }
 
