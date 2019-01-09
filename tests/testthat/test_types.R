@@ -148,3 +148,8 @@ test_that("Reals with borderline 'small' values", {
   expect_type_equal(df, 'two')
   expect_type_equal(df, 'large_int')
 })
+
+test_that("empty STRING", {
+  df = dplyr::tibble(A = rep("", 10))
+  expect_type_equal(df, 'A')
+})
