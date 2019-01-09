@@ -8,6 +8,9 @@
   if(!is.na(decimals(object)) & decimals(object) != 0 & decimals(object) > (width(object) - 2))
     errors = c(errors, 'decimals have to be at least 2 smaller than width')
 
+  if((width(object) < 3))
+    errors = c(errors, 'REAL width must be at least 3')
+
   if(length(errors) == 0) TRUE else errors
 }
 
