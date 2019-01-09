@@ -12,7 +12,8 @@ read_data = function(datafile,
     datafile,
     positions,
     col_types = col_types,
-    locale = locale
+    locale = locale,
+    na = ""
   )
 
   df = convert_factors(df, datamodel, numbered_enum)
