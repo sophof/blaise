@@ -151,5 +151,14 @@ test_that("Reals with borderline 'small' values", {
 
 test_that("empty STRING", {
   df = dplyr::tibble(A = rep("", 10))
-  expect_type_equal(df, 'A')
+
+  datafile = tempfile(fileext = '.asc')
+  blafile = tempfile(fileext = '.bla')
+
+  expect_silent(write_fwf_blaise(df, datafile, blafile, model_name = "test"))
+  expect_silent({dfnew = read_fwf_blaise(datafile, blafile)})
+
+  # I think it is reasonable to expect people to convert empty characters from
+  # NA to "" themselves
+  expect_equal(rep(NA_character_, 10), dfnew[['A']])
 })
