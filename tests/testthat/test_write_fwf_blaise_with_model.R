@@ -654,7 +654,7 @@ test_that("lines of output are returned", {
   datafile = tempfile('testasc', fileext = '.asc')
 
   expect_silent({res = write_fwf_blaise_with_model(df, datafile, blafile)})
-  expect_equal(res, c(" 9,0", "10,0", "11,0"))
+  expect_equal(res, c(" 9.0", "10.0", "11.0"))
 })
 
 
