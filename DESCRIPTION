@@ -21,7 +21,9 @@ Imports:
     tools (>= 3.4.1)
 Suggests:
     testthat,
-    LaF (>= 0.6.3)
+    LaF (>= 0.6.3),
+    knitr,
+    rmarkdown
 RoxygenNote: 6.0.1
 Collate:
     'clean_model.R'
@@ -48,3 +50,4 @@ Collate:
     'write_datamodel.R'
     'write_fwf_blaise.R'
     'write_fwf_blaise_with_model.R'
+VignetteBuilder: knitr
