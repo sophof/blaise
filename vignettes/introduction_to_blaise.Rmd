@@ -1,0 +1,185 @@
+---
+title: "Introduction to blaise"
+author: "Sjoerd Ophof"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(blaise)
+```
+
+## Introduction
+
+The blaise package aims to provide an interface between the blaise software and R by enabling
+the reading and writing of blaise datafile sin a transparent manner. The aim is for an average
+user to be able to read or write such a datafile with a single command. Defaults are always
+set in such a way that the data is not changed if a user reads a datafile to a dataframe and 
+immediately writes it to a blaise datafile afterwards.
+
+## Reading a blaise datafile with model
+
+For the purpose of this vignette we need to create some small examples.
+```{r create datafiles}
+model1 = "
+  DATAMODEL Test
+  FIELDS
+  A     : STRING[1]
+  B     : INTEGER[1]
+  C     : REAL[3,1]
+  D     : REAL[3]
+  E     : (Male, Female)
+  F     : 1..20
+  G     : 1.00..100.00
+  ENDMODEL
+  "
+model2 = "
+  DATAMODEL Test
+  FIELDS
+  A     : STRING[1]
+  B     : INTEGER[1]
+  C     : REAL[3,1]
+  D     : REAL[3]
+  E     : (Male (1), Female (2), Unknown (9))
+  F     : 1..20
+  G     : 1.00..100.00
+  ENDMODEL
+  "
+
+data1 =
+"A12.30.11 1  1.00
+B23.41.2210 20.20
+C34.50.0120100.00"
+data2 = 
+"A12,30,11 1  1,00
+B23,41,2210 20,20
+C34,50,0920100,00"
+blafile1 = tempfile('testbla1', fileext = '.bla')
+datafile1 = tempfile('testdata1', fileext = '.asc')
+blafile2 = tempfile('testbla2', fileext = '.bla')
+datafile2 = tempfile('testdata2', fileext = '.asc')
+writeLines(data1, con = datafile1)
+writeLines(model1, con = blafile1)
+writeLines(data2, con = datafile2)
+writeLines(model2, con = blafile2)
+```
+
+These file can then be simply read to a dataframe by using ```read_fwf_blaise```.
+```{r read datafile}
+df = read_fwf_blaise(datafile1, blafile1)
+df
+```
+
+### Resolving reading issues
+
+If you try to read the second datafile with model you will however get some warnings and the resulting
+dataframe will not look as expected.
+```{r}
+df_comma = read_fwf_blaise(datafile2, blafile2)
+df_comma
+```
+
+The blaise package uses readr to actually read the file into memory. Reading problems can therefore be analysed by using ```readr::problems()```
+```{r}
+readr::problems(df_comma)
+```
+
+These results are somewhat easier to parse but still hard to interpret. 
+In this case it is clear that the comma is an unexpected character.
+This is because the locale is set to expect "." as a decimal seperator by default. This setting (and others, such
+as date format, encoding, etc.) can be changed by supplying a readr locale object using ```readr::locale()```.
+```{r}
+df_comma = read_fwf_blaise(datafile2, blafile2, locale = readr::locale(decimal_mark = ","))
+df_comma
+```
+
+### Numbered enums
+
+The second datamodel contains a numbered enum and is therefore read as a factor with number labels. By interpreting it thus the file will be written out exactly the same as can be seen later. This behaviour can be overwritten by using the option ```numbered_enum = FALSE```. If the resulting dataframe is written back to blaise using ```write_fwf_blaise``` it will however write the integers in the set 1,2,3 instead of 1,2,9.
+```{r}
+df_enum = read_fwf_blaise(datafile2, blafile2, locale = readr::locale(decimal_mark = ","), numbered_enum = FALSE)
+df_enum
+```
+
+### output options
+
+Finally, instead of reading the file into memory, a LaF object can be returned instead. For details see the documentation for the ```LaF``` package.
+```{r}
+df_laf = read_fwf_blaise(datafile1, blafile1, output = "laf")
+df_laf
+df_laf$E
+```
+
+## Writing blaise datafiles
+
+Dataframes can also be written out as blaise datafiles. By default this will also write a corresponding blaise
+datamodel with the same filename and a .bla extension
+```{r}
+outfile = tempfile(fileext = ".asc")
+outbla = sub(".asc", ".bla", outfile)
+write_fwf_blaise(df, outfile)
+readr::read_lines(outfile)
+readr::read_lines(outbla)
+```
+
+As can be seen, this is equivalent to the input data and model. An optional name for the datamodel can be
+given with ```output_model``` or the writing of a model can be entirely suppressed by using ```write_model = FALSE```.
+For further options see the help file.
+Implicit conversions from R types to blaise types are as follows:
+
+* character => STRING,
+* integer => INTEGER,
+* numeric => REAL,
+* Date => DATETYPE,
+* factor => ENUM (will convert factor with numbers as labels to character first)
+* logical => INTEGER
+
+Note that information about the labels in the datamodel is lost for the numbered enum type. 
+One way to solve this is by providing an existing datamodel and using ```write_fwf_blaise_with_model```
+as follows.
+```{r}
+outfile_model = tempfile(fileext = ".asc")
+write_fwf_blaise_with_model(df_enum, outfile_model, blafile2)
+readr::read_lines(outfile_with_model)
+```
+
+This results in the same datafile here, but ensures conformity to the datamodel. One could for instance also
+force a different model on the same data.
+```{r}
+model3 = "
+  DATAMODEL Test
+  FIELDS
+  A     : (A, B, C)
+  B     : (Male (1), Female (2), Unknown (3))
+  ENDMODEL
+  "
+blafile3 = tempfile('testbla3', fileext = '.bla')
+writeLines(model3, con = blafile3)
+outfile_new_model = tempfile(fileext = ".asc")
+write_fwf_blaise_with_model(df_enum, outfile_new_model, blafile3)
+readr::read_lines(outfile_new_model)
+```
+
+This explicitly checks for conformity, so if the data can not be converted an error will be shown and nothing will be written to disk.
+```{r, error=TRUE}
+model4 = "
+  DATAMODEL Test
+  FIELDS
+  A     : (A, B)
+  B     : (Male (1), Female (2))
+  ENDMODEL
+  "
+blafile4 = tempfile('testbla4', fileext = '.bla')
+writeLines(model4, con = blafile4)
+outfile_wrong_model = tempfile(fileext = ".asc")
+write_fwf_blaise_with_model(df_enum, outfile_wrong_model, blafile4)
+```
+
