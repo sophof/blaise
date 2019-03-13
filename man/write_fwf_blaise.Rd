@@ -4,9 +4,9 @@
 \alias{write_fwf_blaise}
 \title{Write a fixed width ascii datafile and accompanying blaise datamodel}
 \usage{
-write_fwf_blaise(df, output_data, output_model = NULL, decimal.mark = ".",
-  digits = getOption("digits"), justify = "right", write_model = TRUE,
-  model_name = NULL)
+write_fwf_blaise(df, output_data, output_model = NULL,
+  decimal.mark = ".", digits = getOption("digits"),
+  justify = "right", write_model = TRUE, model_name = NULL)
 }
 \arguments{
 \item{df}{dataframe to write}

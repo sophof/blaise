@@ -26,7 +26,7 @@ Suggests:
     LaF (>= 0.6.3),
     knitr,
     rmarkdown
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Collate:
     'clean_model.R'
     'generics.R'
