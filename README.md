@@ -17,7 +17,8 @@ a simple name matching scheme based on minimising the levensteihn distance is su
 Since blaise and R datatypes don't exactly overlap, some are automatically converted:
 * R Logical type is always converted to an INTEGER with FALSE:0 and TRUE:1 when writing.
 * numbered blaise enums are converted to factors with the numbers as labels. The original labels are therefore lost. 
-(possibly will be implemented as new R vector in the future)
+(possibly will be implemented as new R vector in the future). This can be suppressed,
+but the default is to convert due to the symmetric design principle.
 
 For reading fwf files an option is available to output LaF objects. In this way the 
 package is used as an alternative datamodel parser for the LaF package.
