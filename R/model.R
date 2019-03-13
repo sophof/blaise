@@ -1,4 +1,5 @@
 #' @include variable.R generics.R
+#' @importFrom methods is new
 NULL
 
 setClass(

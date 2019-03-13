@@ -21,8 +21,8 @@ clean_model = function(tekst){
                 '\\[\\1\\2\\3\\]') %>%       # Spaties tussen '[]';
     str_replace_all(" *\\[ *", "[") %>%      # Spaties rond '[';
     str_replace_all(" *\\] *", "]") %>%      # Spaties rond ']';
-    str_replace_all(" *\\.\\. *", "..") %>%  # Spaties rond '..'.
-    Filter(function(x) x != "", .)           # Lege regels.
+    str_replace_all(" *\\.\\. *", "..")      # Spaties rond '..'.
+  regels <- Filter(function(x) x != "", regels) # Lege regels.
 
 
   check_bla(regels)
@@ -50,8 +50,8 @@ check_bla = function(bla){
   if (!str_detect(bla[1], regex('DATAMODEL', ignore_case = TRUE))){
     stop('Datamodel does not start with DATAMODEL but with:', bla[1])
   }
-  if (!str_detect(tail(bla, 1), regex('ENDMODEL', ignore_case = TRUE))){
-    stop('Datamodel does not end with ENDMODEL but with: ', tail(bla, 1))
+  if (!str_detect(utils::tail(bla, 1), regex('ENDMODEL', ignore_case = TRUE))){
+    stop('Datamodel does not end with ENDMODEL but with: ', utils::tail(bla, 1))
   }
   if (!str_detect(bla[2], regex('FIELDS', ignore_case = TRUE))){
     stop('Datamodel does not contain FIELDS, instead found:', bla[2])

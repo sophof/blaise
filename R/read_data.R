@@ -1,4 +1,5 @@
 #' @include variable.R generics.R model.R
+#' @importFrom stats na.omit
 NULL
 
 read_data = function(datafile,

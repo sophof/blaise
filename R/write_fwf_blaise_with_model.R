@@ -11,6 +11,10 @@
 #' @param output_model path and name to output datamodel. If NULL will not write anything.
 #' default is NULL
 #' @param decimal.mark decimal mark to use. Default is ".".
+#' @param digits how many significant digits are to be used for numeric vectors.
+#' The default uses getOption("digits"). This is a suggestion:
+#' enough decimal places will be used so that the smallest (in magnitude) number
+#' has this many significant digits.
 #' @param justify direction of padding for STRING type when data is smaller than the width.
 #' Defaults to right-justified (padded on the left), can be "left", "right" or "centre".
 #' @param max.distance maximum Levenshtein distance to match columns. ignores case changes.

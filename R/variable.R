@@ -1,5 +1,6 @@
 #' @include generics.R
 #' @include utils.R
+#' @importFrom methods is new
 
 .check_validity_var <- function(object) {
   errors = character()

@@ -1,6 +1,7 @@
 #' @include generics.R
 #' @include utils.R
 #' @include variable.R
+#' @importFrom methods .valueClassTest callNextMethod
 
 .check_validity_custom <- function(object) {
   errors = character()

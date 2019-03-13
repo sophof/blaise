@@ -1,4 +1,5 @@
 #' @include variable.R generics.R model.R
+#' @importFrom utils adist
 NULL
 
 # Convert a dataframe to conform to a given blaise datamodel

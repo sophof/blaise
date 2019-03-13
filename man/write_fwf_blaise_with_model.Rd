@@ -5,7 +5,7 @@
 \title{Write a fixed width ascii datafile based on a given blaise datamodel}
 \usage{
 write_fwf_blaise_with_model(df, output_data, input_model, output_model = NULL,
-  decimal.mark = ",", digits = getOption("digits"), justify = "right",
+  decimal.mark = ".", digits = getOption("digits"), justify = "right",
   max.distance = 0L)
 }
 \arguments{
@@ -18,7 +18,12 @@ write_fwf_blaise_with_model(df, output_data, input_model, output_model = NULL,
 \item{output_model}{path and name to output datamodel. If NULL will not write anything.
 default is NULL}
 
-\item{decimal.mark}{decimal mark to use. Default is ",".}
+\item{decimal.mark}{decimal mark to use. Default is ".".}
+
+\item{digits}{how many significant digits are to be used for numeric vectors.
+The default uses getOption("digits"). This is a suggestion:
+enough decimal places will be used so that the smallest (in magnitude) number
+has this many significant digits.}
 
 \item{justify}{direction of padding for STRING type when data is smaller than the width.
 Defaults to right-justified (padded on the left), can be "left", "right" or "centre".}
