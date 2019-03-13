@@ -1,10 +1,9 @@
-#' Read a fixed width ascii datafile using a blaise datamodel
+#' Read a fixed width datafile using a blaise datamodel
 #'
 #' @description
 #' Use this function to read a fwf that is described by a blaise datamodel.
-#' Only handles files with a single datamodel.
 #' If this function throws a warning, try using readr::problems() on the result,
-#' this will usually show an error in the used locale.
+#' this will for instance show an error in the used locale.
 #'
 #' @details
 #' Handles the following types:
@@ -20,21 +19,22 @@
 #' If you want the numbered enums to be converted to their labels, this is possible
 #' by changing the "numbered_enum" parameter
 #'
-#' @param datafile the ascii file with the data
+#' @param datafile the fwf file containing the data
 #'
 #' @param modelfile the datamodel describing the data
 #'
 #' @param locale locale as specified with readr::locale(). Uses "." as default
-#' decimal separator. Can be used to change date_format, timezone, encoding, etc.
+#' decimal separator. Can be used to change decimal spearator, date_format, timezone, encoding, etc.
 #'
 #' @param numbered_enum use actual labels instead of numbers for enums that use non-
-#' standard numbering in the datamodel. With the default 'TRUE' (Male (1), Female (2), Unknown (9))
+#' standard numbering in the datamodel. With the default (TRUE) (Male (1), Female (2), Unknown (9))
 #' will be read as a factor with labels (1, 2, 9). With FALSE it will be read as a factor
 #' (Male, Female, Unknown). beware that writing a dataframe read with FALSE will result in an
-#' enum with levels (1, 2, 3) unless defined by an existint model, since R does not support custom numbering for factors!
+#' enum with levels (1, 2, 3) unless overruled by an existing model, since R does not support
+#' custom numbering for factors.
 #'
 #' @param output Define which output to use. Either "data.frame" (default) or "LaF". LaF does not support
-#' Datetypes, so these are converted to characters. Using LaF, DUMMY vasiables also can't
+#' Datetypes, so these are converted to character vectors. Using LaF, DUMMY vasiables also can't
 #' be ignored, these are read as empty character vectors. Using LaF basically takes over
 #' the parsing of the datamodel from LaF, since this is more robust and accepts more types of input.
 #'
