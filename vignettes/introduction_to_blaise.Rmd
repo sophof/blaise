@@ -148,7 +148,7 @@ as follows.
 ```{r}
 outfile_model = tempfile(fileext = ".asc")
 write_fwf_blaise_with_model(df_enum, outfile_model, blafile2)
-readr::read_lines(outfile_with_model)
+readr::read_lines(outfile_model)
 ```
 
 This results in the same datafile here, but ensures conformity to the datamodel. One could for instance also
