@@ -10,7 +10,7 @@
 #' @param output_data path and name to output datafile. Will add .asc if no extension
 #' @param output_model path and name to output datamodel. If NULL will not write anything.
 #' default is NULL
-#' @param decimal.mark decimal mark to use. Default is ",".
+#' @param decimal.mark decimal mark to use. Default is ".".
 #' @param justify direction of padding for STRING type when data is smaller than the width.
 #' Defaults to right-justified (padded on the left), can be "left", "right" or "centre".
 #' @param max.distance maximum Levenshtein distance to match columns. ignores case changes.
@@ -84,7 +84,7 @@ write_fwf_blaise_with_model = function(df,
                                 output_data,
                                 input_model,
                                 output_model = NULL,
-                                decimal.mark = ',',
+                                decimal.mark = '.',
                                 digits = getOption('digits'),
                                 justify = 'right',
                                 max.distance = 0L){
