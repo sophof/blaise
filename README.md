@@ -1,20 +1,23 @@
-RBlaise
+Blaise R package
 ===============
 
-package om fwf bestanden met een bijbehorend datamodel te lezen of te schrijven 
-in R.
+This package provides function for reading and writing blaise fixed width files
+with a datamodel (usually with extension .bla) symmetrically. 
+Symmetry in this case means that reading a dataset in R and then immediately
+writing it out, should result in the exact same dataset and datamodel.
 
-Alle types worden momenteel ondersteund behalve arrays.
-Datamodellen met code buiten DATAMODEL blok niet getest, werkt misschien niet.
-Moet nog een parser gemaakt worden die enkel het datamodel er uit peutert.
+All types except arrays are currently supported. Datamodels have only been tested 
+as seperate files, so datamodels within larger manipula or maniplus scripts for 
+instance are not guaranteed to work.
 
-Als je al een datamodel hebt kan deze gebruikt worden om automatisch je dataframe 
-te ordenen en types te converteren.
+In addition, an R dataframe can be forced to conform to a known blaise datamodel.
+For this to work variable names in the dataframe need to match the datamodel. 
+a simple name matching scheme based on minimising the levensteihn distance is supplied.
 
-Logical type wordt standaard geconverteerd naar een indicator met als type INTEGER bij het wegschrijven.
+Since blaise and R datatypes don't exactly overlap, some are automatically converted:
+* R Logical type is always converted to an INTEGER with FALSE:0 and TRUE:1 when writing.
+* numbered blaise enums are converted to factors with the numbers as labels. The original labels are therefore lost. 
+(possibly will be implemented as new R vector in the future)
 
-Kan ook gebruikt worden als alternatieve parser voor het LaF package, zodat datamodellen die voor dat
-package niet worden geaccepteerd alsnog gebruikt kunnen worden om een laf object te krijgen.
-
-Bouw met devtools in Rstudio door de .Rproj file te openen en 'build source package'
-uit te voeren.
+For reading fwf files an option is available to output LaF objects. In this way the 
+package is used as an alternative datamodel parser for the LaF package.
