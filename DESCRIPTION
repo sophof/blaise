@@ -16,7 +16,6 @@ Imports:
     readr (>= 1.1.1),
     stringr (>= 1.2.0),
     utils (>= 3.4.1),
-    lubridate (>= 1.6.0),
     tibble (>= 1.3.3),
     tools (>= 3.4.1),
     methods (>= 3.4.1),
