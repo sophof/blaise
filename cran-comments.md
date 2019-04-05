@@ -1,5 +1,5 @@
 ## Test environments
-* local Windows 10, R 3.5.0
+* local Windows 10, R 3.5.3
 * local Ubuntu 18.10 R 3.5.1
 * win-builder (devel)
 
