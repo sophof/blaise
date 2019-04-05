@@ -6,7 +6,7 @@ Authors@R: person("Sjoerd", "Ophof", email = "sjoerd.ophof@gmail.com",
                   role = c("aut", "cre"))
 Description: Can be used to read and write a fwf with an accompanying blaise datamodel.
   When supplying a datamodel for writing, the dataframe will be automatically converted 
-  to that format and checked for compatability.
+  to that format and checked for compatibility.
   Supports dataframes, tibbles and LaF objects.
 License: GPL-3
 Encoding: UTF-8

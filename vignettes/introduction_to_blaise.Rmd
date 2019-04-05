@@ -94,7 +94,7 @@ readr::problems(df_comma)
 
 These results are somewhat easier to parse but still hard to interpret. 
 In this case it is clear that the comma is an unexpected character.
-This is because the locale is set to expect "." as a decimal seperator by default. This setting (and others, such
+This is because the locale is set to expect "." as a decimal separator by default. This setting (and others, such
 as date format, encoding, etc.) can be changed by supplying a readr locale object using ```readr::locale()```.
 ```{r}
 df_comma = read_fwf_blaise(datafile2, blafile2, locale = readr::locale(decimal_mark = ","))

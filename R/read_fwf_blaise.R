@@ -24,7 +24,7 @@
 #' @param modelfile the datamodel describing the data
 #'
 #' @param locale locale as specified with readr::locale(). Uses "." as default
-#' decimal separator. Can be used to change decimal spearator, date_format, timezone, encoding, etc.
+#' decimal separator. Can be used to change decimal separator, date_format, timezone, encoding, etc.
 #'
 #' @param numbered_enum use actual labels instead of numbers for enums that use non-
 #' standard numbering in the datamodel. With the default (TRUE) (Male (1), Female (2), Unknown (9))
@@ -34,7 +34,7 @@
 #' custom numbering for factors.
 #'
 #' @param output Define which output to use. Either "data.frame" (default) or "LaF". LaF does not support
-#' Datetypes, so these are converted to character vectors. Using LaF, DUMMY vasiables also can't
+#' Datetypes, so these are converted to character vectors. Using LaF, DUMMY variables also can't
 #' be ignored, these are read as empty character vectors. Using LaF basically takes over
 #' the parsing of the datamodel from LaF, since this is more robust and accepts more types of input.
 #'

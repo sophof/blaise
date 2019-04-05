@@ -7,12 +7,12 @@ Symmetry in this case means that reading a dataset in R and then immediately
 writing it out, should result in the exact same dataset and datamodel.
 
 All types except arrays are currently supported. Datamodels have only been tested 
-as seperate files, so datamodels within larger manipula or maniplus scripts for 
+as separate files, so datamodels within larger manipula or maniplus scripts for 
 instance are not guaranteed to work.
 
 In addition, an R dataframe can be forced to conform to a known blaise datamodel.
 For this to work variable names in the dataframe need to match the datamodel. 
-a simple name matching scheme based on minimising the levensteihn distance is supplied.
+a simple name matching scheme based on minimizing the Levenshtein distance is supplied.
 
 Since blaise and R datatypes don't exactly overlap, some are automatically converted:
 * R Logical type is always converted to an INTEGER with FALSE:0 and TRUE:1 when writing.
