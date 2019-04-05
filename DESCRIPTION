@@ -24,7 +24,8 @@ Suggests:
     testthat,
     LaF (>= 0.6.3),
     knitr,
-    rmarkdown
+    rmarkdown,
+    lubridate
 RoxygenNote: 6.1.1
 Collate:
     'clean_model.R'

@@ -2,6 +2,7 @@
 * local Windows 10, R 3.5.3
 * local Ubuntu 18.10 R 3.5.1
 * win-builder (devel)
+* R-hub builder 
 
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
