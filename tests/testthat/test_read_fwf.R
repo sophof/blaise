@@ -88,9 +88,9 @@ test_that("DATETYPE can be used", {
   df = read_fwf_blaise(datafile,
                        blafile,
                        locale = readr::locale(date_format = '%Y%m%d'))
-  expect_equal(lubridate::day(df[[1]]), c(1, 2, 3))
-  expect_equal(lubridate::month(df[[1]]), c(4, 5, 6))
-  expect_equal(lubridate::year(df[[1]]), c(2010, 2011, 2012))
+  expect_equal(weekdays(df[[1]]), c("Thursday", "Monday", "Sunday"))
+  expect_equal(months(df[[1]]), c("April", "May", "June"))
+  expect_equal(format(df[[1]], "%Y"), c("2010", "2011", "2012"))
   unlink(blafile)
   unlink(datafile)
 })
