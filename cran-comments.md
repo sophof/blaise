@@ -1,8 +1,7 @@
 ## Test environments
-* local Windows 10, R 3.5.3
+* local Windows 10, R 3.6.0
 * local Ubuntu 18.10 R 3.5.1
-* win-builder (devel)
-* R-hub builder 
+* R-hub builder (Debian Linux, R-devel, GCC)
 
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
