@@ -107,13 +107,13 @@ test_that("padding direction can be supplied", {
 
   expect_silent(write_fwf_blaise(df, datafile, justify = 'left'))
   uit = readr::read_file(datafile)
-  expect_equal(uit, c('t    1\nte  22\ntes333\n'))
+  expect_equal(uit, c('t    1\r\nte  22\r\ntes333\r\n'))
   expect_silent(write_fwf_blaise(df, datafile, justify = 'right'))
   uit = readr::read_file(datafile)
-  expect_equal(uit, c('  t  1\n te 22\ntes333\n'))
+  expect_equal(uit, c('  t  1\r\n te 22\r\ntes333\r\n'))
   expect_silent(write_fwf_blaise(df, datafile, justify = 'centre'))
   uit = readr::read_file(datafile)
-  expect_equal(uit, c(' t   1\nte  22\ntes333\n'))
+  expect_equal(uit, c(' t   1\r\nte  22\r\ntes333\r\n'))
 })
 
 test_that("Automatic name to datamodel", {

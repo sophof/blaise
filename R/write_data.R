@@ -4,7 +4,7 @@ write_data = function(df, model, file, decimal.mark = '.', justify = 'right'){
     stop('total output width is not the sum of the individual column widths')
   }
 
-  readr::write_lines(uit, file, na = '\n')
+  readr::write_lines(uit, file, na = '\n', sep = "\r\n")
 }
 
 # depends on format for doubles

@@ -8,7 +8,8 @@ makeblafile = function(model){
 
 makedatafile = function(data){
   datafile = tempfile('testdata', fileext = '.asc')
-  writeLines(data, con = datafile)
+  charToRaw(data)
+  readr::write_file(data, datafile)
   return(datafile)
 }
 
@@ -111,7 +112,7 @@ test_that("numbered enums write out the same numbers as are read, including NA",
   "
   blafile = makeblafile(model)
 
-  data = "1 1\n2 2\n910"
+  data = "1 1\r\n2 2\r\n910\r\n"
   datafile = makedatafile(data)
   output = tempfile(fileext = '.asc')
   outputbla = tempfile(fileext = '.bla')
@@ -120,10 +121,10 @@ test_that("numbered enums write out the same numbers as are read, including NA",
   expect_silent(write_fwf_blaise(df, output, outputbla))
   outdata = readr::read_file(output)
   bla = read_model(outputbla)
-  expect_equal(outdata, paste0(data, '\n'))
+  expect_equal(outdata, data)
   expect_equivalent(model_widths(bla), c(1, 2))
 
-  data = "1  \n2 2\n 10"
+  data = "1  \r\n2 2\r\n 10\r\n"
   datafile = makedatafile(data)
   output = tempfile(fileext = '.asc')
   outputbla = tempfile(fileext = '.bla')
@@ -132,7 +133,7 @@ test_that("numbered enums write out the same numbers as are read, including NA",
   expect_silent(write_fwf_blaise(df, output, outputbla))
   outdata = readr::read_file(output)
   bla = read_model(outputbla)
-  expect_equal(outdata, paste0(data, '\n'))
+  expect_equal(outdata, data)
   expect_equivalent(model_widths(bla), c(1, 2))
 })
 
