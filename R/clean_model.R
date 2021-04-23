@@ -26,20 +26,6 @@ clean_model = function(tekst){
 }
 
 detect_lines = function(text){
-  reg = stringr::regex(
-    sprintf('(?:%s|%s|%s|%s|%s|%s|%s)',
-            'DATAMODEL.*',
-            'FIELDS',
-            'ENDMODEL',
-            '.+:[\\s\\n]*[^\\(][\\d.,]+',
-            '.+:[\\s\\n]*[^\\(]\\w+(\\s*\\[[\\w,\\s]+\\])?',
-            'DUMMY\\s*(?:\\[\\d+\\])',
-            '.+:[\\s\\n]*\\([\\s\\n,\\w\\-(\\(\\s*\\d+\\s*\\))]+\\)'
-    ),
-    ignore_case = TRUE
-  )
-
-  f_name = ".+[\\s\\n]*?(\\\".+\\\")?[\\s\\n]*?"
   options = c(
     'DATAMODEL.*',
     'FIELDS',
