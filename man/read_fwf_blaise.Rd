@@ -4,8 +4,13 @@
 \alias{read_fwf_blaise}
 \title{Read a fixed width datafile using a blaise datamodel}
 \usage{
-read_fwf_blaise(datafile, modelfile, locale = readr::locale(),
-  numbered_enum = TRUE, output = "data.frame")
+read_fwf_blaise(
+  datafile,
+  modelfile,
+  locale = readr::locale(),
+  numbered_enum = TRUE,
+  output = "data.frame"
+)
 }
 \arguments{
 \item{datafile}{the fwf file containing the data}
