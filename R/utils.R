@@ -32,5 +32,6 @@ remove_nested_comments = function(tekst){
     tekst0 <- tekst
     tekst <- str_replace_all(tekst, "(?s)\\{[^\\{\\}]*\\}", "")
   }
+  tekst <- str_replace_all(tekst, "[\\r\\n][[:space:]]*","\r\n") # simplify big whitespaces
   return(tekst)
 }
