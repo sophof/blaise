@@ -3,6 +3,7 @@
 #' @import dplyr
 read_custom_types = function(bla){
   block = extract_type_block(bla)
+  if(is.na(block[[1]])) return(NULL)
   types = extract_custom_types(block)
   if(is.na(types[[1]])) return(NULL)
   ret = lapply(types, parse_type)
