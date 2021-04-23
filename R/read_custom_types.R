@@ -43,8 +43,8 @@ extract_type_block = function(bla){
                                  ignore_case = TRUE,
                                  dotall = TRUE))
 
-  #pak TYPE sectie
-  reg = regex('(?<=TYPE)\\s*.*\\)\\s*\\)\\s*',
+  #pak TYPE section
+  reg = regex('(?<=(?<!DATE)TYPE)\\s*.*\\)\\s*\\)\\s*(?=FIELDS)',
               ignore_case = TRUE,
               dotall = TRUE)
   str_extract(bla, reg)
