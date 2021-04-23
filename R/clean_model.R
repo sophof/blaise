@@ -11,7 +11,7 @@ clean_model = function(tekst){
     str_replace("^[:blank:]*", "") %>%       # Spaties aan het begin;
     str_replace("[:blank:]*$", "") %>%       # Spaties aan het einde;
     str_replace_all("[:blank:]+", " ") %>%   # Spaties achter elkaar;
-    str_replace_all("\".*\"", "") %>%        # Tekst tussen '"';
+    str_replace_all("\".*?\"", "") %>%        # Tekst tussen '"';
     str_replace_all(" *: *", ":") %>%        # Spaties rond ':';
     str_replace('\\[(\\d+)\\s*(,)?\\s*(\\d+)?\\]',
                 '\\[\\1\\2\\3\\]') %>%       # Spaties tussen '[]';
@@ -26,14 +26,15 @@ clean_model = function(tekst){
 }
 
 detect_lines = function(text){
+  f_name <- '.+[\\s\\n]*?(\\".+\\")?[\\s\\n]*?'
   options = c(
     'DATAMODEL.*',
     'FIELDS',
     'ENDMODEL',
-    '.+:[\\s\\n]*[^\\(][\\d.,]+',                                                   # integer and reals repr. as 1..9
-    '.+[\\s\\n]*?(\\".+\\")?[\\s\\n]*?:[\\s\\n]*[^\\(]\\w+(\\s*\\[[\\w,\\s]+\\])?', # Standard fields like STRING[1]
-    'DUMMY\\s*(?:\\[\\d+\\])',                                                      # DUMMY vars
-    '.+:[\\s\\n]*\\([\\s\\n,\\w\\-(\\(\\s*\\d+\\s*\\))]+\\)'                        # enums
+    '.+:[\\s\\n]*[^\\(][\\d.,]+',                                                  # integer and reals repr. as 1..9
+    paste0(f_name, ':[\\s\\n]*[^\\(]\\w+(\\s*\\[[\\w,\\s]+\\])?'),                 # Standard fields like STRING[1]
+    'DUMMY\\s*(?:\\[\\d+\\])',                                                     # DUMMY vars
+    paste0(f_name, ':[\\s\\n]*\\([\\s\\n,\\w\\-(\\(\\s*\\d+\\s*\\))\\"]+\\)')      # enums
   )
   reg = stringr::regex(
     paste0("(?:", paste(options, collapse = "|"), ")"),
