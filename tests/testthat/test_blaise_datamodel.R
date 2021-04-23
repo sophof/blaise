@@ -207,14 +207,17 @@ test_that("ENUMS accept secondary text", {
     "
   DATAMODEL Test
   FIELDS
-  A     : (Male \"Man\", Female \"vrouw\")
+  A           : (Male \"Man\", Female \"vrouw\")
+  B \"VAR B\" : (Male \"Man\", Female \"vrouw\")
   ENDMODEL
   "
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equivalent(model_names(bla), 'A')
-  expect_equivalent(model_types(bla), 'ENUM')
+  expect_equivalent(model_names(bla), c('A', 'B'))
+  expect_equivalent(model_types(bla), c('ENUM', 'ENUM'))
   expect_equivalent(model_labels(bla)[[1]],
+                    c('Male', 'Female'))
+  expect_equivalent(model_labels(bla)[[2]],
                     c('Male', 'Female'))
 })
 
@@ -634,19 +637,24 @@ test_that("numbered enums accept secondary text", {
   model = "
   DATAMODEL Test
   FIELDS
-  A     : (Male (1) \"Man\",
-           Female (2) \"Vrouw\",
-           Unknown (9) \"Onbekend\")
+  A           : (Male (1) \"Man\",
+                 Female (2) \"Vrouw\",
+                 Unknown (9) \"Onbekend\")
+  B \"VAR B\" : (Male (1) \"Man\",
+                 Female (2) \"Vrouw\",
+                 Unknown (9) \"Onbekend\")
   ENDMODEL
   "
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equivalent(model_names(bla), 'A')
-  expect_equivalent(model_types(bla), 'ENUM')
-  expect_equivalent(model_widths(bla), 1)
+  expect_equivalent(model_names(bla), c('A', 'B'))
+  expect_equivalent(model_types(bla), c('ENUM', 'ENUM'))
+  expect_equivalent(model_widths(bla), c(1,1))
   expect_equivalent(model_labels(bla)[[1]], c('Male', 'Female', 'Unknown'))
   expect_equivalent(model_levels(bla)[[1]], c(1, 2, 9))
+  expect_equivalent(model_labels(bla)[[2]], c('Male', 'Female', 'Unknown'))
+  expect_equivalent(model_levels(bla)[[2]], c(1, 2, 9))
 })
 
 test_that("Custom Types can be read", {
