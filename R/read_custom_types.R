@@ -36,14 +36,10 @@ extract_custom_types = function(block){
 
 extract_type_block = function(bla){
   # Verwijder genest commentaar.
-  tekst0 = ""
-  while (bla != tekst0) {
-    tekst0 = bla
-    bla = str_replace_all(bla, "(?s)\\{[^\\{\\}]*\\}", "")
-  }
+  bla <- remove_nested_comments(bla)
 
   #pak datamodel
-  model = str_extract(bla, regex('(?<=DATAMODEL).*(?=ENDMODEL)',
+  bla = str_extract(bla, regex('(?<=DATAMODEL).*(?=ENDMODEL)',
                                  ignore_case = TRUE,
                                  dotall = TRUE))
 

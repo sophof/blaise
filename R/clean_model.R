@@ -2,11 +2,7 @@
 #' @import dplyr
 clean_model = function(tekst){
   # Verwijder genest commentaar.
-  tekst0 <- ""
-  while (tekst != tekst0) {
-    tekst0 <- tekst
-    tekst <- str_replace_all(tekst, "(?s)\\{[^\\{\\}]*\\}", "")
-  }
+  tekst <- remove_nested_comments(tekst)
 
   regels <-                                        # Splits en verwijder ...
     detect_lines(tekst) %>%                  # Deel op in velden
@@ -40,6 +36,21 @@ detect_lines = function(text){
             'DUMMY\\s*(?:\\[\\d+\\])',
             '.+:[\\s\\n]*\\([\\s\\n,\\w\\-(\\(\\s*\\d+\\s*\\))]+\\)'
     ),
+    ignore_case = TRUE
+  )
+
+  f_name = ".+[\\s\\n]*?(\\\".+\\\")?[\\s\\n]*?"
+  options = c(
+    'DATAMODEL.*',
+    'FIELDS',
+    'ENDMODEL',
+    '.+:[\\s\\n]*[^\\(][\\d.,]+',                                                   # integer and reals repr. as 1..9
+    '.+[\\s\\n]*?(\\".+\\")?[\\s\\n]*?:[\\s\\n]*[^\\(]\\w+(\\s*\\[[\\w,\\s]+\\])?', # Standard fields like STRING[1]
+    'DUMMY\\s*(?:\\[\\d+\\])',                                                      # DUMMY vars
+    '.+:[\\s\\n]*\\([\\s\\n,\\w\\-(\\(\\s*\\d+\\s*\\))]+\\)'                        # enums
+  )
+  reg = stringr::regex(
+    paste0("(?:", paste(options, collapse = "|"), ")"),
     ignore_case = TRUE
   )
 

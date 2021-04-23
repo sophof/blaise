@@ -22,3 +22,14 @@ condition <- function(subclass, message, call = sys.call(-1), ...) {
     list(message = message, call = call, ...)
   )
 }
+
+#' @import stringr
+# Nested comments are hard to remove with regex, therefore this helper function
+remove_nested_comments = function(tekst){
+  tekst0 <- ""
+  while (tekst != tekst0) {
+    tekst0 <- tekst
+    tekst <- str_replace_all(tekst, "(?s)\\{[^\\{\\}]*\\}", "")
+  }
+  return(tekst)
+}
