@@ -68,13 +68,21 @@ test_that("secondary text is accepted", {
   F \"VAR F\" : (Male, Female)
   G \"VAR G\" : 1..20
   H \"VAR H\" : 1.0..99.9
+  I \"VAR I\" : (Male (1), Female (2), Unknown (9))
   ENDMODEL
   "
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
-  expect_equivalent(model_names(bla), c('A', 'B'))
+  expect_equivalent(model_names(bla), c('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', "I"))
   expect_equivalent(model_types(bla), c('STRING',
-                                        'INTEGER'))
+                                        'INTEGER',
+                                        'REAL',
+                                        'STRING',
+                                        'DATETYPE',
+                                        'ENUM',
+                                        'INTEGER',
+                                        'REAL',
+                                        'ENUM'))
 })
 
 test_that("Empty STRING or large STRING throws an error", {
