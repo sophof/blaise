@@ -242,6 +242,96 @@ test_that("field descriptions over multiple lines work", {
   expect_equivalent(model_names(bla), 'A')
   expect_equivalent(model_types(bla), 'ENUM')
   expect_equivalent(model_widths(bla), 1)
+
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A
+  :STRING[9]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(model_names(bla), 'A')
+  expect_equivalent(model_types(bla), 'STRING')
+  expect_equivalent(model_widths(bla), 9)
+
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A
+  :
+  STRING[9]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(model_names(bla), 'A')
+  expect_equivalent(model_types(bla), 'STRING')
+  expect_equivalent(model_widths(bla), 9)
+
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A \"test\"
+  :
+  STRING[9]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(model_names(bla), 'A')
+  expect_equivalent(model_types(bla), 'STRING')
+  expect_equivalent(model_widths(bla), 9)
+
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A
+  \"test\"
+  :
+  STRING[9]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(model_names(bla), 'A')
+  expect_equivalent(model_types(bla), 'STRING')
+  expect_equivalent(model_widths(bla), 9)
+
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A
+  \"test\":
+  STRING[9]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(model_names(bla), 'A')
+  expect_equivalent(model_types(bla), 'STRING')
+  expect_equivalent(model_widths(bla), 9)
+
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A
+  \"test\"
+  :STRING[9]
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(model_names(bla), 'A')
+  expect_equivalent(model_types(bla), 'STRING')
+  expect_equivalent(model_widths(bla), 9)
 })
 
 
