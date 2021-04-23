@@ -396,8 +396,8 @@ test_that("field descriptions over multiple lines work", {
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
   expect_equivalent(model_names(bla), 'A')
-  expect_equivalent(model_types(bla), 'STRING')
-  expect_equivalent(model_widths(bla), 9)
+  expect_equivalent(model_types(bla), 'ENUM')
+  expect_equivalent(model_widths(bla), 1)
 })
 
 
