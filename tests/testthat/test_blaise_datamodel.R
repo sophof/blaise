@@ -18,18 +18,19 @@ FIELDS
   F     : (Male, Female)
   G     : 1..20
   H     : 1.0..99.9
+  I     : (Male (1), Female (2), Unknown (9))
 { multiline comment {with nesting}
   second line}
 ENDMODEL
 "
-  Ncols = 8
+  Ncols = 9
 
   blafile = makeblafile(model)
   expect_silent({bla = read_model(blafile)})
   expect_true(length(model_names(bla)) == Ncols)
   expect_true(length(model_types(bla)) == Ncols)
   expect_true(length(model_widths(bla)) == Ncols)
-  expect_equivalent(model_names(bla), c('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'))
+  expect_equivalent(model_names(bla), c('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', "I"))
   expect_equivalent(model_types(bla), c('STRING',
                                            'INTEGER',
                                            'REAL',
@@ -37,7 +38,8 @@ ENDMODEL
                                            'DATETYPE',
                                            'ENUM',
                                            'INTEGER',
-                                           'REAL'))
+                                           'REAL',
+                                           'ENUM'))
 })
 
 test_that("Unknown datatypes throw an error", {
@@ -52,6 +54,35 @@ test_that("Unknown datatypes throw an error", {
   "
   blafile = makeblafile(model)
   expect_error(read_model(blafile))
+})
+
+test_that("secondary text is accepted", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A \"var A\" : STRING[9]
+  B \"VAR B\" : INTEGER[2]
+  C \"VAR C\" : REAL[9,2]
+  D \"VAR D\" : STRING[4]
+  E \"VAR E\" : DATETYPE  {testcomment}
+  F \"VAR F\" : (Male, Female)
+  G \"VAR G\" : 1..20
+  H \"VAR H\" : 1.0..99.9
+  I \"VAR I\" : (Male (1), Female (2), Unknown (9))
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(model_names(bla), c('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', "I"))
+  expect_equivalent(model_types(bla), c('STRING',
+                                        'INTEGER',
+                                        'REAL',
+                                        'STRING',
+                                        'DATETYPE',
+                                        'ENUM',
+                                        'INTEGER',
+                                        'REAL',
+                                        'ENUM'))
 })
 
 test_that("Empty STRING or large STRING throws an error", {
@@ -169,6 +200,25 @@ test_that("ENUMS get correctly read", {
                c('1', '2', '3', '4', '5', '6', '7', '8', '9', '10'))
   expect_equivalent(model_labels(bla)[[3]],
                NA_character_)
+})
+
+test_that("ENUMS accept secondary text", {
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A           : (Male \"Man\", Female \"vrouw\")
+  B \"VAR B\" : (Male \"Man\", Female \"vrouw\")
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(model_names(bla), c('A', 'B'))
+  expect_equivalent(model_types(bla), c('ENUM', 'ENUM'))
+  expect_equivalent(model_labels(bla)[[1]],
+                    c('Male', 'Female'))
+  expect_equivalent(model_labels(bla)[[2]],
+                    c('Male', 'Female'))
 })
 
 test_that("alternative representations for INTEGER and REAL work", {
@@ -332,6 +382,22 @@ test_that("field descriptions over multiple lines work", {
   expect_equivalent(model_names(bla), 'A')
   expect_equivalent(model_types(bla), 'STRING')
   expect_equivalent(model_widths(bla), 9)
+
+  model =
+    "
+  DATAMODEL Test
+  FIELDS
+  A
+  \"test\":
+  (c1 (1) \"tekst1\",
+   c2 (2) \"tekst2\")
+  ENDMODEL
+  "
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(model_names(bla), 'A')
+  expect_equivalent(model_types(bla), 'ENUM')
+  expect_equivalent(model_widths(bla), 1)
 })
 
 
@@ -565,6 +631,30 @@ test_that("numbered enums work when constructed vertically", {
                                            'DUMMY',
                                            'ENUM'))
   expect_equivalent(model_widths(bla), c(1, 1, 2))
+})
+
+test_that("numbered enums accept secondary text", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+  A           : (Male (1) \"Man\",
+                 Female (2) \"Vrouw\",
+                 Unknown (9) \"Onbekend\")
+  B \"VAR B\" : (Male (1) \"Man\",
+                 Female (2) \"Vrouw\",
+                 Unknown (9) \"Onbekend\")
+  ENDMODEL
+  "
+
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(model_names(bla), c('A', 'B'))
+  expect_equivalent(model_types(bla), c('ENUM', 'ENUM'))
+  expect_equivalent(model_widths(bla), c(1,1))
+  expect_equivalent(model_labels(bla)[[1]], c('Male', 'Female', 'Unknown'))
+  expect_equivalent(model_levels(bla)[[1]], c(1, 2, 9))
+  expect_equivalent(model_labels(bla)[[2]], c('Male', 'Female', 'Unknown'))
+  expect_equivalent(model_levels(bla)[[2]], c(1, 2, 9))
 })
 
 test_that("Custom Types can be read", {

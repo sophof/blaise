@@ -3,6 +3,7 @@
 #' @import dplyr
 read_custom_types = function(bla){
   block = extract_type_block(bla)
+  if(is.na(block[[1]])) return(NULL)
   types = extract_custom_types(block)
   if(is.na(types[[1]])) return(NULL)
   ret = lapply(types, parse_type)
@@ -36,19 +37,15 @@ extract_custom_types = function(block){
 
 extract_type_block = function(bla){
   # Verwijder genest commentaar.
-  tekst0 = ""
-  while (bla != tekst0) {
-    tekst0 = bla
-    bla = str_replace_all(bla, "(?s)\\{[^\\{\\}]*\\}", "")
-  }
+  bla <- remove_nested_comments(bla)
 
   #pak datamodel
-  model = str_extract(bla, regex('(?<=DATAMODEL).*(?=ENDMODEL)',
+  bla = str_extract(bla, regex('(?<=DATAMODEL).*(?=ENDMODEL)',
                                  ignore_case = TRUE,
                                  dotall = TRUE))
 
-  #pak TYPE sectie
-  reg = regex('(?<=TYPE)\\s*.*\\)\\s*\\)\\s*',
+  #pak TYPE section
+  reg = regex('(?<=(?<!DATE)TYPE)\\s*.*\\)\\s*\\)\\s*(?=FIELDS)',
               ignore_case = TRUE,
               dotall = TRUE)
   str_extract(bla, reg)
