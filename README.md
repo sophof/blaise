@@ -22,3 +22,7 @@ but the default is to convert due to the symmetric design principle.
 
 For reading fwf files an option is available to output LaF objects. In this way the 
 package is used as an alternative datamodel parser for the LaF package.
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/sophof/blaise/workflows/R-CMD-check/badge.svg)](https://github.com/sophof/blaise/actions)
+<!-- badges: end -->
