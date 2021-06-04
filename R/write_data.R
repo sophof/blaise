@@ -28,7 +28,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
     else if(class(col) == 'Date') col = as.character.Date(col, format = '%Y%m%d')
 
     # Doubles with specific decimals
-    else if (is.numeric(col) & !is.na(decimals(var))){
+    else if (type(var) == "REAL" & !is.na(decimals(var))){
       info = format.info(col[!nas])
       if(info[2] > decimals(var) | info[1] > width(var)){
         message('reducing significance for variable ',
@@ -36,6 +36,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
                 ' since the datamodel requires less significance')
         col = round(col, decimals(var))
       }
+      if (width(var) == 1) stop("width can not be 1 or smaller for REAL:", name(var))
       col[!nas] = format(round(col[!nas], decimals(var)),
                          decimal.mark = decimal.mark,
                          digits = width(var) - 1,
@@ -45,7 +46,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
     }
 
     # Doubles with no specific decimals
-    else if (is.numeric(col) & is.na(decimals(var))){
+    else if (type(var) == "REAL" & is.na(decimals(var))){
       info = format.info(col[!nas])
       if(info[1] > width(var)) {
         message('reducing significance for variable ',
@@ -53,6 +54,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
                 ' since the datamodel requires less significance')
         col = signif(col, width(var) - 1)
       }
+      if (width(var) == 1) stop("width can not be 1 or smaller for REAL:", name(var))
       col[!nas] = format(col[!nas],
                          decimal.mark = decimal.mark,
                          width = width(var),
