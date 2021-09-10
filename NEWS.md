@@ -1,4 +1,4 @@
-# blaise 1.3.7
+# blaise 1.3.8
 Fixed a big with readr that would cause blaise to break on files with empty rows.
 
 # blaise 1.3.7
