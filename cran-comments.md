@@ -5,6 +5,8 @@ This is a resubmission. In this version I have:
 
 * Added information about the Blaise format in the description
 
+* Enclosed the URL in the description in brackets
+
 ## Test environments
 * local Windows 10, R 4.1.0
 * remote Ubuntu 20.04 R 4.1.1 (travis)
