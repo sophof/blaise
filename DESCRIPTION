@@ -5,14 +5,14 @@ Version: 1.3.8
 Authors@R: person("Sjoerd", "Ophof", email = "sjoerd.ophof@gmail.com",
                   role = c("aut", "cre"))
 Description: Can be used to read and write a fwf with an accompanying 'Blaise' datamodel.
-  Blaise is the software suite built by Statistics Netherlands (CBS). It is essentially a 
-  way to write and collect surveys and perform statistical analysis on the data. It stores its data in 
-  fixed width format with an accompanying metadata file, this is the Blaise format. The package automatically 
-  interprets this metadata and reads the file into an R dataframe.
-  When supplying a datamodel for writing, the dataframe will be automatically converted 
-  to that format and checked for compatibility.
-  Supports dataframes, tibbles and LaF objects.
-  For more information about 'Blaise', see https://blaise.com/products/general-information
+    Blaise is the software suite built by Statistics Netherlands (CBS). It is essentially a 
+    way to write and collect surveys and perform statistical analysis on the data. It stores its data in 
+    fixed width format with an accompanying metadata file, this is the Blaise format. The package automatically 
+    interprets this metadata and reads the file into an R dataframe.
+    When supplying a datamodel for writing, the dataframe will be automatically converted 
+    to that format and checked for compatibility.
+    Supports dataframes, tibbles and LaF objects.
+    For more information about 'Blaise', see https://blaise.com/products/general-information. 
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
