@@ -9,6 +9,8 @@ writing it out, should result in the exact same dataset and datamodel.
 All types except arrays are currently supported. Datamodels have only been tested 
 as separate files, so datamodels within larger manipula or maniplus scripts for 
 instance are not guaranteed to work.
+Datamodels from questionnaires are also mostly untested. Known limitations at this
+point are the NODK and NORF options, but there are likely to be more.
 
 In addition, an R dataframe can be forced to conform to a known blaise datamodel.
 For this to work variable names in the dataframe need to match the datamodel. 
