@@ -16,7 +16,7 @@
 #' @param df dataframe to write
 #' @param output_data path and name to output datafile. Will add .asc if no extension
 #' @param output_model path and name to output datamodel. If NULL will use the
-#' same name as output_data with .bla extension unless and input_model is given.
+#' same name as output_data with .bla extension.
 #' @param decimal.mark decimal mark to use. Default is ".".
 #' @param digits how many significant digits are to be used for numeric and
 #' complex x. The default uses getOption("digits"). This is a suggestion:
