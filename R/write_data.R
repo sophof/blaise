@@ -25,7 +25,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
     }
 
     # Dates
-    else if(class(col) == 'Date') col = as.character.Date(col, format = '%Y%m%d')
+    else if(class(col) == 'Date') col = format(col, format = '%Y%m%d')
 
     # Doubles with specific decimals
     else if (type(var) == "REAL" & !is.na(decimals(var))){
