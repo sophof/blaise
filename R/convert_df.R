@@ -68,7 +68,7 @@ find_names = function(names, model, max.distance){
 
 cast_type = function(var, original){
   # cast dates to string
-  if(class(original) == 'Date' & type(var) == 'STRING') {
+  if(inherits(original, 'Date') & type(var) == 'STRING') {
     return(format(original, format = '%Y%m%d'))
   }
 

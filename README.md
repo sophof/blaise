@@ -27,4 +27,5 @@ package is used as an alternative datamodel parser for the LaF package.
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/sophof/blaise/workflows/R-CMD-check/badge.svg)](https://github.com/sophof/blaise/actions)
+[![R-CMD-check](https://github.com/sophof/blaise/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sophof/blaise/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->

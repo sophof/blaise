@@ -8,7 +8,7 @@ read_data_laf = function(datafile,
   laf_dm = make_laf_dm(datafile, datamodel, locale)
   l = list()
   for (var in variables(datamodel)){
-    if(class(var) == "variable_enum"){
+    if(inherits(var, "variable_enum")){
       if(is.numbered_enum(var) & numbered_enum)
         lab = variable_levels(var)
       else
