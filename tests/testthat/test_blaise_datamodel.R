@@ -657,6 +657,22 @@ test_that("numbered enums accept secondary text", {
   expect_equivalent(model_levels(bla)[[2]], c(1, 2, 9))
 })
 
+test_that("field names can contain special names", {
+  model = "
+  DATAMODEL Test
+  FIELDS
+    testfields : string[3]
+    isced97fields3\"oude isced tydelyk\"   :string[3]
+  ENDMODEL
+  "
+
+  blafile = makeblafile(model)
+  expect_silent({bla = read_model(blafile)})
+  expect_equivalent(model_names(bla), c('testfields', 'isced97fields3'))
+  expect_equivalent(model_types(bla), c('STRING','STRING'))
+  expect_equivalent(model_widths(bla), c(3,3))
+})
+
 test_that("Custom Types can be read", {
   model = "
   DATAMODEL Test
