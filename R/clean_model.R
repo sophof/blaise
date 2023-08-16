@@ -27,9 +27,9 @@ clean_model = function(tekst){
 detect_lines = function(text){
   f_name <- '.+[\\s\\n]*?[\\s\\n]*?'
   options = c(
-    'DATAMODEL.*',
-    'FIELDS',
-    'ENDMODEL',
+    '\\bDATAMODEL\\b.*',
+    '\\bFIELDS\\b',
+    '\\bENDMODEL\\b',
     '.+:[\\s\\n]*[^\\(][\\d.,]+',                                                  # integer and reals repr. as 1..9
     paste0(f_name, ':[\\s\\n]*[^\\(]\\w+(\\s*\\[[\\w,\\s]+\\])?'),                 # Standard fields like STRING[1]
     'DUMMY\\s*(?:\\[\\d+\\])',                                                     # DUMMY vars

@@ -33,7 +33,7 @@ parse_bla = function(bla, custom_types){
 
 remove_non_fields = function(bla){
   modelname = str_detect(bla, regex('^DATAMODEL', ignore_case = TRUE))
-  FIELDS = str_detect(bla, regex('FIELDS', ignore_case = TRUE))
+  FIELDS = str_detect(bla, regex('\\bFIELDS\\b', ignore_case = TRUE))
   ENDMODEL = str_detect(bla, regex('ENDMODEL', ignore_case = TRUE))
   bla[!(modelname | ENDMODEL | FIELDS)]
 }
