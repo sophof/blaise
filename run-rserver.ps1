@@ -1,0 +1,1 @@
+docker run --rm -ti -e DISABLE_AUTH=true -p 8787:8787 --name blaise-devel -v ${PWD}/:/home/rstudio/workspace blaise-devel
