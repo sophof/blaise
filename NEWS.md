@@ -1,3 +1,6 @@
+# blaise 1.3.10
+fixed bug where the word 'fields' anywhere in a variable would prevent a correct parse of the datamodel
+
 # blaise 1.3.9
 fixed warnings and errors caused by new Date formatting style in base R
 
