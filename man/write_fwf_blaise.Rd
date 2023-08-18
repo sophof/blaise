@@ -21,7 +21,7 @@ write_fwf_blaise(
 \item{output_data}{path and name to output datafile. Will add .asc if no extension}
 
 \item{output_model}{path and name to output datamodel. If NULL will use the
-same name as output_data with .bla extension unless and input_model is given.}
+same name as output_data with .bla extension.}
 
 \item{decimal.mark}{decimal mark to use. Default is ".".}
 

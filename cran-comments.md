@@ -1,20 +1,16 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* fixed warnings and errors caused by new Date formatting style in base R
+* fixed bug where the word 'fields' anywhere in a variable would prevent a correct parse of the datamodel
 
 ## Test environments
-* local Windows 10, R 4.3.0
-* Remote Windows server 2022, R-devel (rhub)
-* remote mac-os-latest (release) (usethis R-CMD)
-* remote windows-latest (release) (usethis R-CMD)
-* remote ubuntu-latest (release) (usethis R-CMD)
-* remote ubuntu-latest (devel) (usethis R-CMD)
-* remote ubuntu-latest (oldrel-1) (usethis R-CMD)
+* local Ubuntu docker container, R-devel
+* Remote Windows server 2022, R-devel (devtools check_win_devel)
+* remote mac-os-latest (release) (R-lib actions)
+* remote windows-latest (release) (R-lib actions)
+* remote ubuntu-latest (release) (R-lib actions)
+* remote ubuntu-latest (devel) (R-lib actions)
+* remote ubuntu-latest (oldrel-1) (R-lib actions)
 
 ## R CMD check results
-There were no ERRORs, WARNINGs 1 NOTES.
-
-* checking for detritus in the temp directory ... NOTE
-Found the following files/directories:
-  'lastMiKTeXException'
+There were no ERRORs, WARNINGs or NOTES.

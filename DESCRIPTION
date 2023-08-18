@@ -30,7 +30,7 @@ Suggests:
     LaF (>= 0.6.3),
     knitr,
     rmarkdown
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 Collate:
     'clean_model.R'
     'generics.R'
