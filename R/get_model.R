@@ -43,7 +43,7 @@ get_width = function(col, digits){
   }
 
   string = function(col){
-    max(normal(col), 1)
+    max(nchar(col), 1)
   }
 
   switch(
