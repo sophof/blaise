@@ -183,3 +183,19 @@ test_that("dataframe can be written with small reals", {
 
   expect_silent(write_fwf_blaise(df, datafile, blafile, model_name = 'test'))
 })
+
+test_that("dataframe can be written with escaped strings", {
+  df = data.frame(
+    A = "0_escapes",
+    B = "1_\\escape",
+    C = "\\2esc\\"
+  )
+
+  datafile = tempfile(fileext = '.asc')
+  
+  write_fwf_blaise(df, datafile, write_model = FALSE)
+
+  data_str = readLines(datafile)
+  expected_data_str = paste0(df, collapse = "")
+  expect_equal(data_str, expected_data_str)
+})
