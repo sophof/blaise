@@ -1,6 +1,6 @@
 write_data = function(df, model, file, decimal.mark = '.', justify = 'right'){
   uit = create_fixed_width_column(df, model, decimal.mark, justify)
-  if (format.info(uit)[1] != sum(model_widths(model))){
+  if (max(nchar(uit)) != sum(model_widths(model))) {
     stop('total output width is not the sum of the individual column widths')
   }
 
@@ -79,7 +79,7 @@ create_fixed_width_column = function(df, model, decimal.mark, justify){
                             scientific = FALSE)
 
     col = replace_NA(col, width(var))
-    nmax = format.info(col)[1]
+    nmax = if (is.character(col)) max(nchar(col)) else format.info(col)[1]
     if(width(var) < nmax){
       stop('width in datamodel smaller than number of characters of largest element for variable: ',
            name(var))

@@ -22,10 +22,7 @@ test_that("all types are accepted", {
   df$string = as.character(df$factor)
 
   datafile = tempfile(fileext = '.bla')
-  dir = tempdir()
-
   expect_silent(write_datamodel(get_model(df), datafile))
-  file = readr::read_file(datafile)
   model ='
   DATAMODEL
   FIELDS
@@ -53,10 +50,7 @@ test_that("boolean is converted to INTEGER", {
   df[5,] = NA
 
   datafile = tempfile(fileext = '.bla')
-  dir = tempdir()
-
   expect_silent(write_datamodel(get_model(df), datafile))
-  file = readr::read_file(datafile)
   model ='
   DATAMODEL
   FIELDS
@@ -77,10 +71,7 @@ test_that("Name can be given to datamodel", {
   )
 
   datafile = tempfile(fileext = '.bla')
-  dir = tempdir()
-
   expect_silent(write_datamodel(get_model(df), datafile, name = 'test'))
-  file = readr::read_file(datafile)
   model ='
   DATAMODEL test
   FIELDS
@@ -101,10 +92,7 @@ test_that("small REALs are accepted but padded", {
   )
 
   datafile = tempfile(fileext = '.bla')
-  dir = tempdir()
-
   expect_silent(write_datamodel(get_model(df), datafile, name = 'test'))
-  file = readr::read_file(datafile)
   model ='
   DATAMODEL test
   FIELDS
@@ -116,6 +104,31 @@ test_that("small REALs are accepted but padded", {
   blafile = makeblafile(model)
   m1 = read_model(datafile)
   m2 = read_model(blafile)
+  expect_equal(model_types(m1), model_types(m2))
+  expect_equal(model_widths(m1), model_widths(m2))
+})
+
+test_that("strings with escape characters have the correct width", {
+  df = data.frame(
+    A = "0_escapes",
+    B = "1_\\escape",
+    C = "\\2esc\\"
+  )
+
+  datafile = tempfile(fileext = '.bla')
+  expect_silent(write_datamodel(get_model(df), datafile, name = 'test'))
+  model ='
+  DATAMODEL test
+  FIELDS
+  A     : STRING[9]
+  B     : STRING[9]
+  C     : STRING[6]
+  ENDMODEL
+  '
+  blafile = makeblafile(model)
+  m1 = read_model(datafile)
+  m2 = read_model(blafile)
+  expect_equal(model_names(m1), model_names(m2))
   expect_equal(model_types(m1), model_types(m2))
   expect_equal(model_widths(m1), model_widths(m2))
 })
