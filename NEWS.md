@@ -1,3 +1,6 @@
+# blaise 1.3.11
+fixed bug where STRING fields with escaped characters would get incorrectly written to a fwf file.
+
 # blaise 1.3.10
 fixed bug where the word 'fields' anywhere in a variable would prevent a correct parse of the datamodel
 

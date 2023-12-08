@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* fixed bug where the word 'fields' anywhere in a variable would prevent a correct parse of the datamodel
+* fixed bug where STRING fields with escaped characters would get incorrectly written to a fwf file.
 
 ## Test environments
 * local Ubuntu docker container, R-devel
